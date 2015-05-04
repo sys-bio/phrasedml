@@ -1,0 +1,357 @@
+/**
+ * This file is designed to be compiled by the 'bison' program with the
+ * command:
+ *
+ * bison -v phraSedML.ypp
+ *
+ * The '-v' creates a file called 'phraSedML.output' which can be examined
+ * to piece together the explicit logic of the parser.  The fact that no
+ * '-o' option is used means that the default output file (phraSedML.tab.cpp)
+ * will be produced.
+ *
+ * This command produces the file 'phraSedML.tab.cpp' which is included
+ * explicitly in the phraSedML distribution.  Automatic creation of this
+ * file is not yet incorporated into the CMake system; it must be
+ * run by hand before change here will make it into the actual phraSedML
+ * library.
+ *
+ * Bison v2.4.2 was used to create the .cpp file when this file was
+ * first created.  It does not rely on odd features of the bison
+ * parser, so other versions should work fine.
+ *
+ * This file currently compiles with zero reduce/reduce errors and 10
+ * shift/reduce warnings.
+ */
+
+%{
+  //#define YYSTYPE double
+#include <cassert>
+#include <ctype.h>
+#include <fstream>
+#include <iostream>
+#include <math.h>
+#include <set>
+#include <stdio.h>
+#include <string>
+#include <vector>
+#ifndef NSBML
+#include <sbml/SBMLTypes.h>
+#endif
+#include "registry.h"
+//#include "module.h"
+//#include "unitdef.h"
+//#include "stringx.h"
+
+  class ChangeList;
+
+  using namespace std;
+  int phrased_yylex(void);
+  void phrased_yyerror(char const *);
+  Registry g_registry;
+  int phrased_yylloc_last_line = 1;
+%}
+
+/*Bison declarations */
+%union {
+  char character;
+  const string* word;
+  vector<const string*>* words;
+  vector<string>* wordstr;
+  vector<vector<const string*>* >* nameslist;
+  double num;
+  vector<double>* nums;
+  ChangeList* changelist;
+}
+
+%type   <character>     mathThing "mathematical symbol"
+%type   <words>         varOrKeyword 
+%type   <wordstr>       formula commaformula
+%type   <nameslist>     plotlist
+%type   <nums>          numlist
+%type   <changelist>    changelist
+
+%left '&' '|' /* Boolean functions and, or */
+%left '-' '+'
+%left '*' '/' '%'
+%right '^'    /* exponentiation        */
+
+%token YYEOF 0 "end of file"
+%token  <num> NUM "number"
+%token  <word> PHRASEWORD "element name"
+%token  <word> TEXTSTRING "text string in quotes"
+%token  <word> ERROR "an error"
+
+%name-prefix="phrased_yy"
+%debug
+%error-verbose
+%% /* The grammar: */
+
+input:          /* empty */
+        |       input equals lineend {}
+        |       input plot lineend {}
+        |       input lineend {}
+        |       input error {YYABORT;} 
+        |       input ERROR {YYABORT;} 
+        ;
+
+varOrKeyword:   PHRASEWORD {$$ = new vector<const string*>; $$->push_back($1);}
+        |       varOrKeyword '.' PHRASEWORD {$$ = $1; $$->push_back($3);}
+        ;
+
+equals:         varOrKeyword '=' varOrKeyword TEXTSTRING {if (g_registry.addModelDef($1, $3, $4)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword TEXTSTRING varOrKeyword changelist {if (g_registry.addModelDef($1, $3, $4, $5, $6)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword TEXTSTRING varOrKeyword varOrKeyword varOrKeyword ',' changelist {if (g_registry.addModelDef($1, $3, $4, $5, $6, $7, $9)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword varOrKeyword {if (g_registry.addEquals($1, $3, $4)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword changelist {if (g_registry.addEquals($1, $3, $4, $5, $6)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword varOrKeyword {if (g_registry.addEquals($1, $3, $4, $5, $6)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword varOrKeyword varOrKeyword {if (g_registry.addEquals($1, $3, $4, $5, $6, $7)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword varOrKeyword varOrKeyword ',' changelist {if (g_registry.addEquals($1, $3, $4, $5, $6, $7)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword varOrKeyword '(' numlist ')' {if (g_registry.addEquals($1, $3, $4, $6)) YYABORT;}
+        ;
+
+changelist:     varOrKeyword '=' NUM {$$ = g_registry.createChangeList($1, $3); if ($$==NULL) YYABORT;}
+        |       varOrKeyword varOrKeyword '=' formula {$$ = g_registry.createChangeList($1, $2, $4); if ($$==NULL) YYABORT;}
+        |       varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = g_registry.createChangeList($1, $2, $3, $5); if ($$==NULL) YYABORT;}
+        |       varOrKeyword varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = g_registry.createChangeList($1, $2, $3, $4, $6); if ($$==NULL) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword {$$ = $1; if (g_registry.addToChangeList($$, $3, $4)) YYABORT;}
+        |       changelist ',' varOrKeyword '=' NUM {$$ = $1; if (g_registry.addToChangeList($$, $3, $5)) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword '=' formula {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $6)) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $5, $7)) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $5, $6, $8)) YYABORT;}
+        ;
+
+numlist:        /* empty */ {$$ = new vector<double>;}
+        |       NUM {$$ = new vector<double>; $$->push_back($1);}
+        |       numlist ',' NUM {$$ = $1; $$->push_back($3);}
+        ;
+
+plot:           varOrKeyword varOrKeyword varOrKeyword plotlist {if (g_registry.addPlot($1, $2, $3, $4)) YYABORT;}
+        ;
+
+plotlist:       /* empty */ {$$ = new vector<vector<const string*>*>;}
+        |       plotlist varOrKeyword {$$ = $1; $$->push_back($2);}
+        |       plotlist ',' varOrKeyword {$$ = $1; $$->push_back($3);}
+        ;
+
+formula:        /* empty */ {$$ = new vector<string>(); }
+        |       formula PHRASEWORD {$$ = $1; $1->push_back(*$2); }
+        |       formula NUM  {$$ = $1; $1->push_back(g_registry.ftoa($2)); }
+        |       formula '(' commaformula ')'
+                {
+                  $$ = $1;
+                  $$->push_back("(");
+                  $$->insert($$->end(), $3->begin(), $3->end());
+                  $$->push_back(")");
+                  delete $3;
+                }
+        |       formula mathThing {$$ = $1; string mt; mt.push_back($2); $1->push_back(mt); }
+        |       formula '&' '&' {$$ = $1; $1->push_back("&"); $1->push_back("&"); }
+        |       formula '|' '|' {$$ = $1; $1->push_back("|"); $1->push_back("|"); }
+        ;
+
+commaformula:   formula {$$ = $1;}
+        |       commaformula ',' formula {$$ = $1; $$->push_back(","); $$->insert($$->end(), $3->begin(), $3->end()); }
+        ;
+
+mathThing:      '+' {$$ = '+';}
+        |       '-' {$$ = '-';}
+        |       '*' {$$ = '*';}
+        |       '/' {$$ = '/';}
+        |       '^' {$$ = '^';}
+        |       '>' {$$ = '>';}
+        |       '<' {$$ = '<';}
+        |       '!' {$$ = '!';}
+        |       '%' {$$ = '%';}
+        |       '=' {$$ = '=';}
+        ;
+
+lineend:        ';' {}
+        |       '\n' {}
+        ;
+
+%%
+
+
+void phrased_yyerror(char const *s)
+{
+  if (g_registry.getError()=="") {
+    g_registry.setError(s);
+  }
+}
+
+int phrased_yylex(void)
+{
+  char cc = 0;
+  g_registry.input->get(cc);
+
+  //If we're done with the file:
+  if (g_registry.input->eof()) {
+    if (g_registry.finalize()) {
+      return ERROR;
+    }
+    return 0;
+  }
+  if (!g_registry.input->good()) {
+    //Something else went wrong!
+    g_registry.setError("Unparseable content in line " + g_registry.ftoa(phrased_yylloc_last_line) + ".");
+    return ERROR;
+  }
+
+  // Skip white space.
+  while ((cc == ' ' ||
+         cc == '\t') &&
+         !g_registry.input->eof()) {
+    g_registry.input->get(cc);
+  }
+  if (g_registry.input->eof()) return phrased_yylex();
+  // Skip carriage returns after '\':
+  if (cc == '\\') {
+    g_registry.input->get(cc);
+    if (cc == '\r' || cc == '\n' || cc == ' ') {
+      while ((cc == '\r' || cc == '\n' || cc == ' ') && !g_registry.input->eof()) {
+        g_registry.input->get(cc);
+      }
+      ++phrased_yylloc_last_line;
+      g_registry.input->unget();
+      return phrased_yylex();
+    }
+    else {
+      g_registry.input->unget();
+      cc = '\\';
+    }
+ }
+
+  // Parse words
+  if (cc > 0 && cc < 256 && (isalpha(cc) || cc == '_')) {
+    string word;
+    while (cc > 0 && cc < 256 && (isalpha(cc) || isdigit(cc) || cc == '_') && !g_registry.input->eof()) {
+      word += cc;
+      g_registry.input->get(cc);
+    }
+    if (!g_registry.input->eof()) {
+      g_registry.input->unget();
+    }
+    //Otherwise, it's a user-defined variable:
+    phrased_yylval.word = g_registry.addWord(word);
+    //cout << "\tRead word '" << word << "'." << endl;
+    return PHRASEWORD;
+  }
+
+  // Parse numbers
+  if (cc > 0 && cc < 256 && (isdigit(cc) || (cc=='.' && isdigit(g_registry.input->peek())))) {
+    double number;
+    g_registry.input->unget();
+    streampos numbegin = g_registry.input->tellg();
+    *g_registry.input >> number;
+    streampos numend = g_registry.input->tellg();
+    if (g_registry.input->fail()) {
+      //The gcc 4.4.3 parser fails if there's an 'e' after a number with no exponent.
+      g_registry.input->clear();
+      g_registry.input->seekg(numbegin);
+      int numint;
+      *g_registry.input >> numint;
+      phrased_yylval.num = numint;
+      if (g_registry.input->peek() == '.') {
+        g_registry.input->get();
+        *g_registry.input >> numint;
+        double fraction = numint;
+        while (fraction >= 1.0) {
+          fraction = fraction/10;
+        }
+        phrased_yylval.num += fraction;
+      }
+      return NUM;
+    }
+    assert(g_registry.input->good());
+    phrased_yylval.num = number;
+    //However, pre-4.4.3 parsers would read the 'e' anyway, and we don't want it to, so unget the 'e'.
+    g_registry.input->unget();
+    if (!g_registry.input->good()) {
+      //Sometimes you can't do this?  For some reason?  If this happens we'll assume there was no 'e'.
+      g_registry.input->clear();
+    }
+    else {
+      g_registry.input->get(cc);
+      if (cc == 'e' || cc == 'E') {
+        g_registry.input->unget();
+      }
+    }
+    return NUM;
+  }
+
+  //Skip comments:
+  if (cc == '/') {
+    g_registry.input->get(cc);
+    if (cc == '/') {
+      while (cc != '\n' && cc != '\r' && !g_registry.input->eof()) {
+        g_registry.input->get(cc);
+      }
+      if (!g_registry.input->eof()) {
+        g_registry.input->unget();
+      }
+      return phrased_yylex();
+    }
+    else if (cc == '*') {
+      bool nextstar = false;
+      g_registry.input->get(cc);
+      while ((!g_registry.input->eof()) && !(nextstar && cc == '/')) {
+        if (cc == '*') {
+          nextstar = true;
+        }
+        else {
+          nextstar = false;
+        }
+        g_registry.input->get(cc);
+      }
+      return phrased_yylex();
+    }
+    else {
+      g_registry.input->unget();
+      cc = '/';
+    }
+  }
+  else if (cc == '#') {
+      while (cc != '\n' && cc != '\r' && !g_registry.input->eof()) {
+        g_registry.input->get(cc);
+      }
+      if (!g_registry.input->eof()) {
+        g_registry.input->unget();
+      }
+      return phrased_yylex();
+  }
+
+  //Parse text strings
+  if (cc == '"') {
+    string textstring;
+    long ccount = 0;
+    g_registry.input->get(cc);
+    while (cc != '"' && cc != '\r' && cc != '\n' && !g_registry.input->eof()) {
+      textstring += cc;
+      ccount++;
+      g_registry.input->get(cc);
+    }
+    if (cc == '\r' || cc == '\n' || g_registry.input->eof()) {
+      for (; ccount > 0; ccount--) {
+        g_registry.input->unget();
+      }
+      cc = '"';
+    }
+    else {
+      phrased_yylval.word = g_registry.addWord(textstring);
+      return TEXTSTRING;
+    }
+  }
+
+  //This converts PC and Mac end-of-line characters to \n:
+  if (cc == '\r') {
+    g_registry.input->get(cc);
+    if (cc != '\n') {
+      g_registry.input->unget();
+    }
+    cc = '\n';
+  }
+  if (cc == '\n') {
+    ++phrased_yylloc_last_line;
+  }
+  return cc;
+}
