@@ -34,6 +34,19 @@ START_TEST (test_model_err1)
 END_TEST
 
 
+START_TEST (test_model_err2)
+{
+  testError("sbml.model = model \"sbml_model.xml\"", "Unable to parse line 1: a phraSED-ML id may not be a sub-id of another variable:  'sbml.model' is not a legal ID for a phraSED-ML model.");
+}
+END_TEST
+
+
+START_TEST (test_model_err3)
+{
+  testError("0sbml_model = model \"sbml_model.xml\"", "syntax error, unexpected number");
+}
+END_TEST
+
 
 Suite *
 create_suite_Errors (void)
@@ -42,7 +55,9 @@ create_suite_Errors (void)
   TCase *tcase = tcase_create("PhraSED-ML Errors");
 
   tcase_add_test( tcase, test_model_err1);
-//  tcase_add_test( tcase, );
+  tcase_add_test( tcase, test_model_err2);
+  tcase_add_test( tcase, test_model_err3);
+//  tcase_add_test( tcase, test_model_err4);
 
   suite_add_tcase(suite, tcase);
 

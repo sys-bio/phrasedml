@@ -7,6 +7,7 @@
 
 #include "registry.h"
 #include "stringx.h"
+#include "model.h"
 
 extern int phrased_yyparse();
 extern int phrased_yylloc_last_line;
@@ -15,10 +16,11 @@ extern int phrased_yylloc_last_line;
 using namespace std;
 
 Registry::Registry()
-  : m_variablenames(),
-    m_error(),
-    m_warnings(),
-    input(NULL)
+  : m_variablenames()
+  , m_error()
+  , m_warnings()
+  , m_models()
+  , input(NULL)
 {
 }
 
@@ -34,13 +36,19 @@ string Registry::convertString(string model)
   istringstream* inputstring = new istringstream(model + "\n");
   phrased_yylloc_last_line = 1;
   input = inputstring;
-  return parseInput();
+  if (parseInput()) {
+    return "";
+  }
+  return getSEDML();
 }
 
 string Registry::convertFile(const string& filename)
 {
   //Try to read it as SED-ML first
   //LS DEBUG:  TODO
+  //if (isSEDMLFile(filename)) {
+
+  //}
 
 
   //If that failed, set up the 'input' member variable so we can parse it as Phrasedml.
@@ -56,7 +64,10 @@ string Registry::convertFile(const string& filename)
   }
   input = inputfile;
   phrased_yylloc_last_line = 1;
-  return parseInput();
+  if (parseInput()) {
+    return "";
+  }
+  return getSEDML();
 }
 
 bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc)
@@ -70,9 +81,12 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
     setError(err.str());
     return true;
   }
-
-  setError("Error in addModelDef v1.");
-  return true;
+  if (checkId(name)) {
+    return true;
+  }
+  PhrasedModel pm(namestr, *modelloc, true);
+  m_models.push_back(pm);
+  return false;
 }
 
 bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc, vector<const string*>* with, ChangeList* changelist)
@@ -219,6 +233,31 @@ bool Registry::addToChangeList(ChangeList* cl, vector<const string*>* key1, vect
   return true;
 }
 
+bool Registry::setName(vector<const string*>* id, vector<const string*>* is, const string* name)
+{
+  string iskeyword = "is";
+  string idstr = getStringFrom(id);
+  string isstr = getStringFrom(is);
+  stringstream err;
+  if (isstr != iskeyword) {
+    err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << idstr << " " << isstr << " \"" << *name << "\"'): the only type of phraSED-ML content that fits the syntax '[ID] [keyword] \"[string]\"' is setting the names of elements, where 'keyword' is the word 'is' (i.e. 'mod1 is \"Biomodels file #322\"').  ";
+    setError(err.str());
+    return true;
+  }
+  if (checkId(id)) {
+    return true;
+  }
+  for (size_t m=0; m<m_models.size(); m++) {
+    if (m_models[m].getId() == idstr) {
+      m_models[m].setName(*name);
+      return false;
+    }
+  }
+
+  err << "Error in line " << phrased_yylloc_last_line-1 << ": no such id '" << idstr << "' exists to set its name.";
+  setError(err.str());
+  return true;
+}
 
 
 //Assistance functions
@@ -241,18 +280,36 @@ const string* Registry::addWord(string word)
 
 string Registry::getPhraSEDML() const
 {
-  string retval;
+  string retval  = "//Created by libphrasedml ";
+  retval += LIBPHRASEDML_VERSION_STRING;
+  retval += "\n";
+  string names = "";
+  for (size_t m=0; m<m_models.size(); m++) {
+    if (m==0) {
+      retval += "// Models\n";
+    }
+    retval += m_models[m].getPhraSEDML();
+    if (m==m_models.size()-1) {
+      retval += "\n";
+    }
+    if (m_models[m].getName() != "") {
+      names += m_models[m].getId() + " is \"" + m_models[m].getName() + "\"\n";
+    }
+  }
 
 
+  if (names != "") {
+    retval += "// Names\n" + names + "\n";
+  }
   return retval;
 }
 
 string Registry::getSEDML() const
 {
-  string retval;
-
-
-  return retval;
+  if (m_error.empty()) {
+    return "Successfully parsed the input, but can't translate to SEDML yet.\n";
+  }
+  return "";
 }
 
 /*
@@ -313,9 +370,9 @@ bool Registry::finalize()
 }
 
 
-string Registry::parseInput()
+bool Registry::parseInput()
 {
-  m_error.clear();
+  clearAll();
   int success = phrased_yyparse();
   if (success != 0) {
     if (getError().size() == 0) {
@@ -330,23 +387,73 @@ string Registry::parseInput()
         setError("Unknown parsing error.");
       }
     }
+    return true;
   }
-  return getSEDML();
+  return false;
 }
 
-string Registry::getSEDML()
+bool Registry::parseSEDML()
 {
-  if (m_error.empty()) {
-    return "Successfully parsed the phraSEDML file, but can't translate to SEDML yet.";
-  }
-  return "";
+  clearAll();
+  setError("Unable to parse SED-ML input at this time.");
+  return true;
 }
 
-string Registry::getPhraSEDML()
+bool Registry::checkId(vector<const string*>* name)
 {
-  if (m_error.empty()) {
-    return "Successfully parsed the SEDML file, but can't translate to phraSEDML yet.";
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line-1 << ": ";
+  if (name->size()==0) {
+    assert(false); //This shouldn't be possible, and I want to see what happened to cause it if it happens.
+    err << "a phraSED-ML top-level ID must exist, and this ID has corresponding string for it.";
+    setError(err.str());
+    return true;
   }
-  return "";
+  else if (name->size() > 1) {
+    err << "a phraSED-ML id may not be a sub-id of another variable:  '" << getStringFrom(name) << "' is not a legal ID for a phraSED-ML model.";
+    setError(err.str());
+    return true;
+  }
+  else if (!isValidSId(name)) {
+    err << "a phraSED-ML id must adhere to the pattern '[A-Za-z_][A-Za-z_0-9]*', and '" << (*(*name)[0]) << " does not conform.";
+    setError(err.str());
+    return true;
+  }
+  return false;
 }
 
+
+bool Registry::isValidSId(vector<const string*>* name)
+{
+  if (name->size() != 1) return false;
+  string corename = *(*name)[0];
+
+  //Taken from libsbml's "SyntaxChecker::isValidInternalSId(string sid)"
+  size_t size = (*name)[0]->size();
+  if (size == 0)
+  {
+    return false;
+  }
+
+  size_t n = 0;
+
+  char c = (*(*name)[0])[n];
+  bool okay = (isalpha(c) || (c == '_'));
+  n++;
+
+  while (okay && n < size)
+  {
+    c = (*(*name)[0])[n];
+    okay = (isalnum(c) || c == '_');
+    n++;
+  }
+
+  return okay;
+}
+
+void Registry::clearAll()
+{
+  m_error.clear();
+  m_warnings.clear();
+  m_models.clear();
+}

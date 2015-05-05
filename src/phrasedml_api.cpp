@@ -55,6 +55,16 @@ LIB_EXTERN char* getLastError()
   return getCharStar((g_registry.getError()).c_str());
 }
 
+LIB_EXTERN char* getLastPhraSEDML()
+{
+  return getCharStar((g_registry.getPhraSEDML()).c_str());
+}
+
+LIB_EXTERN char* getLastSEDML()
+{
+  return getCharStar((g_registry.getSEDML()).c_str());
+}
+
 LIB_EXTERN char* getWarnings()
 {
   string ret;

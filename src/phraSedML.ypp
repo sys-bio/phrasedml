@@ -89,6 +89,7 @@
 input:          /* empty */
         |       input equals lineend {}
         |       input plot lineend {}
+        |       input name lineend {}
         |       input lineend {}
         |       input error {YYABORT;} 
         |       input ERROR {YYABORT;} 
@@ -126,6 +127,9 @@ numlist:        /* empty */ {$$ = new vector<double>;}
         ;
 
 plot:           varOrKeyword varOrKeyword varOrKeyword plotlist {if (g_registry.addPlot($1, $2, $3, $4)) YYABORT;}
+        ;
+
+name:           varOrKeyword varOrKeyword TEXTSTRING {if (g_registry.setName($1, $2, $3)) YYABORT;}
         ;
 
 plotlist:       /* empty */ {$$ = new vector<vector<const string*>*>;}

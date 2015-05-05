@@ -21,6 +21,7 @@
 //#include "reaction.h"
 //#include "enums.h"
 
+class PhrasedModel;
 class ChangeList;
 
 class Registry
@@ -29,6 +30,9 @@ private:
   std::set<std::string>    m_variablenames;
   std::string              m_error;
   std::vector<std::string> m_warnings;
+
+  //The actual SEDML bits:
+  std::vector<PhrasedModel> m_models;
 
 public:
   Registry();
@@ -81,6 +85,9 @@ public:
   bool addToChangeList(ChangeList* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* name, double val);
   bool addToChangeList(ChangeList* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* name, double val);
   
+  //Setting the 'name' attribute
+  bool setName(std::vector<const std::string*>* id, std::vector<const std::string*>* is, const std::string* name);
+
   //Assistance functions
   std::string ftoa(double val);
   const std::string* addWord(std::string word);
@@ -99,9 +106,12 @@ public:
   void freeAll();
 
 private:
-  std::string parseInput();
-  std::string getSEDML();
-  std::string getPhraSEDML();
+  bool parseInput();
+  bool parseSEDML();
+
+  bool checkId(std::vector<const std::string*>* name);
+  bool isValidSId(std::vector<const std::string*>* name);
+  void clearAll();
 
 };
 
