@@ -5,11 +5,13 @@
 #include <vector>
 
 #include "variable.h"
+#include "sbml\SBMLDocument.h"
 
 enum language {
   lang_XML, 
   lang_SBML, 
   lang_CellML, 
+  lang_SBMLl1v1, 
   lang_SBMLl1v2, 
   lang_SBMLl2v1, 
   lang_SBMLl2v2, 
@@ -32,23 +34,26 @@ private:
   std::string m_source;
   std::vector<ChangeList*> m_changes;
 
-  bool m_quoteSource;
+  bool m_isFile;
+  SBMLDocument m_sbml;
 
 public:
 
-  PhrasedModel(std::string id, std::string source, bool quoteSource);
-  PhrasedModel(std::string id, std::string source, std::vector<ChangeList*> changes, bool quoteSource);
+  PhrasedModel(std::string id, std::string source, bool isFile);
+  PhrasedModel(std::string id, std::string source, std::vector<ChangeList*> changes, bool isFile);
   ~PhrasedModel();
 
-  void setQuoteSource(bool quote);
-  bool getQuoteSource();
+  void setIsFile(bool isfile);
+  bool getIsFile();
 
   std::string getPhraSEDML() const;
+  void addModelToSEDML(SedDocument* sedml) const;
 
+  void langTypeToURI(language type) const;
 private:
   void processSource();
-  language getLanguageFromURI(std::string uri);
-  std::string getURIFromLanguage(language lang);
+  language getLanguageFromURI(std::string uri) const;
+  std::string getURIFromLanguage(language lang) const;
 
 };
 

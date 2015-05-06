@@ -57,12 +57,12 @@ LIB_EXTERN char* getLastError()
 
 LIB_EXTERN char* getLastPhraSEDML()
 {
-  return getCharStar((g_registry.getPhraSEDML()).c_str());
+  return g_registry.getPhraSEDML();
 }
 
 LIB_EXTERN char* getLastSEDML()
 {
-  return getCharStar((g_registry.getSEDML()).c_str());
+  return g_registry.getSEDML();
 }
 
 LIB_EXTERN char* getWarnings()
@@ -77,6 +77,11 @@ LIB_EXTERN char* getWarnings()
     ret += warnings[warn];
   }
   return getCharStar(ret.c_str());
+}
+
+LIB_EXTERN void setWorkingDirectory(const char* directory)
+{
+  g_registry.setWorkingDirectory(directory);
 }
 
 LIB_EXTERN void freeAll()

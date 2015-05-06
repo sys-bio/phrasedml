@@ -77,6 +77,13 @@ LIB_EXTERN char*  getLastPhraSEDML();
 LIB_EXTERN char*  getWarnings();
 
 /**
+ * Sets the working directory for phraSED-ML to look for referenced files.
+ *
+ * @param directory The directory as a character string.  May be either absolute or relative to the directory the executable is being run from.
+ */
+LIB_EXTERN void setWorkingDirectory(const char* directory);
+
+/**
  * Frees all pointers handed to you by libphraSEDML.
  * All libphraSEDML functions above that return pointers return malloc'ed pointers that you now own.  If you wish, you can ignore this and never free anything, as long as you call 'freeAll' at the very end of your program.  If you free *anything* yourself, however, calling this function will cause the program to crash!  It won't know that you already freed that pointer, and will attempt to free it again.  So either keep track of all memory management yourself, or use this function after you're completely done.
  *

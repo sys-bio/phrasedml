@@ -46,15 +46,12 @@ set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, op
 #
 
 # which language bindings should be build
-option(WITH_SBML            "Use libSBML to assist translation"      OFF )
-if (WITH_SBML)
-    option(WITH_STATIC_SBML     "Use the static version of the libsbml library"      OFF )
-#    option(WITH_COMP_SBML       "Use the hierarchical composition package API"      ON )
+option(WITH_STATIC_SEDML    "Use the static version of the libsedml library"      ON )
+    option(WITH_STATIC_SBML     "Use the static version of the libsbml library"      ON )
     OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat library."  OFF)
     OPTION(WITH_LIBSBML_LIBXML "Set if libsbml was compiled with a separate libxml library." ON)
     OPTION(WITH_LIBSBML_XERCES "Set if libsbml was compiled with a separate xerces library." OFF)
     OPTION(WITH_LIBSBML_COMPRESSION "Set if libsbml was compiled with separate zdll and bzip libraries." OFF)
-endif()
 #option(WITH_CELLML          "Generate CellML translations"    ON )
 #option(WITH_QTPHRASEDML      "Generate QTPhrasedml"             ON )
 #option(WITH_SBW             "QTPhrasedml integration with SBW" OFF )
@@ -81,10 +78,59 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
 
 ####################################################################
 #
+# Locate libsedml
+#
+    find_path(LIBSEDML_INSTALL_DIR
+    NAMES include/sedml/SedBase.h
+    PATHS /usr /usr/local /usr/lib /usr/local/lib 
+              ${CMAKE_SOURCE_DIR}
+              ${CMAKE_SOURCE_DIR}/dependencies/
+              ${CMAKE_SOURCE_DIR}/../
+              )
+
+    if(WITH_STATIC_SEDML)
+        find_library(LIBSEDML_LIBRARY
+             NAMES libsedml-static.lib libsedml-static.so libsedml-static sedml-static.lib sedml-static.so sedml-static
+             PATHS /usr/lib /usr/local/lib
+               ${LIBSEDML_INSTALL_DIR}/lib
+               ${CMAKE_SOURCE_DIR}
+               ${CMAKE_SOURCE_DIR}/dependencies/lib
+             )
+    else()
+        find_library(LIBSEDML_LIBRARY 
+            NAMES libsedml.lib libsedml.so libsedml sedml.lib sedml.so sedml
+            PATHS /usr/lib /usr/local/lib 
+              ${LIBSEDML_INSTALL_DIR}/lib
+              ${CMAKE_SOURCE_DIR} 
+              ${CMAKE_SOURCE_DIR}/dependencies/lib
+            )
+    endif()
+    find_path(LIBSEDML_INCLUDE_DIR
+        NAMES sedml/SedBase.h
+        PATHS /usr/include /usr/local/include 
+              ${LIBSEDML_INSTALL_DIR}/include
+              ${CMAKE_SOURCE_DIR}/include 
+              ${CMAKE_SOURCE_DIR}/dependencies/include
+        )
+    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBSEDML_LIBRARY} )
+    if(WIN32 AND NOT(WITH_STATIC_SEDML))
+        find_path(LIBSEDML_BIN_DIR
+            NAMES libsedml.dll
+            PATHS /usr/bin /usr/local/bin
+                  ${LIBSEDML_INSTALL_DIR}/bin
+                  ${LIBSEDML_INCLUDE_DIR}/../bin
+                  ${CMAKE_SOURCE_DIR}/ 
+                  ${CMAKE_SOURCE_DIR}/dependencies/libsedml/bin
+            )
+        set(LIBSEDML_DLL ${LIBSEDML_BIN_DIR}/libsedml.dll)
+        install(FILES   ${LIBSEDML_DLL} DESTINATION ${CMAKE_SOURCE_DIR}/win32)
+    endif()
+    INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBSEDML_INCLUDE_DIR})
+
+####################################################################
+#
 # Locate libsbml if needed
 #
-
-if(WITH_SBML)
 
     find_path(LIBSBML_INSTALL_DIR
     NAMES include/sbml/SBMLTypes.h
@@ -140,9 +186,6 @@ if(WITH_SBML)
     if (WITH_COMP_SBML)
         add_definitions( -DUSE_COMP )
     endif(WITH_COMP_SBML)
-else(WITH_SBML)
-    add_definitions( -DNSBML )
-endif(WITH_SBML)
 
 ####################################################################
 #
@@ -369,7 +412,7 @@ add_library (${LIBPHRASEDML_LIBRARY}-static STATIC ${LIBPHRASEDML_SOURCES} )
 
 if (WIN32 AND NOT CYGWIN)
     # don't decorate static library 
-    set_target_properties(${LIBPHRASEDML_LIBRARY}-static PROPERTIES COMPILE_DEFINITIONS "LIBLAX_STATIC=1;LIBSBML_STATIC=1;LIBPHRASEDML_STATIC=1")
+    set_target_properties(${LIBPHRASEDML_LIBRARY}-static PROPERTIES COMPILE_DEFINITIONS "LIBLAX_STATIC=1;LIBSEDML_STATIC=1;LIBSBML_STATIC=1;LIBPHRASEDML_STATIC=1")
 endif(WIN32 AND NOT CYGWIN)
 
 target_link_libraries(${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})

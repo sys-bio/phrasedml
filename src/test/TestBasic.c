@@ -38,6 +38,7 @@ void compareFileTranslation(const string& base)
 
 void compareStringTranslation(const string& phrasedml, const string& sedml)
 {
+  setWorkingDirectory(TestDataDirectory);
   char* sedgen = convertString(phrasedml.c_str());
   if (sedgen==NULL) {
     cout << getLastError() << endl << endl;
@@ -76,6 +77,13 @@ START_TEST (test_model_name_txt)
 }
 END_TEST
 
+START_TEST (test_model2_txt)
+{
+  compareStringTranslation("sbml_model = model \"unknown_model.xml\"", "model2.xml");
+}
+END_TEST
+
+
 
 
 Suite *
@@ -88,6 +96,7 @@ create_suite_Basic (void)
   tcase_add_test( tcase, test_model_txt);
   tcase_add_test( tcase, test_model_name);
   tcase_add_test( tcase, test_model_name_txt);
+  tcase_add_test( tcase, test_model2_txt);
 
   suite_add_tcase(suite, tcase);
 

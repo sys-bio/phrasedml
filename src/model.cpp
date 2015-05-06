@@ -8,32 +8,29 @@
 
 #include "registry.h"
 #include "model.h"
+#include "sbml\SBMLTypes.h"
 
-#ifdef LIBSBML_HAS_PACKAGE_DISTRIB
-#include "sbml/packages/distrib/common/DistribExtensionTypes.h"
-#endif
-
-extern Registry g_registry;
 using namespace std;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
-PhrasedModel::PhrasedModel(string id, string source, bool quoteSource)
+PhrasedModel::PhrasedModel(string id, string source, bool isFile)
   : Variable(id)
   , m_type(lang_XML)
   , m_source(source)
   , m_changes()
-  , m_quoteSource(quoteSource)
+  , m_isFile(isFile)
+  , m_sbml(3,1)
 {
   processSource();
 }
 
-PhrasedModel::PhrasedModel(string id, string source, vector<ChangeList*> changes, bool quoteSource)
+PhrasedModel::PhrasedModel(string id, string source, vector<ChangeList*> changes, bool isFile)
   : Variable(id)
   , m_type(lang_XML)
   , m_source(source)
   , m_changes(changes)
-  , m_quoteSource(quoteSource)
+  , m_isFile(isFile)
 {
   processSource();
 }
@@ -42,14 +39,14 @@ PhrasedModel::~PhrasedModel()
 {
 }
 
-void PhrasedModel::setQuoteSource(bool quote)
+void PhrasedModel::setIsFile(bool quote)
 {
-  m_quoteSource = quote;
+  m_isFile = quote;
 }
 
-bool PhrasedModel::getQuoteSource()
+bool PhrasedModel::getIsFile()
 {
-  return m_quoteSource;
+  return m_isFile;
 }
 
 string PhrasedModel::getPhraSEDML() const
@@ -57,19 +54,81 @@ string PhrasedModel::getPhraSEDML() const
   string ret = m_id;
   ret += " = model ";
   string source = m_source;
-  if (m_quoteSource) {
+  if (m_isFile) {
     source = "\"" + source + "\"";
   }
   ret += source + "\n";
   return ret;
 }
 
-void PhrasedModel::processSource()
+void PhrasedModel::addModelToSEDML(SedDocument* sedml) const
 {
-  //Probably have to use libsbml or whatever.
+  SedModel* model = sedml->createModel();
+  model->setId(m_id);
+  model->setName(m_name);
+  model->setSource(m_source);
+  model->setLanguage(getURIFromLanguage(m_type));
 }
 
-language PhrasedModel::getLanguageFromURI(string uri)
+void PhrasedModel::processSource()
+{
+  if (m_isFile) {
+    string actualsource = g_registry.getWorkingFilename(m_source);
+    if (actualsource.empty()) {
+      //The file cannot be found, so we'll have to punt
+      return;
+    }
+    SBMLDocument* doc = readSBMLFromFile(actualsource.c_str());
+    if (doc->getNumErrors(LIBSBML_SEV_ERROR) == 0 && doc->getNumErrors(LIBSBML_SEV_FATAL) == 0) {
+      m_sbml = *doc;
+      m_type = lang_SBML; //In case the levels/versions below don't work.
+      switch(m_sbml.getLevel()) {
+      case 1:
+        switch(m_sbml.getVersion()) {
+        case 1:
+          m_type = lang_SBMLl1v1;
+          break;
+        case 2:
+          m_type = lang_SBMLl1v2;
+          break;
+        }
+        break;
+      case 2:
+        switch(m_sbml.getVersion()) {
+        case 1:
+          m_type = lang_SBMLl2v1;
+          break;
+        case 2:
+          m_type = lang_SBMLl2v2;
+          break;
+        case 3:
+          m_type = lang_SBMLl2v3;
+          break;
+        case 4:
+          m_type = lang_SBMLl2v4;
+          break;
+        case 5:
+          m_type = lang_SBMLl2v5;
+          break;
+        }
+        break;
+      case 3:
+        switch(m_sbml.getVersion()) {
+        case 1:
+          m_type = lang_SBMLl3v1;
+          break;
+        case 2:
+          m_type = lang_SBMLl3v2;
+          break;
+        }
+        break;
+      }
+    }
+  }
+  //If the referenced model is another SEDML construct, we'll have to process it later.
+}
+
+language PhrasedModel::getLanguageFromURI(string uri) const
 {
   if (uri == "urn:sedml:language:xml") {
     return lang_XML;
@@ -77,7 +136,9 @@ language PhrasedModel::getLanguageFromURI(string uri)
     return lang_SBML;
   } else if (uri == "urn:sedml:language:cellml") {
     return lang_CellML;
-  } else if (uri == "urn:sedml:language:sbml.level-2.version-2") {
+  } else if (uri == "urn:sedml:language:sbml.level-1.version-1") {
+    return lang_SBMLl1v1;
+  } else if (uri == "urn:sedml:language:sbml.level-1.version-2") {
     return lang_SBMLl1v2;
   } else if (uri == "urn:sedml:language:sbml.level-2.version-1") {
     return lang_SBMLl2v1;
@@ -103,7 +164,7 @@ language PhrasedModel::getLanguageFromURI(string uri)
   return lang_XML;
 }
 
-std::string PhrasedModel::getURIFromLanguage(language lang)
+std::string PhrasedModel::getURIFromLanguage(language lang) const
 {
   switch(lang)
   {
@@ -113,8 +174,10 @@ std::string PhrasedModel::getURIFromLanguage(language lang)
     return "urn:sedml:language:sbml";
   case lang_CellML: 
     return "urn:sedml:language:cellml";
+  case lang_SBMLl1v1: 
+    return "urn:sedml:language:sbml.level-1.version-1";
   case lang_SBMLl1v2: 
-    return "urn:sedml:language:sbml.level-2.version-2";
+    return "urn:sedml:language:sbml.level-1.version-2";
   case lang_SBMLl2v1: 
     return "urn:sedml:language:sbml.level-2.version-1";
   case lang_SBMLl2v2: 

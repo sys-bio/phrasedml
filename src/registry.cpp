@@ -9,6 +9,8 @@
 #include "stringx.h"
 #include "model.h"
 
+#include "sedml\SedDocument.h"
+
 extern int phrased_yyparse();
 extern int phrased_yylloc_last_line;
 
@@ -19,6 +21,7 @@ Registry::Registry()
   : m_variablenames()
   , m_error()
   , m_warnings()
+  , m_sedml(NULL)
   , m_models()
   , input(NULL)
 {
@@ -26,34 +29,60 @@ Registry::Registry()
 
 Registry::~Registry()
 {
+  delete m_sedml;
 }
 
-string Registry::convertString(string model)
+char* Registry::convertString(string model)
 {
   //Try to read it as SED-ML first.
-  //LS DEBUG:  TODO
-
+  m_sedml = readSedMLFromString(model.c_str());
+  if (m_sedml->getNumErrors(LIBSEDML_SEV_ERROR) == 0 && m_sedml->getNumErrors(LIBSEDML_SEV_FATAL) == 0) {
+    parseSEDML();
+    return getPhraSEDML();
+  }
   istringstream* inputstring = new istringstream(model + "\n");
   phrased_yylloc_last_line = 1;
   input = inputstring;
   if (parseInput()) {
     return "";
   }
+  createSEDML();
   return getSEDML();
 }
 
-string Registry::convertFile(const string& filename)
+char* Registry::convertFile(const string& filename)
 {
+  string file = filename;
+  if (!file_exists(file)) {
+    file = m_workingDirectory + file;
+    if (!file_exists(file)) {
+      string error = "Input file '";
+      error += filename;
+      error += "' cannot be found.  Check to see if the file exists and that the permissions are correct, and try again.  If this still does not work, contact us letting us know how you got this error.";
+      setError(error);
+      return NULL;
+    }
+  }
+  string old_wd = m_workingDirectory;
+  m_workingDirectory = file;
+  size_t lastslash = m_workingDirectory.rfind('/');
+  if (lastslash==string::npos) {
+    lastslash = m_workingDirectory.rfind('\\');
+  }
+  if (lastslash!=string::npos) {
+    m_workingDirectory.erase(lastslash+1, m_workingDirectory.size()-lastslash-1);
+  }
   //Try to read it as SED-ML first
-  //LS DEBUG:  TODO
-  //if (isSEDMLFile(filename)) {
-
-  //}
-
+  m_sedml = readSedMLFromFile(file.c_str());
+  if (m_sedml->getNumErrors(LIBSEDML_SEV_ERROR) == 0 && m_sedml->getNumErrors(LIBSEDML_SEV_FATAL) == 0) {
+    parseSEDML();
+    return getPhraSEDML();
+  }
 
   //If that failed, set up the 'input' member variable so we can parse it as Phrasedml.
+  clearSEDML();
   ifstream* inputfile = new ifstream();
-  inputfile->open(filename.c_str(), ios::in);
+  inputfile->open(file.c_str(), ios::in);
   if (!inputfile->is_open() || !inputfile->good()) {
     string error = "Input file '";
     error += filename;
@@ -67,7 +96,10 @@ string Registry::convertFile(const string& filename)
   if (parseInput()) {
     return "";
   }
-  return getSEDML();
+  createSEDML();
+  char* ret = getSEDML();
+  m_workingDirectory = old_wd;
+  return ret;
 }
 
 bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc)
@@ -278,7 +310,20 @@ const string* Registry::addWord(string word)
   return &(*wordit);
 }
 
-string Registry::getPhraSEDML() const
+void Registry::setWorkingDirectory(const char* directory)
+{
+  m_workingDirectory = directory;
+}
+
+string Registry::getWorkingFilename(const string& filename)
+{
+  if (file_exists(filename)) return filename;
+  string newfile = m_workingDirectory + filename;
+  if (file_exists(newfile)) return newfile;
+  return "";
+}
+  
+char* Registry::getPhraSEDML() const
 {
   string retval  = "//Created by libphrasedml ";
   retval += LIBPHRASEDML_VERSION_STRING;
@@ -301,15 +346,28 @@ string Registry::getPhraSEDML() const
   if (names != "") {
     retval += "// Names\n" + names + "\n";
   }
-  return retval;
+  char* ret = strdup(retval.c_str());
+  g_registry.m_charstars.push_back(ret);
+  return ret;
 }
 
-string Registry::getSEDML() const
+char* Registry::getSEDML() const
 {
-  if (m_error.empty()) {
-    return "Successfully parsed the input, but can't translate to SEDML yet.\n";
+  if (m_sedml==NULL) {
+    return NULL;
   }
-  return "";
+  char* ret = writeSedMLToString(m_sedml);
+  g_registry.m_charstars.push_back(ret);
+  return ret;
+}
+
+void Registry::createSEDML()
+{
+  delete m_sedml;
+  m_sedml = new SedDocument();
+  for (size_t m=0; m<m_models.size(); m++) {
+    m_models[m].addModelToSEDML(m_sedml);
+  }
 }
 
 /*
@@ -373,6 +431,7 @@ bool Registry::finalize()
 bool Registry::parseInput()
 {
   clearAll();
+  clearSEDML();
   int success = phrased_yyparse();
   if (success != 0) {
     if (getError().size() == 0) {
@@ -457,3 +516,21 @@ void Registry::clearAll()
   m_warnings.clear();
   m_models.clear();
 }
+
+void Registry::clearSEDML()
+{
+  delete m_sedml;
+  m_sedml = NULL;
+}
+
+bool Registry::file_exists (const string& filename)
+{
+#ifdef _MSC_VER
+#  define stat _stat
+#endif
+
+  if (filename.empty()) return false;
+  struct stat buf;
+  return stat(filename.c_str(), &buf) == 0;
+}
+

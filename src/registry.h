@@ -6,6 +6,8 @@
 #include <sstream>
 #include <set>
 
+#include "sedml\SedTypes.h"
+
 //#include <ctype.h>
 //#include <fstream>
 //#include <iostream>
@@ -31,6 +33,9 @@ private:
   std::string              m_error;
   std::vector<std::string> m_warnings;
 
+  SedDocument*             m_sedml;
+  std::string              m_workingDirectory;
+
   //The actual SEDML bits:
   std::vector<PhrasedModel> m_models;
 
@@ -40,16 +45,16 @@ public:
 
   std::istream* input;
 
-  std::string convertFile(const std::string& filename);
-  std::string convertString(std::string model);
+  char* convertFile(const std::string& filename);
+  char* convertString(std::string model);
 
   void setError(std::string error) {m_error = error;};
   void addErrorPrefix(std::string error) {m_error = error + m_error;};
   void addWarning(std::string warning) {m_warnings.push_back(warning);};
   void clearWarnings() {m_warnings.clear();};
 
-  std::string getPhraSEDML() const;
-  std::string getSEDML() const;
+  char* getPhraSEDML() const;
+  char* getSEDML() const;
 
   std::string getError() {return m_error;};
   std::vector<std::string> getWarnings() {return m_warnings;};
@@ -91,6 +96,8 @@ public:
   //Assistance functions
   std::string ftoa(double val);
   const std::string* addWord(std::string word);
+  void setWorkingDirectory(const char* directory);
+  std::string getWorkingFilename(const std::string& filename);
 
   //When we're done, make sure the whole thing is coherent.
   bool finalize();
@@ -112,6 +119,10 @@ private:
   bool checkId(std::vector<const std::string*>* name);
   bool isValidSId(std::vector<const std::string*>* name);
   void clearAll();
+  void clearSEDML();
+
+  void createSEDML();
+  bool file_exists (const std::string& filename);
 
 };
 
