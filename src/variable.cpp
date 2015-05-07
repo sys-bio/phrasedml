@@ -8,6 +8,8 @@
 
 #include "variable.h"
 
+#include "sedml\SedBase.h"
+
 using namespace std;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
@@ -15,6 +17,12 @@ using namespace std;
 Variable::Variable(string id)
   : m_id(id)
   , m_name()
+{
+}
+
+Variable::Variable(SedBase* sedbase)
+  : m_id(sedbase->getId())
+  , m_name(sedbase->getName())
 {
 }
 

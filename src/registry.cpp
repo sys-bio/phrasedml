@@ -76,7 +76,9 @@ char* Registry::convertFile(const string& filename)
   m_sedml = readSedMLFromFile(file.c_str());
   if (m_sedml->getNumErrors(LIBSEDML_SEV_ERROR) == 0 && m_sedml->getNumErrors(LIBSEDML_SEV_FATAL) == 0) {
     parseSEDML();
-    return getPhraSEDML();
+    char* ret = getPhraSEDML();
+    m_workingDirectory = old_wd;
+    return ret;
   }
 
   //If that failed, set up the 'input' member variable so we can parse it as Phrasedml.
@@ -454,8 +456,12 @@ bool Registry::parseInput()
 bool Registry::parseSEDML()
 {
   clearAll();
-  setError("Unable to parse SED-ML input at this time.");
-  return true;
+  for (unsigned long m=0; m<m_sedml->getNumModels(); m++) {
+    PhrasedModel mod(m_sedml->getModel(m), m_sedml);
+    m_models.push_back(mod);
+  }
+  //setError("Unable to parse SED-ML input at this time.");
+  return false;
 }
 
 bool Registry::checkId(vector<const string*>* name)

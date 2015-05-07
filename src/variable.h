@@ -3,6 +3,8 @@
 
 #include <string>
 
+class SedBase;
+
 class Variable
 {
 private:
@@ -15,6 +17,7 @@ protected:
 public:
 
   Variable(std::string id);
+  Variable(SedBase* sedbase);
   ~Variable();
 
   void setName(std::string name);

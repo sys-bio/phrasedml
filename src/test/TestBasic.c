@@ -23,33 +23,61 @@ void compareFileTranslation(const string& base)
   string dir(TestDataDirectory);
   string phrasedfile = dir + base + ".txt";
   string sedfile = dir + base + ".xml";
-  char* sedgen = convertFile(phrasedfile.c_str());
-  if (sedgen==NULL) {
+  char* sed_gen = convertFile(phrasedfile.c_str());
+  if (sed_gen==NULL) {
     cout << getLastError() << endl << endl;
     fail_unless(false);
     return;
   }
-  cout << sedgen;
+  cout << "SED-ML generated from " << base << ".txt" << endl << sed_gen << endl;
   char* phrased_rt = getLastPhraSEDML();
-  cout << phrased_rt;
-  free(sedgen);
+
+  char* phrased_gen = convertFile(sedfile.c_str());
+  if (phrased_gen==NULL) {
+    cout << getLastError() << endl << endl;
+    fail_unless(false);
+    return;
+  }
+  cout << "phraSED-ML generated from " << base << ".xml" << endl << phrased_gen << endl;
+  char* sed_rt = getLastSEDML();
+
+  fail_unless((string)phrased_rt == (string)phrased_gen);
+  fail_unless((string)sed_rt     == (string)sed_gen);
+
+  free(sed_gen);
+  free(sed_rt);
+  free(phrased_gen);
   free(phrased_rt);
 }
 
 void compareStringTranslation(const string& phrasedml, const string& sedml)
 {
   setWorkingDirectory(TestDataDirectory);
-  char* sedgen = convertString(phrasedml.c_str());
-  if (sedgen==NULL) {
+  char* sed_gen = convertString(phrasedml.c_str());
+  if (sed_gen==NULL) {
     cout << getLastError() << endl << endl;
     fail_unless(false);
     return;
   }
-  cout << sedgen;
   char* phrased_rt = getLastPhraSEDML();
-  cout << phrased_rt;
+
+  string dir(TestDataDirectory);
+  string sedfile = dir + sedml;
+  char* phrased_gen = convertFile(sedfile.c_str());
+  if (phrased_gen==NULL) {
+    cout << getLastError() << endl << endl;
+    fail_unless(false);
+    return;
+  }
+  char* sed_rt = getLastSEDML();
+
+  fail_unless((string)phrased_rt == (string)phrased_gen);
+  fail_unless((string)sed_rt     == (string)sed_gen);
+
+  free(sed_gen);
+  free(sed_rt);
+  free(phrased_gen);
   free(phrased_rt);
-  free(sedgen);
 }
 
 START_TEST (test_model)
@@ -77,6 +105,12 @@ START_TEST (test_model_name_txt)
 }
 END_TEST
 
+START_TEST (test_model2)
+{
+  compareFileTranslation("model2");
+}
+END_TEST
+
 START_TEST (test_model2_txt)
 {
   compareStringTranslation("sbml_model = model \"unknown_model.xml\"", "model2.xml");
@@ -96,6 +130,7 @@ create_suite_Basic (void)
   tcase_add_test( tcase, test_model_txt);
   tcase_add_test( tcase, test_model_name);
   tcase_add_test( tcase, test_model_name_txt);
+  tcase_add_test( tcase, test_model2);
   tcase_add_test( tcase, test_model2_txt);
 
   suite_add_tcase(suite, tcase);

@@ -1,0 +1,2 @@
+sbml_model = model "sbml_model.xml"
+sbml_model is "The SBML Model"

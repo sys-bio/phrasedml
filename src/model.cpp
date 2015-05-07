@@ -35,6 +35,20 @@ PhrasedModel::PhrasedModel(string id, string source, vector<ChangeList*> changes
   processSource();
 }
 
+PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
+  : Variable(sedmodel)
+  , m_type(lang_XML)
+  , m_source(sedmodel->getSource())
+  , m_changes()
+  , m_isFile(true)
+{
+  m_type = getLanguageFromURI(sedmodel->getLanguage());
+  SedModel* referenced = seddoc->getModel(m_source);
+  if (referenced != NULL && referenced != sedmodel) {
+    m_isFile = false;
+  }
+}
+
 PhrasedModel::~PhrasedModel()
 {
 }

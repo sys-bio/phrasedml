@@ -41,6 +41,7 @@ public:
 
   PhrasedModel(std::string id, std::string source, bool isFile);
   PhrasedModel(std::string id, std::string source, std::vector<ChangeList*> changes, bool isFile);
+  PhrasedModel(SedModel* sedmodel, SedDocument* seddoc);
   ~PhrasedModel();
 
   void setIsFile(bool isfile);

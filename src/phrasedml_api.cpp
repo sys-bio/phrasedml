@@ -33,20 +33,18 @@ LIB_EXTERN char* convertFile(const char* filename)
 {
   string oldlocale = setlocale(LC_ALL, NULL);
   setlocale(LC_ALL, "C");
-  string ret = g_registry.convertFile(filename);
+  char* ret = g_registry.convertFile(filename);
   setlocale(LC_ALL, oldlocale.c_str());
-  if(ret.empty()) return NULL;
-  return getCharStar(ret.c_str());
+  return ret;
 }
 
 LIB_EXTERN char* convertString(const char* model)
 {
   string oldlocale = setlocale(LC_ALL, NULL);
   setlocale(LC_ALL, "C");
-  string ret = g_registry.convertString(model);
+  char* ret = g_registry.convertString(model);
   setlocale(LC_ALL, oldlocale.c_str());
-  if(ret.empty()) return NULL;
-  return getCharStar(ret.c_str());
+  return ret;
 }
 
 
