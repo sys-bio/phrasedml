@@ -375,7 +375,7 @@ mark_as_advanced(CMAKE_INSTALL_LIBDIR)
 set (PHRASEDML_SRC_DIR src/)
 
 file(GLOB LIBPHRASEDML_SOURCES 
-          ${PHRASEDML_SRC_DIR}phraSedML.tab.cpp
+          ${PHRASEDML_SRC_DIR}phrasedml.tab.cpp
           ${PHRASEDML_SRC_DIR}model.cpp
           ${PHRASEDML_SRC_DIR}registry.cpp
           ${PHRASEDML_SRC_DIR}stringx.cpp
@@ -464,11 +464,11 @@ endif()
 #set (QTPHRASEDML_DIALOG_DIR QTPhrasedml_src/qtfindreplacedialog-1.1/dialogs/)
 
 #file(GLOB QTPHRASEDML_SOURCES
-#        ${QTPHRASEDML_SRC_DIR}PhrasedmlTab.cpp
+#        ${QTPHRASEDML_SRC_DIR}phrasedmlTab.cpp
 #        )
 
 #file(GLOB QTPHRASEDML_HEADERS
-#        ${QTPHRASEDML_SRC_DIR}PhrasedmlTab.h
+#        ${QTPHRASEDML_SRC_DIR}phrasedmlTab.h
 #        ${QTPHRASEDML_SRC_DIR}CellMLTab.h
 #        )
 

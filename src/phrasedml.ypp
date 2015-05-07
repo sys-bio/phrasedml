@@ -2,17 +2,17 @@
  * This file is designed to be compiled by the 'bison' program with the
  * command:
  *
- * bison -v phraSedML.ypp
+ * bison -v phrasedml.ypp
  *
- * The '-v' creates a file called 'phraSedML.output' which can be examined
+ * The '-v' creates a file called 'phrasedml.output' which can be examined
  * to piece together the explicit logic of the parser.  The fact that no
- * '-o' option is used means that the default output file (phraSedML.tab.cpp)
+ * '-o' option is used means that the default output file (phrasedml.tab.cpp)
  * will be produced.
  *
- * This command produces the file 'phraSedML.tab.cpp' which is included
- * explicitly in the phraSedML distribution.  Automatic creation of this
+ * This command produces the file 'phrasedml.tab.cpp' which is included
+ * explicitly in the phrasedml distribution.  Automatic creation of this
  * file is not yet incorporated into the CMake system; it must be
- * run by hand before change here will make it into the actual phraSedML
+ * run by hand before change here will make it into the actual phrasedml
  * library.
  *
  * Bison v2.4.2 was used to create the .cpp file when this file was
