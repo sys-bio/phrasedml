@@ -42,7 +42,7 @@
 //#include "unitdef.h"
 //#include "stringx.h"
 
-  class ChangeList;
+  class ModelChange;
 
   using namespace std;
   int phrased_yylex(void);
@@ -60,7 +60,7 @@
   vector<vector<const string*>* >* nameslist;
   double num;
   vector<double>* nums;
-  ChangeList* changelist;
+  vector<ModelChange>* changelist;
 }
 
 %type   <character>     mathThing "mathematical symbol"
@@ -110,10 +110,10 @@ equals:         varOrKeyword '=' varOrKeyword TEXTSTRING {if (g_registry.addMode
         |       varOrKeyword '=' varOrKeyword varOrKeyword '(' numlist ')' {if (g_registry.addEquals($1, $3, $4, $6)) YYABORT;}
         ;
 
-changelist:     varOrKeyword '=' NUM {$$ = g_registry.createChangeList($1, $3); if ($$==NULL) YYABORT;}
-        |       varOrKeyword varOrKeyword '=' formula {$$ = g_registry.createChangeList($1, $2, $4); if ($$==NULL) YYABORT;}
-        |       varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = g_registry.createChangeList($1, $2, $3, $5); if ($$==NULL) YYABORT;}
-        |       varOrKeyword varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = g_registry.createChangeList($1, $2, $3, $4, $6); if ($$==NULL) YYABORT;}
+changelist:     varOrKeyword '=' NUM {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $3)) YYABORT;}
+        |       varOrKeyword varOrKeyword '=' formula {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $4)) YYABORT;}
+        |       varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $3, $5)) YYABORT;}
+        |       varOrKeyword varOrKeyword varOrKeyword varOrKeyword '=' NUM {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $3, $4, $6)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword {$$ = $1; if (g_registry.addToChangeList($$, $3, $4)) YYABORT;}
         |       changelist ',' varOrKeyword '=' NUM {$$ = $1; if (g_registry.addToChangeList($$, $3, $5)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword '=' formula {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $6)) YYABORT;}
@@ -179,7 +179,7 @@ lineend:        ';' {}
 void phrased_yyerror(char const *s)
 {
   if (g_registry.getError()=="") {
-    g_registry.setError(s);
+    g_registry.setError(s, phrased_yylloc_last_line);
   }
 }
 
@@ -197,7 +197,7 @@ int phrased_yylex(void)
   }
   if (!g_registry.input->good()) {
     //Something else went wrong!
-    g_registry.setError("Unparseable content in line " + g_registry.ftoa(phrased_yylloc_last_line) + ".");
+    g_registry.setError("Unparseable content in line " + g_registry.ftoa(phrased_yylloc_last_line) + ".", phrased_yylloc_last_line);
     return ERROR;
   }
 

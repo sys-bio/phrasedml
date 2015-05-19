@@ -90,7 +90,7 @@
 //#include "unitdef.h"
 //#include "stringx.h"
 
-  class ChangeList;
+  class ModelChange;
 
   using namespace std;
   int phrased_yylex(void);
@@ -154,7 +154,7 @@ typedef union YYSTYPE
   vector<vector<const string*>* >* nameslist;
   double num;
   vector<double>* nums;
-  ChangeList* changelist;
+  vector<ModelChange>* changelist;
 
 
 /* Line 387 of yacc.c  */
@@ -1566,25 +1566,25 @@ yyreduce:
   case 20:
 /* Line 1787 of yacc.c  */
 #line 113 "phrasedml.ypp"
-    {(yyval.changelist) = g_registry.createChangeList((yyvsp[(1) - (3)].words), (yyvsp[(3) - (3)].num)); if ((yyval.changelist)==NULL) YYABORT;}
+    {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[(1) - (3)].words), (yyvsp[(3) - (3)].num))) YYABORT;}
     break;
 
   case 21:
 /* Line 1787 of yacc.c  */
 #line 114 "phrasedml.ypp"
-    {(yyval.changelist) = g_registry.createChangeList((yyvsp[(1) - (4)].words), (yyvsp[(2) - (4)].words), (yyvsp[(4) - (4)].wordstr)); if ((yyval.changelist)==NULL) YYABORT;}
+    {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[(1) - (4)].words), (yyvsp[(2) - (4)].words), (yyvsp[(4) - (4)].wordstr))) YYABORT;}
     break;
 
   case 22:
 /* Line 1787 of yacc.c  */
 #line 115 "phrasedml.ypp"
-    {(yyval.changelist) = g_registry.createChangeList((yyvsp[(1) - (5)].words), (yyvsp[(2) - (5)].words), (yyvsp[(3) - (5)].words), (yyvsp[(5) - (5)].num)); if ((yyval.changelist)==NULL) YYABORT;}
+    {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[(1) - (5)].words), (yyvsp[(2) - (5)].words), (yyvsp[(3) - (5)].words), (yyvsp[(5) - (5)].num))) YYABORT;}
     break;
 
   case 23:
 /* Line 1787 of yacc.c  */
 #line 116 "phrasedml.ypp"
-    {(yyval.changelist) = g_registry.createChangeList((yyvsp[(1) - (6)].words), (yyvsp[(2) - (6)].words), (yyvsp[(3) - (6)].words), (yyvsp[(4) - (6)].words), (yyvsp[(6) - (6)].num)); if ((yyval.changelist)==NULL) YYABORT;}
+    {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[(1) - (6)].words), (yyvsp[(2) - (6)].words), (yyvsp[(3) - (6)].words), (yyvsp[(4) - (6)].words), (yyvsp[(6) - (6)].num))) YYABORT;}
     break;
 
   case 24:
@@ -2038,7 +2038,7 @@ yyreturn:
 void phrased_yyerror(char const *s)
 {
   if (g_registry.getError()=="") {
-    g_registry.setError(s);
+    g_registry.setError(s, phrased_yylloc_last_line);
   }
 }
 
@@ -2056,7 +2056,7 @@ int phrased_yylex(void)
   }
   if (!g_registry.input->good()) {
     //Something else went wrong!
-    g_registry.setError("Unparseable content in line " + g_registry.ftoa(phrased_yylloc_last_line) + ".");
+    g_registry.setError("Unparseable content in line " + g_registry.ftoa(phrased_yylloc_last_line) + ".", phrased_yylloc_last_line);
     return ERROR;
   }
 

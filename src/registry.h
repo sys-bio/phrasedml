@@ -24,13 +24,14 @@
 //#include "enums.h"
 
 class PhrasedModel;
-class ChangeList;
+class ModelChange;
 
 class Registry
 {
 private:
   std::set<std::string>    m_variablenames;
   std::string              m_error;
+  int                      m_errorLine;
   std::vector<std::string> m_warnings;
 
   SedDocument*             m_sedml;
@@ -48,28 +49,31 @@ public:
   char* convertFile(const std::string& filename);
   char* convertString(std::string model);
 
-  void setError(std::string error) {m_error = error;};
+  void setError(std::string error, int line) {m_error = error; m_errorLine=line;};
   void addErrorPrefix(std::string error) {m_error = error + m_error;};
   void addWarning(std::string warning) {m_warnings.push_back(warning);};
   void clearWarnings() {m_warnings.clear();};
 
   char* getPhraSEDML() const;
   char* getSEDML() const;
+  const PhrasedModel* getModel(std::string modid) const;
+  PhrasedModel* getModel(std::string modid);
 
   std::string getError() {return m_error;};
+  int getErrorLine() {return m_errorLine;};
   std::vector<std::string> getWarnings() {return m_warnings;};
 
   //phraSED-ML lines that are clearly model definitions:
   bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc);
-  bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc, std::vector<const std::string*>* with, ChangeList* changelist);
-  bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc, std::vector<const std::string*>* with, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, ChangeList* changelist);
+  bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc, std::vector<const std::string*>* with, std::vector<ModelChange>* changelist);
+  bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc, std::vector<const std::string*>* with, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<ModelChange>* changelist);
 
   //phraSED-ML lines that could be almost anything:
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2);
-  bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, ChangeList* changelist);
+  bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<ModelChange>* changelist);
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* key4);
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* key4, std::vector<const std::string*>* key5);
-  bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* key4, std::vector<const std::string*>* key5, ChangeList* changelist);
+  bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* key4, std::vector<const std::string*>* key5, std::vector<ModelChange>* changelist);
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<double>* numlist);
 
 
@@ -77,18 +81,12 @@ public:
   bool addPlot(std::vector<const std::string*>* plot, std::vector<const std::string*>* name, std::vector<const std::string*>* vs,  std::vector<std::vector<const std::string*>*>* plotlist);
 
   
-  //ChangeList creation
-  ChangeList* createChangeList(std::vector<const std::string*>* name, double val);
-  ChangeList* createChangeList(std::vector<const std::string*>* name, std::vector<const std::string*>* key, std::vector<std::string>* formula );
-  ChangeList* createChangeList(std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* name, double val );
-  ChangeList* createChangeList(std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* name, double val );
-
   //ChangeList addition
-  bool addToChangeList(ChangeList* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2);
-  bool addToChangeList(ChangeList* cl, std::vector<const std::string*>* name, double val);
-  bool addToChangeList(ChangeList* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* name, std::vector<std::string>* formula);
-  bool addToChangeList(ChangeList* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* name, double val);
-  bool addToChangeList(ChangeList* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* name, double val);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* name, double val);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* name, std::vector<std::string>* formula);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* name, double val);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* name, double val);
   
   //Setting the 'name' attribute
   bool setName(std::vector<const std::string*>* id, std::vector<const std::string*>* is, const std::string* name);

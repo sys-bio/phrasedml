@@ -26,7 +26,7 @@ public:
   void setId(std::string id);
   std::string getId() const;
 
-
+  bool check() const;
 
 private:
 

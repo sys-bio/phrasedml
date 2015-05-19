@@ -118,6 +118,13 @@ START_TEST (test_model2_txt)
 END_TEST
 
 
+START_TEST (test_model_attchange_txt)
+{
+  compareStringTranslation("sbml_model = model \"sbml_model.xml\" with S1=4", "model_attchange.xml");
+}
+END_TEST
+
+
 
 
 Suite *
@@ -125,6 +132,9 @@ create_suite_Basic (void)
 {
   Suite *suite = suite_create("Antimony Basic");
   TCase *tcase = tcase_create("Antimony Basic");
+
+  tcase_add_test( tcase, test_model_attchange_txt);
+
 
   tcase_add_test( tcase, test_model);
   tcase_add_test( tcase, test_model_txt);

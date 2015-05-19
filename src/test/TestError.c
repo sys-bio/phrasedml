@@ -29,7 +29,7 @@ void testError(const string& base, const string& err)
 
 START_TEST (test_model_err1)
 {
-  testError("sbml_model = mod \"sbml_model.xml\"", "Unable to parse line 1 ('sbml_model = mod \"sbml_model.xml\"'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\"' is model definitions, where 'keyword' is the word 'model' (i.e. 'mod1 = model \"file.xml\"').  ");
+  testError("sbml_model = mod \"sbml_model.xml\"", "Unable to parse line 1 ('sbml_model = mod \"sbml_model.xml\"'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\"' is model definitions, where 'keyword' is the word 'model' (i.e. 'mod1 = model \"file.xml\"').");
 }
 END_TEST
 
@@ -48,11 +48,28 @@ START_TEST (test_model_err3)
 END_TEST
 
 
+START_TEST (test_model_changeerr1)
+{
+  testError("sbml_model = model \"sbml_model.xml\" and S1=3", "Unable to parse line 1 ('sbml_model = model \"sbml_model.xml\" and [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\" [with] [...]' is model definitions, where 'with' is the word 'with' (i.e. 'mod1 = model \"file.xml\" with S1=3').");
+}
+END_TEST
+
+
+START_TEST (test_model_changeerr2)
+{
+  testError("sbml_model = model \"sbml_model.xml\" with S1.S1=3", "No such id in SBML document: 'S1.S1'.");
+}
+END_TEST
+
+
 Suite *
 create_suite_Errors (void)
 {
   Suite *suite = suite_create("PhraSED-ML Errors");
   TCase *tcase = tcase_create("PhraSED-ML Errors");
+
+  tcase_add_test( tcase, test_model_changeerr1);
+  tcase_add_test( tcase, test_model_changeerr2);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);

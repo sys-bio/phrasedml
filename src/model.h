@@ -6,6 +6,7 @@
 
 #include "variable.h"
 #include "sbml\SBMLDocument.h"
+#include "modelChange.h"
 
 enum language {
   lang_XML, 
@@ -32,7 +33,7 @@ private:
 
   language m_type;
   std::string m_source;
-  std::vector<ChangeList*> m_changes;
+  std::vector<ModelChange> m_changes;
 
   bool m_isFile;
   SBMLDocument m_sbml;
@@ -40,17 +41,21 @@ private:
 public:
 
   PhrasedModel(std::string id, std::string source, bool isFile);
-  PhrasedModel(std::string id, std::string source, std::vector<ChangeList*> changes, bool isFile);
+  PhrasedModel(std::string id, std::string source, std::vector<ModelChange> changes, bool isFile);
   PhrasedModel(SedModel* sedmodel, SedDocument* seddoc);
   ~PhrasedModel();
 
   void setIsFile(bool isfile);
   bool getIsFile();
+  const SBMLDocument* getSBMLDocument() const {return &m_sbml;} ;
+  SBMLDocument* getSBMLDocument() {return &m_sbml;} ;
 
   std::string getPhraSEDML() const;
   void addModelToSEDML(SedDocument* sedml) const;
 
   void langTypeToURI(language type) const;
+
+  bool check() const;
 private:
   void processSource();
   language getLanguageFromURI(std::string uri) const;

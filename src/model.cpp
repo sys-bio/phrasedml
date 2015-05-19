@@ -8,6 +8,7 @@
 
 #include "registry.h"
 #include "model.h"
+#include "modelChange.h"
 #include "sbml\SBMLTypes.h"
 
 using namespace std;
@@ -25,7 +26,7 @@ PhrasedModel::PhrasedModel(string id, string source, bool isFile)
   processSource();
 }
 
-PhrasedModel::PhrasedModel(string id, string source, vector<ChangeList*> changes, bool isFile)
+PhrasedModel::PhrasedModel(string id, string source, vector<ModelChange> changes, bool isFile)
   : Variable(id)
   , m_type(lang_XML)
   , m_source(source)
@@ -46,6 +47,10 @@ PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
   SedModel* referenced = seddoc->getModel(m_source);
   if (referenced != NULL && referenced != sedmodel) {
     m_isFile = false;
+  }
+  for (unsigned int ch=0; ch<sedmodel->getNumChanges(); ch++) {
+    ModelChange mc(sedmodel->getChange(ch), seddoc, m_id);
+    m_changes.push_back(mc);
   }
 }
 
@@ -71,7 +76,18 @@ string PhrasedModel::getPhraSEDML() const
   if (m_isFile) {
     source = "\"" + source + "\"";
   }
-  ret += source + "\n";
+  ret += source;
+  for (size_t cl=0; cl<m_changes.size(); cl++) {
+    if (cl==0) {
+      ret += " with ";
+    }
+    else {
+      ret += ", ";
+    }
+    ret += m_changes[cl].getPhraSEDML();
+  }
+  
+  ret += "\n";
   return ret;
 }
 
@@ -82,6 +98,9 @@ void PhrasedModel::addModelToSEDML(SedDocument* sedml) const
   model->setName(m_name);
   model->setSource(m_source);
   model->setLanguage(getURIFromLanguage(m_type));
+  for (size_t cl=0; cl<m_changes.size(); cl++) {
+    m_changes[cl].addModelChangeToSEDML(model);
+  }
 }
 
 void PhrasedModel::processSource()
@@ -217,3 +236,18 @@ std::string PhrasedModel::getURIFromLanguage(language lang) const
   return "urn:sedml:language:xml";
 }
 
+bool PhrasedModel::check() const
+{
+  if (Variable::check()) {
+    return true;
+  }
+  if (m_sbml.getModel() == NULL) {
+    g_registry.addWarning("Unable to find model '" + m_source + "'.  Some constructs may be incorrectly formed as a result.");
+  }
+  for (size_t c=0; c<m_changes.size(); c++) {
+    if (m_changes[c].check()) {
+      return true;
+    }
+  }
+  return false;
+}

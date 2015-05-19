@@ -11,16 +11,19 @@
 #include "registry.h"
 
 
+#ifdef _MSC_VER
+#  define strdup _strdup
+#endif
+
 using namespace std;
-extern int phrasedml_yyparse();
-extern int phrasedml_yylloc_first_line;
+extern int phrased_yylloc_last_line;
 
 //Useful functions for later routines:
 char* getCharStar(const char* orig)
 {
   char* ret = strdup(orig);
   if (ret == NULL) {
-    g_registry.setError("Out of memory error.");
+    g_registry.setError("Out of memory error.", phrased_yylloc_last_line-1);
     return NULL;
   }
   g_registry.m_charstars.push_back(ret);
@@ -52,6 +55,13 @@ LIB_EXTERN char* getLastError()
 {
   return getCharStar((g_registry.getError()).c_str());
 }
+
+LIB_EXTERN int getLastErrorLine()
+{
+  return g_registry.getErrorLine();
+}
+
+
 
 LIB_EXTERN char* getLastPhraSEDML()
 {

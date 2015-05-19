@@ -7,6 +7,7 @@
 #include <set>
 
 #include "variable.h"
+#include "registry.h"
 
 #include "sedml\SedBase.h"
 
@@ -48,4 +49,13 @@ string Variable::getId() const
 string Variable::getName() const
 {
   return m_name;
+}
+
+bool Variable::check() const
+{
+  if (m_id.empty()) {
+    g_registry.setError("Missing ID for element.", 0);
+    return true;
+  }
+  return false;
 }

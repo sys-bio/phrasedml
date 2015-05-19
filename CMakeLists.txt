@@ -377,6 +377,7 @@ set (PHRASEDML_SRC_DIR src/)
 file(GLOB LIBPHRASEDML_SOURCES 
           ${PHRASEDML_SRC_DIR}phrasedml.tab.cpp
           ${PHRASEDML_SRC_DIR}model.cpp
+          ${PHRASEDML_SRC_DIR}modelChange.cpp
           ${PHRASEDML_SRC_DIR}registry.cpp
           ${PHRASEDML_SRC_DIR}stringx.cpp
           ${PHRASEDML_SRC_DIR}phrasedml_api.cpp
@@ -386,6 +387,7 @@ file(GLOB LIBPHRASEDML_SOURCES
 file(GLOB LIBPHRASEDML_HEADERS 
           ${PHRASEDML_SRC_DIR}libutil.h
           ${PHRASEDML_SRC_DIR}model.h
+          ${PHRASEDML_SRC_DIR}modelChange.h
           ${PHRASEDML_SRC_DIR}registry.h
           ${PHRASEDML_SRC_DIR}stringx.h
           ${PHRASEDML_SRC_DIR}phrasedml_api.h

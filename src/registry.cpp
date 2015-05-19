@@ -10,9 +10,13 @@
 #include "model.h"
 
 #include "sedml\SedDocument.h"
-
+extern char* getCharStar(const char* orig);
 extern int phrased_yyparse();
 extern int phrased_yylloc_last_line;
+
+#ifdef _MSC_VER
+#  define strdup _strdup
+#endif
 
 
 using namespace std;
@@ -20,6 +24,7 @@ using namespace std;
 Registry::Registry()
   : m_variablenames()
   , m_error()
+  , m_errorLine(0)
   , m_warnings()
   , m_sedml(NULL)
   , m_models()
@@ -44,7 +49,7 @@ char* Registry::convertString(string model)
   phrased_yylloc_last_line = 1;
   input = inputstring;
   if (parseInput()) {
-    return "";
+    return NULL;
   }
   createSEDML();
   return getSEDML();
@@ -59,7 +64,7 @@ char* Registry::convertFile(const string& filename)
       string error = "Input file '";
       error += filename;
       error += "' cannot be found.  Check to see if the file exists and that the permissions are correct, and try again.  If this still does not work, contact us letting us know how you got this error.";
-      setError(error);
+      setError(error, 0);
       return NULL;
     }
   }
@@ -89,14 +94,14 @@ char* Registry::convertFile(const string& filename)
     string error = "Input file '";
     error += filename;
     error += "' cannot be read.  Check to see if the file exists and that the permissions are correct, and try again.  If this still does not work, contact us letting us know how you got this error.";
-    setError(error);
+    setError(error, 0);
     delete inputfile;
-    return "";
+    return NULL;
   }
   input = inputfile;
   phrased_yylloc_last_line = 1;
   if (parseInput()) {
-    return "";
+    return NULL;
   }
   createSEDML();
   char* ret = getSEDML();
@@ -106,13 +111,12 @@ char* Registry::convertFile(const string& filename)
 
 bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc)
 {
-  string modkeyword = "model";
   string namestr = getStringFrom(name);
   string modelstr = getStringFrom(model);
-  if (modelstr != modkeyword) {
+  if (modelstr != "model") {
     stringstream err;
-    err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\"'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\"' is model definitions, where 'keyword' is the word 'model' (i.e. 'mod1 = model \"file.xml\"').  ";
-    setError(err.str());
+    err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\"'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\"' is model definitions, where 'keyword' is the word 'model' (i.e. 'mod1 = model \"file.xml\"').";
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   if (checkId(name)) {
@@ -123,18 +127,39 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
   return false;
 }
 
-bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc, vector<const string*>* with, ChangeList* changelist)
+bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc, vector<const string*>* with, vector<ModelChange>* changelist)
 {
-
-  setError("Error in addModelDef v2.");
-  return true;
+  string namestr = getStringFrom(name);
+  string modelstr = getStringFrom(model);
+  string withstr = getStringFrom(with);
+  if (modelstr != "model") {
+    stringstream err;
+    err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\" [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\" [...]' is model definitions, where 'keyword' is the word 'model' (i.e. 'mod1 = model \"file.xml\" with S1=3').";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    return true;
+  }
+  if (checkId(name)) {
+    return true;
+  }
+  if (withstr != "with") {
+    stringstream err;
+    err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\" " << withstr << " [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\" [with] [...]' is model definitions, where 'with' is the word 'with' (i.e. 'mod1 = model \"file.xml\" with S1=3').";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    return true;
+  }
+  for (size_t cl=0; cl<changelist->size(); cl++) {
+    (*changelist)[cl].setParent(namestr);
+  }
+  PhrasedModel pm(namestr, *modelloc, *changelist, true);
+  m_models.push_back(pm);
+  return false;
 }
 
 
-bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc, vector<const string*>* with, vector<const string*>* key1, vector<const string*>* key2, ChangeList* changelist)
+bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc, vector<const string*>* with, vector<const string*>* key1, vector<const string*>* key2, vector<ModelChange>* changelist)
 {
 
-  setError("Error in addModelDef v3.");
+  setError("Error in addModelDef v3.", phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -144,15 +169,15 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2)
 {
 
-  setError("Error in addEquals v1.");
+  setError("Error in addEquals v1.", phrased_yylloc_last_line-1);
   return true;
 }
 
 
-bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, ChangeList* changelist)
+bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<ModelChange>* changelist)
 {
 
-  setError("Error in addEquals v2.");
+  setError("Error in addEquals v2.", phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -160,7 +185,7 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* key4)
 {
 
-  setError("Error in addEquals v3.");
+  setError("Error in addEquals v3.", phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -168,15 +193,15 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* key4, vector<const string*>* key5)
 {
 
-  setError("Error in addEquals v4.");
+  setError("Error in addEquals v4.", phrased_yylloc_last_line-1);
   return true;
 }
 
 
-bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* key4, vector<const string*>* key5, ChangeList* changelist)
+bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* key4, vector<const string*>* key5, vector<ModelChange>* changelist)
 {
 
-  setError("Error in addEquals v5.");
+  setError("Error in addEquals v5.", phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -184,7 +209,7 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<double>* numlist)
 {
 
-  setError("Error in addEquals v6.");
+  setError("Error in addEquals v6.", phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -195,75 +220,50 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
 bool Registry::addPlot(vector<const string*>* plot, vector<const string*>* name, vector<const string*>* vs,  vector<vector<const string*>*>* plotlist)
 {
 
-  setError("Error in addPlot.");
+  setError("Error in addPlot.", phrased_yylloc_last_line-1);
   return true;
 }
 
-
-
-
-//ChangeList creation
-ChangeList* Registry::createChangeList(vector<const string*>* name, double val)
-{
-
-  return NULL;
-}
-
-
-ChangeList* Registry::createChangeList(vector<const string*>* name, vector<const string*>* key, vector<string>* formula )
-{
-
-  return NULL;
-}
-
-
-ChangeList* Registry::createChangeList(vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* name, double val )
-{
-
-  return NULL;
-}
-
-
-ChangeList* Registry::createChangeList(vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* name, double val )
-{
-
-  return NULL;
-}
 
 
 
 //ChangeList addition
-bool Registry::addToChangeList(ChangeList* cl, vector<const string*>* key1, vector<const string*>* key2)
+bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* key2)
 {
 
+  setError("Error in addToChangeList v1.", phrased_yylloc_last_line-1);
   return true;
 }
 
 
-bool Registry::addToChangeList(ChangeList* cl, vector<const string*>* name, double val)
+bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* name, double val)
+{
+  ModelChange mc(name, val);
+  cl->push_back(mc);
+  return false;
+}
+
+
+bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* name, vector<string>* formula)
 {
 
+  setError("Error in addToChangeList v3.", phrased_yylloc_last_line-1);
   return true;
 }
 
 
-bool Registry::addToChangeList(ChangeList* cl, vector<const string*>* key1, vector<const string*>* name, vector<string>* formula)
+bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* name, double val)
 {
 
+  setError("Error in addToChangeList v4.", phrased_yylloc_last_line-1);
   return true;
 }
 
 
-bool Registry::addToChangeList(ChangeList* cl, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* name, double val)
+bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* name, double val)
 {
 
-  return true;
-}
-
-
-bool Registry::addToChangeList(ChangeList* cl, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* name, double val)
-{
-
+  setError("Error in addToChangeList v5.", phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -275,7 +275,7 @@ bool Registry::setName(vector<const string*>* id, vector<const string*>* is, con
   stringstream err;
   if (isstr != iskeyword) {
     err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << idstr << " " << isstr << " \"" << *name << "\"'): the only type of phraSED-ML content that fits the syntax '[ID] [keyword] \"[string]\"' is setting the names of elements, where 'keyword' is the word 'is' (i.e. 'mod1 is \"Biomodels file #322\"').  ";
-    setError(err.str());
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   if (checkId(id)) {
@@ -289,7 +289,7 @@ bool Registry::setName(vector<const string*>* id, vector<const string*>* is, con
   }
 
   err << "Error in line " << phrased_yylloc_last_line-1 << ": no such id '" << idstr << "' exists to set its name.";
-  setError(err.str());
+  setError(err.str(), phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -358,9 +358,41 @@ char* Registry::getSEDML() const
   if (m_sedml==NULL) {
     return NULL;
   }
-  char* ret = writeSedMLToString(m_sedml);
-  g_registry.m_charstars.push_back(ret);
-  return ret;
+  ostringstream stream;
+  SedWriter sw;
+  sw.writeSedML(m_sedml, stream);
+  string ret = stream.str();
+  size_t replace = ret.find("&apos;");
+  while (replace != string::npos) {
+    ret.replace(replace, 6, "'");
+    replace = ret.find("&apos;");
+  }
+  replace = ret.find("&quot;");
+  while (replace != string::npos) {
+    ret.replace(replace, 6, "\"");
+    replace = ret.find("&quot;");
+  }
+  return getCharStar(ret.c_str());
+}
+
+const PhrasedModel* Registry::getModel(string modid) const
+{
+  for (size_t m=0; m<m_models.size(); m++) {
+    if (m_models[m].getId() == modid) {
+      return &(m_models[m]);
+    }
+  }
+  return NULL;
+}
+
+PhrasedModel* Registry::getModel(string modid)
+{
+  for (size_t m=0; m<m_models.size(); m++) {
+    if (m_models[m].getId() == modid) {
+      return &(m_models[m]);
+    }
+  }
+  return NULL;
 }
 
 void Registry::createSEDML()
@@ -389,6 +421,12 @@ string Registry::getJarnac(string modulename) const
 
 bool Registry::finalize()
 {
+  //Check the models
+  for (size_t m=0; m<m_models.size(); m++) {
+    if (m_models[m].check()) {
+      return true;
+    }
+  }
 
   return false;
 }
@@ -439,13 +477,13 @@ bool Registry::parseInput()
     if (getError().size() == 0) {
       assert(false); //Need to fill in the reason why we failed explicitly, if possible.
       if (success == 1) {
-        setError("Parsing failed because of invalid input.");
+        setError("Parsing failed because of invalid input.", phrased_yylloc_last_line);
       }
       else if (success == 2) {
-        setError("Parsing failed due to memory exhaution.");
+        setError("Parsing failed due to memory exhaution.", phrased_yylloc_last_line-1);
       }
       else {
-        setError("Unknown parsing error.");
+        setError("Unknown parsing error.", phrased_yylloc_last_line-1);
       }
     }
     return true;
@@ -471,17 +509,17 @@ bool Registry::checkId(vector<const string*>* name)
   if (name->size()==0) {
     assert(false); //This shouldn't be possible, and I want to see what happened to cause it if it happens.
     err << "a phraSED-ML top-level ID must exist, and this ID has corresponding string for it.";
-    setError(err.str());
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   else if (name->size() > 1) {
     err << "a phraSED-ML id may not be a sub-id of another variable:  '" << getStringFrom(name) << "' is not a legal ID for a phraSED-ML model.";
-    setError(err.str());
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   else if (!isValidSId(name)) {
     err << "a phraSED-ML id must adhere to the pattern '[A-Za-z_][A-Za-z_0-9]*', and '" << (*(*name)[0]) << " does not conform.";
-    setError(err.str());
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   return false;
@@ -519,6 +557,7 @@ bool Registry::isValidSId(vector<const string*>* name)
 void Registry::clearAll()
 {
   m_error.clear();
+  m_errorLine = 0;
   m_warnings.clear();
   m_models.clear();
 }

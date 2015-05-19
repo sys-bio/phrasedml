@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <iostream>
 #include "stringx.h"
+#include "registry.h"
+#include "sbml/SBMLDocument.h"
 
 using namespace std;
 extern bool CaselessStrCmp(const string& lhs, const string& rhs);
@@ -30,6 +32,58 @@ string getStringFrom(const vector<const string*>* name, string cc)
     retval += *(*name)[nn];
   }
   return retval;
+}
+
+string getIdFromXPath(const string& xpath)
+{
+  size_t atid = xpath.find("[@id=");
+  size_t idend = xpath.find("]", atid);
+  string ret = xpath;
+  ret = ret.substr(atid+6, idend-atid-7);
+  return ret;
+}
+
+string getValueXPathFromId(const string& id, SBMLDocument* doc)
+{
+  const SBase* ref = doc->getElementBySId(id);
+  if (ref==NULL) {
+    g_registry.setError("No such id in SBML document: '" + id + "'.", 0);
+    return "";
+  }
+  const Species* species;
+  string ret = "/sbml:sbml/sbml:model/";
+  switch(ref->getTypeCode()) {
+  case SBML_SPECIES:
+    ret += "listOfSpecies/species[@id='" + id + "']/@";
+    species = static_cast<const Species*>(ref);
+    if (species->isSetInitialAmount()) {
+      ret += "initialAmount";
+    }
+    else if (species->isSetInitialConcentration()) {
+      ret += "initialConcentration";
+    }
+    else {
+      //Set a warning?  LS DEBUG
+      ret += "initialConcentration";
+    }
+    break;
+  case SBML_COMPARTMENT:
+    ret += "listOfCompartments/compartment[@id='" + id + "']/@size";
+    break;
+  case SBML_PARAMETER:
+    ret += "listOfParameters/parameter[@id='" + id + "']/@value";
+    break;
+  case SBML_LOCAL_PARAMETER:
+    ret += "listOfReactions/reaction[@id='";
+    ret += ref->getAncestorOfType(SBML_REACTION)->getId();
+    ret += "']/kineticLaw/listOfLocalParameters/localParameter[@id='" + id + "']/@value";
+  default:
+    //Set a warning? LS DEBUG
+    ret += "/descendant::*[@id='" + id + "']/@value";
+    break;
+  }
+  return ret;
+
 }
 
 bool IsReal(const string& src)

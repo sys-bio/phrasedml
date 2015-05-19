@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version2" level="1" version="2">
+  <listOfModels>
+    <model id="sbml_model" language="urn:sedml:language:sbml.level-3.version-1" source="sbml_model.xml">
+      <listOfChanges>
+        <changeAttribute target="/sbml:sbml/sbml:model/listOfSpecies/species[@id='S1']/@initialConcentration" newValue="4"/>
+      </listOfChanges>
+    </model>
+  </listOfModels>
+</sedML>
