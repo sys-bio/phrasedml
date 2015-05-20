@@ -66,6 +66,7 @@ public:
   //phraSED-ML lines that are clearly model definitions:
   bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc);
   bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc, std::vector<const std::string*>* with, std::vector<ModelChange>* changelist);
+  bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc, std::vector<const std::string*>* with, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2);
   bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc, std::vector<const std::string*>* with, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<ModelChange>* changelist);
 
   //phraSED-ML lines that could be almost anything:

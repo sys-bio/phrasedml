@@ -9,6 +9,7 @@ class SBMLDocument;
 std::string SizeTToString(size_t num);
 std::string DoubleToString(double num);
 std::string getStringFrom(const std::vector<const std::string*>* name, std::string cc=".");
+std::string getStringFrom(const std::vector<std::string>* name);
 std::string getIdFromXPath(const std::string& xpath);
 std::string getValueXPathFromId(const std::string& id, SBMLDocument* doc);
 

@@ -143,12 +143,9 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
   }
   if (withstr != "with") {
     stringstream err;
-    err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\" " << withstr << " [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\" [with] [...]' is model definitions, where 'with' is the word 'with' (i.e. 'mod1 = model \"file.xml\" with S1=3').";
+    err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\" " << withstr << " [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\" [keyword] [...]' is model definitions, where 'keyword' is the word 'with' (i.e. 'mod1 = model \"file.xml\" with S1=3').";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
-  }
-  for (size_t cl=0; cl<changelist->size(); cl++) {
-    (*changelist)[cl].setParent(namestr);
   }
   PhrasedModel pm(namestr, *modelloc, *changelist, true);
   m_models.push_back(pm);
@@ -156,11 +153,22 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
 }
 
 
+bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc, vector<const string*>* with, vector<const string*>* key1, vector<const string*>* key2)
+{
+  vector<ModelChange>* cl = new vector<ModelChange>;
+  if (addToChangeList(cl, key1, key2)) {
+    return true;
+  }
+  return addModelDef(name, model, modelloc, with, cl);
+}
+
+
 bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* model, const string* modelloc, vector<const string*>* with, vector<const string*>* key1, vector<const string*>* key2, vector<ModelChange>* changelist)
 {
-
-  setError("Error in addModelDef v3.", phrased_yylloc_last_line-1);
-  return true;
+  if (addToChangeList(changelist, key1, key2)) {
+    return true;
+  }
+  return addModelDef(name, model, modelloc, with, changelist);
 }
 
 
@@ -168,17 +176,65 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
 //phraSED-ML lines that could be almost anything:
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2)
 {
-
-  setError("Error in addEquals v1.", phrased_yylloc_last_line-1);
-  return true;
+  if (checkId(name)) {
+    return true;
+  }
+  string namestr = getStringFrom(name);
+  string key1str = getStringFrom(key1);
+  string key2str = getStringFrom(key2);
+  stringstream err;
+  if (key1str == "model") {
+    if (checkId(key2)) {
+      return true;
+    }
+    PhrasedModel pm(namestr, key2str, false);
+    m_models.push_back(pm);
+    return false;
+  }
+  else if (key1str == "simulate") {
+    if (key2str == "steadystate") {
+    }
+    else {
+      err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << "'): the only type of phraSED-ML content that fits the syntax '[ID] = simulate [keyword]' (without anything following) is simulating the steady state, where 'keyword' is 'steadystate' (i.e. 'sim1 = simulate steadystate').";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    }
+  }
+  else {
+    setError("Error in addEquals [keyword1] [keyword2]:  unsupported keyword1" + key1str, phrased_yylloc_last_line-1);
+    return true;
+  }
+  return false;
 }
 
 
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<ModelChange>* changelist)
 {
-
-  setError("Error in addEquals v2.", phrased_yylloc_last_line-1);
-  return true;
+  if (checkId(name)) {
+    return true;
+  }
+  string namestr = getStringFrom(name);
+  string key1str = getStringFrom(key1);
+  string key2str = getStringFrom(key2);
+  string key3str = getStringFrom(key3);
+  stringstream err;
+  if (key1str == "model") {
+    if (checkId(key2)) {
+      return true;
+    }
+    if (key3str != "with") {
+      err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << " " << key3str << " [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = model [string] [keyword] [...]' is model definitions, where 'keyword' is the word 'with' (i.e. 'mod1 = model mod0 with S1=3').";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    return true;
+    }
+    PhrasedModel pm(namestr, key2str, *changelist, false);
+    m_models.push_back(pm);
+    return false;
+  }
+  else {
+    setError("Error in addEquals v2:  unsupported keyword" + key1str, phrased_yylloc_last_line-1);
+    return true;
+  }
+  return false;
 }
 
 
@@ -230,8 +286,9 @@ bool Registry::addPlot(vector<const string*>* plot, vector<const string*>* name,
 //ChangeList addition
 bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* key2)
 {
-
-  setError("Error in addToChangeList v1.", phrased_yylloc_last_line-1);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(key2) << "': changes to models of the form '[keyword] [id]' (such as 'remove S1') are not currently supported.  Future plans include incorporation of this functionality.";
+  setError(err.str(), phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -246,24 +303,27 @@ bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* n
 
 bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* name, vector<string>* formula)
 {
-
-  setError("Error in addToChangeList v3.", phrased_yylloc_last_line-1);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(name) << " = " << getStringFrom(formula) << "': changes to models of the form '[keyword] [id] = [formula]' (such as 'compute S1 = k1/k2') are not currently supported.  Future plans include incorporation of this functionality.";
+  setError(err.str(), phrased_yylloc_last_line-1);
   return true;
 }
 
 
 bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* name, double val)
 {
-
-  setError("Error in addToChangeList v4.", phrased_yylloc_last_line-1);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(key2) << getStringFrom(name) << " = " << val << "': changes to models of the form '[keyword] [keyword] [id] = [value]' (such as 'add parameter p1 = 3') are not currently supported.  Future plans include incorporation of this functionality.";
+  setError(err.str(), phrased_yylloc_last_line-1);
   return true;
 }
 
 
 bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* name, double val)
 {
-
-  setError("Error in addToChangeList v5.", phrased_yylloc_last_line-1);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(key2) << getStringFrom(key3) << getStringFrom(name) << " = " << val << "': changes to models of the form '[keyword] [id] [keyword] [id] = [value]' (such as 'change p1 to p3 = 5') are not currently supported.  Future plans include incorporation of this functionality.";
+  setError(err.str(), phrased_yylloc_last_line-1);
   return true;
 }
 
@@ -404,26 +464,11 @@ void Registry::createSEDML()
   }
 }
 
-/*
-string Registry::getJarnac(string modulename) const
-{
-  const Module* jmod = getModule(modulename);
-  if (jmod == NULL) return "";
-  string jarnac = modulename + " = define model\n";
-  jarnac += jmod->getJarnacReactions();
-  jarnac += "\n";
-  jarnac += jmod->getJarnacVarFormulas();
-  jarnac += "\nend\n\n";
-  jarnac += jmod->getJarnacConstFormulas(modulename);
-  return jarnac;
-}
-*/
-
 bool Registry::finalize()
 {
   //Check the models
   for (size_t m=0; m<m_models.size(); m++) {
-    if (m_models[m].check()) {
+    if (m_models[m].finalize()) {
       return true;
     }
   }
@@ -508,12 +553,12 @@ bool Registry::checkId(vector<const string*>* name)
   err << "Unable to parse line " << phrased_yylloc_last_line-1 << ": ";
   if (name->size()==0) {
     assert(false); //This shouldn't be possible, and I want to see what happened to cause it if it happens.
-    err << "a phraSED-ML top-level ID must exist, and this ID has corresponding string for it.";
+    err << "a phraSED-ML top-level ID must exist, and this construct has no corresponding ID.";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   else if (name->size() > 1) {
-    err << "a phraSED-ML id may not be a sub-id of another variable:  '" << getStringFrom(name) << "' is not a legal ID for a phraSED-ML model.";
+    err << "the phraSED-ML ID '" << getStringFrom(name) << "' in this context may not be a sub-id of another variable.";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }

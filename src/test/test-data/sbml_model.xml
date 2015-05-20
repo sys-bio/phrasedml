@@ -3,10 +3,11 @@
 <sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
   <model id="__main" name="__main">
     <listOfCompartments>
-      <compartment id="C1" spatialDimensions="3" constant="true"/>
+      <compartment id="C1" size="1" spatialDimensions="3" constant="true"/>
     </listOfCompartments>
     <listOfSpecies>
       <species id="S1" compartment="C1" initialConcentration="3" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="S2" compartment="C1" initialAmount="3" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
     </listOfSpecies>
     <listOfParameters>
       <parameter id="p1" value="2" constant="true"/>

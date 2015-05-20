@@ -79,10 +79,18 @@ string ModelChange::getParent() const
   return m_parent;
 }
 
-bool ModelChange::check() const
+bool ModelChange::finalize() const
 {
   PhrasedModel* mod = g_registry.getModel(m_parent);
+  if (mod==NULL) {
+    g_registry.setError("Unable to find the parent '" + m_parent + "' for a model change.  This is likely a programming error.", 0);
+    return true;
+  }
   SBMLDocument* doc = mod->getSBMLDocument();
+  if (doc==NULL) {
+    //Error already set.
+    return true;
+  }
   if (getValueXPathFromId(m_variable, doc).empty()) {
     return true;
   }

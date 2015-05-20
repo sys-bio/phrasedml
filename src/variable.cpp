@@ -51,7 +51,7 @@ string Variable::getName() const
   return m_name;
 }
 
-bool Variable::check() const
+bool Variable::finalize() const
 {
   if (m_id.empty()) {
     g_registry.setError("Missing ID for element.", 0);

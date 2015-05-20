@@ -32,7 +32,7 @@ public:
   void setParent(std::string parent);
   std::string getParent() const;
 
-  bool check() const;
+  bool finalize() const;
 private:
 
 };

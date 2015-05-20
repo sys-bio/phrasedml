@@ -46,16 +46,17 @@ public:
   ~PhrasedModel();
 
   void setIsFile(bool isfile);
-  bool getIsFile();
+  bool getIsFile() const;
+  language getType() const;
   const SBMLDocument* getSBMLDocument() const {return &m_sbml;} ;
-  SBMLDocument* getSBMLDocument() {return &m_sbml;} ;
+  SBMLDocument* getSBMLDocument();
 
   std::string getPhraSEDML() const;
   void addModelToSEDML(SedDocument* sedml) const;
 
   void langTypeToURI(language type) const;
 
-  bool check() const;
+  bool finalize();
 private:
   void processSource();
   language getLanguageFromURI(std::string uri) const;

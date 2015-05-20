@@ -1,0 +1,3 @@
+//Created by libphrasedml v0.1
+// Models
+sbml_model = model "sbml_model.xml" with S1 = 4

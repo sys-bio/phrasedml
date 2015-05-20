@@ -34,6 +34,9 @@ PhrasedModel::PhrasedModel(string id, string source, vector<ModelChange> changes
   , m_isFile(isFile)
 {
   processSource();
+  for (size_t mc=0; mc<m_changes.size(); mc++) {
+    m_changes[mc].setParent(id);
+  }
 }
 
 PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
@@ -63,12 +66,35 @@ void PhrasedModel::setIsFile(bool quote)
   m_isFile = quote;
 }
 
-bool PhrasedModel::getIsFile()
+bool PhrasedModel::getIsFile() const
 {
   return m_isFile;
 }
 
-string PhrasedModel::getPhraSEDML() const
+language PhrasedModel::getType() const
+{
+  return m_type;
+}
+
+SBMLDocument* PhrasedModel::getSBMLDocument() 
+{
+  if (!m_isFile && m_sbml.getModel()==NULL) {
+    PhrasedModel* referencedModel = g_registry.getModel(m_source);
+    if (referencedModel==NULL) {
+      g_registry.setError("The model '" + m_id + "' references another SED-ML model '" + m_source + "', which does not exist.", 0);
+      return NULL;
+    }
+    m_type = referencedModel->getType();
+    SBMLDocument* doc = referencedModel->getSBMLDocument();
+    if (doc==NULL) {
+      return NULL;
+    }
+    m_sbml = *doc;
+  }
+  return &m_sbml;
+}
+
+  string PhrasedModel::getPhraSEDML() const
 {
   string ret = m_id;
   ret += " = model ";
@@ -112,50 +138,51 @@ void PhrasedModel::processSource()
       return;
     }
     SBMLDocument* doc = readSBMLFromFile(actualsource.c_str());
-    if (doc->getNumErrors(LIBSBML_SEV_ERROR) == 0 && doc->getNumErrors(LIBSBML_SEV_FATAL) == 0) {
-      m_sbml = *doc;
-      m_type = lang_SBML; //In case the levels/versions below don't work.
-      switch(m_sbml.getLevel()) {
+    m_sbml = *doc;
+    m_type = lang_SBML; //In case the levels/versions below don't work.
+    switch(m_sbml.getLevel()) {
+    case 1:
+      switch(m_sbml.getVersion()) {
       case 1:
-        switch(m_sbml.getVersion()) {
-        case 1:
-          m_type = lang_SBMLl1v1;
-          break;
-        case 2:
-          m_type = lang_SBMLl1v2;
-          break;
-        }
+        m_type = lang_SBMLl1v1;
         break;
       case 2:
-        switch(m_sbml.getVersion()) {
-        case 1:
-          m_type = lang_SBMLl2v1;
-          break;
-        case 2:
-          m_type = lang_SBMLl2v2;
-          break;
-        case 3:
-          m_type = lang_SBMLl2v3;
-          break;
-        case 4:
-          m_type = lang_SBMLl2v4;
-          break;
-        case 5:
-          m_type = lang_SBMLl2v5;
-          break;
-        }
-        break;
-      case 3:
-        switch(m_sbml.getVersion()) {
-        case 1:
-          m_type = lang_SBMLl3v1;
-          break;
-        case 2:
-          m_type = lang_SBMLl3v2;
-          break;
-        }
+        m_type = lang_SBMLl1v2;
         break;
       }
+      break;
+    case 2:
+      switch(m_sbml.getVersion()) {
+      case 1:
+        m_type = lang_SBMLl2v1;
+        break;
+      case 2:
+        m_type = lang_SBMLl2v2;
+        break;
+      case 3:
+        m_type = lang_SBMLl2v3;
+        break;
+      case 4:
+        m_type = lang_SBMLl2v4;
+        break;
+      case 5:
+        m_type = lang_SBMLl2v5;
+        break;
+      }
+      break;
+    case 3:
+      switch(m_sbml.getVersion()) {
+      case 1:
+        m_type = lang_SBMLl3v1;
+        break;
+      case 2:
+        m_type = lang_SBMLl3v2;
+        break;
+      }
+      break;
+    }
+    if (doc->getNumErrors(LIBSBML_SEV_ERROR) == 0 && doc->getNumErrors(LIBSBML_SEV_FATAL) == 0) {
+      g_registry.addWarning("The SBML model '" + m_source + "' has one or more validation errors, and may not be simulatable on all systems.");
     }
   }
   //If the referenced model is another SEDML construct, we'll have to process it later.
@@ -236,16 +263,26 @@ std::string PhrasedModel::getURIFromLanguage(language lang) const
   return "urn:sedml:language:xml";
 }
 
-bool PhrasedModel::check() const
+bool PhrasedModel::finalize()
 {
-  if (Variable::check()) {
+  if (Variable::finalize()) {
     return true;
   }
-  if (m_sbml.getModel() == NULL) {
-    g_registry.addWarning("Unable to find model '" + m_source + "'.  Some constructs may be incorrectly formed as a result.");
+
+  if (m_isFile) {
+    if (m_sbml.getModel() == NULL) {
+      g_registry.addWarning("Unable to find model '" + m_source + "'.  Some constructs may be incorrectly formed as a result.");
+    }
+  }
+  else {
+    SBMLDocument* docref = getSBMLDocument();
+    if (docref==NULL) {
+      //Error was already set.
+      return true;
+    }
   }
   for (size_t c=0; c<m_changes.size(); c++) {
-    if (m_changes[c].check()) {
+    if (m_changes[c].finalize()) {
       return true;
     }
   }

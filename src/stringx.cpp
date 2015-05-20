@@ -34,6 +34,18 @@ string getStringFrom(const vector<const string*>* name, string cc)
   return retval;
 }
 
+string getStringFrom(const vector<string>* name)
+{
+  string retval = "";
+  for (size_t nn=0; nn<name->size(); nn++) {
+    if (nn>0) {
+      retval += " ";
+    }
+    retval += (*name)[nn];
+  }
+  return retval;
+}
+
 string getIdFromXPath(const string& xpath)
 {
   size_t atid = xpath.find("[@id=");
