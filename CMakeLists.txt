@@ -379,6 +379,10 @@ file(GLOB LIBPHRASEDML_SOURCES
           ${PHRASEDML_SRC_DIR}model.cpp
           ${PHRASEDML_SRC_DIR}modelChange.cpp
           ${PHRASEDML_SRC_DIR}registry.cpp
+          ${PHRASEDML_SRC_DIR}simulation.cpp
+          ${PHRASEDML_SRC_DIR}oneStep.cpp
+          ${PHRASEDML_SRC_DIR}uniform.cpp
+          ${PHRASEDML_SRC_DIR}steadystate.cpp
           ${PHRASEDML_SRC_DIR}stringx.cpp
           ${PHRASEDML_SRC_DIR}phrasedml_api.cpp
           ${PHRASEDML_SRC_DIR}variable.cpp
@@ -389,6 +393,10 @@ file(GLOB LIBPHRASEDML_HEADERS
           ${PHRASEDML_SRC_DIR}model.h
           ${PHRASEDML_SRC_DIR}modelChange.h
           ${PHRASEDML_SRC_DIR}registry.h
+          ${PHRASEDML_SRC_DIR}simulation.h
+          ${PHRASEDML_SRC_DIR}oneStep.h
+          ${PHRASEDML_SRC_DIR}uniform.h
+          ${PHRASEDML_SRC_DIR}steadystate.h
           ${PHRASEDML_SRC_DIR}stringx.h
           ${PHRASEDML_SRC_DIR}phrasedml_api.h
           ${PHRASEDML_SRC_DIR}variable.h

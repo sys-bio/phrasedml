@@ -8,6 +8,9 @@
 #include "registry.h"
 #include "stringx.h"
 #include "model.h"
+#include "steadyState.h"
+#include "uniform.h"
+#include "oneStep.h"
 
 #include "sedml\SedDocument.h"
 extern char* getCharStar(const char* orig);
@@ -34,6 +37,7 @@ Registry::Registry()
 
 Registry::~Registry()
 {
+  clearAll();
   delete m_sedml;
 }
 
@@ -113,7 +117,7 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
 {
   string namestr = getStringFrom(name);
   string modelstr = getStringFrom(model);
-  if (modelstr != "model") {
+  if (!CaselessStrCmp(modelstr,"model")) {
     stringstream err;
     err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\"'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\"' is model definitions, where 'keyword' is the word 'model' (i.e. 'mod1 = model \"file.xml\"').";
     setError(err.str(), phrased_yylloc_last_line-1);
@@ -132,7 +136,7 @@ bool Registry::addModelDef(vector<const string*>* name, vector<const string*>* m
   string namestr = getStringFrom(name);
   string modelstr = getStringFrom(model);
   string withstr = getStringFrom(with);
-  if (modelstr != "model") {
+  if (!CaselessStrCmp(modelstr,"model")) {
     stringstream err;
     err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << modelstr << " \"" << *modelloc << "\" [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] \"[string]\" [...]' is model definitions, where 'keyword' is the word 'model' (i.e. 'mod1 = model \"file.xml\" with S1=3').";
     setError(err.str(), phrased_yylloc_last_line-1);
@@ -183,7 +187,8 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
   string key1str = getStringFrom(key1);
   string key2str = getStringFrom(key2);
   stringstream err;
-  if (key1str == "model") {
+  err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << "'): ";
+  if (CaselessStrCmp(key1str,"model")) {
     if (checkId(key2)) {
       return true;
     }
@@ -191,16 +196,26 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
     m_models.push_back(pm);
     return false;
   }
-  else if (key1str == "simulate") {
-    if (key2str == "steadystate") {
+  if (CaselessStrCmp(key1str,"simulate")) {
+    if (CaselessStrCmp(key2str,"steadystate")) {
+      PhrasedSteadyState* pss = new PhrasedSteadyState(namestr);
+      m_simulations.push_back(pss);
+      return false;
+    }
+    else if (CaselessStrCmp(key2str,"onestep") || CaselessStrCmp(key2str,"uniform")) {
+      err << "uniform and oneStep simulations must be defined with arguments to determine their properties, (i.e. 'sim1 = simulate uniform(0,10,100)' or 'sim2 = simulate oneStep(0.5)').";
+      setError(err.str(), phrased_yylloc_last_line-1);
+      return true;
     }
     else {
-      err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << "'): the only type of phraSED-ML content that fits the syntax '[ID] = simulate [keyword]' (without anything following) is simulating the steady state, where 'keyword' is 'steadystate' (i.e. 'sim1 = simulate steadystate').";
-    setError(err.str(), phrased_yylloc_last_line-1);
+      err << "the only type of phraSED-ML content that fits the syntax '[ID] = simulate [keyword]' (without anything following) is simulating the steady state, where 'keyword' is 'steadystate' (i.e. 'sim1 = simulate steadystate').";
+      setError(err.str(), phrased_yylloc_last_line-1);
+      return true;
     }
   }
   else {
-    setError("Error in addEquals [keyword1] [keyword2]:  unsupported keyword1" + key1str, phrased_yylloc_last_line-1);
+    err << "unsupported keyword '" << key1str << "'.  Try 'model' or 'simulate' in this context.";
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   return false;
@@ -217,11 +232,11 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
   string key2str = getStringFrom(key2);
   string key3str = getStringFrom(key3);
   stringstream err;
-  if (key1str == "model") {
+  if (CaselessStrCmp(key1str,"model")) {
     if (checkId(key2)) {
       return true;
     }
-    if (key3str != "with") {
+    if (!CaselessStrCmp(key3str,"with")) {
       err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << " " << key3str << " [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = model [string] [keyword] [...]' is model definitions, where 'keyword' is the word 'with' (i.e. 'mod1 = model mod0 with S1=3').";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
@@ -329,11 +344,10 @@ bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* k
 
 bool Registry::setName(vector<const string*>* id, vector<const string*>* is, const string* name)
 {
-  string iskeyword = "is";
   string idstr = getStringFrom(id);
   string isstr = getStringFrom(is);
   stringstream err;
-  if (isstr != iskeyword) {
+  if (CaselessStrCmp(isstr,"is")) {
     err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << idstr << " " << isstr << " \"" << *name << "\"'): the only type of phraSED-ML content that fits the syntax '[ID] [keyword] \"[string]\"' is setting the names of elements, where 'keyword' is the word 'is' (i.e. 'mod1 is \"Biomodels file #322\"').  ";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
@@ -405,6 +419,20 @@ char* Registry::getPhraSEDML() const
   }
 
 
+  for (size_t s=0; s<m_simulations.size(); s++) {
+    if (s==0) {
+      retval += "// Simulations\n";
+    }
+    retval += m_simulations[s]->getPhraSEDML();
+    if (s==m_simulations.size()-1) {
+      retval += "\n";
+    }
+    if (m_simulations[s]->getName() != "") {
+      names += m_simulations[s]->getId() + " is \"" + m_simulations[s]->getName() + "\"\n";
+    }
+  }
+
+
   if (names != "") {
     retval += "// Names\n" + names + "\n";
   }
@@ -462,6 +490,9 @@ void Registry::createSEDML()
   for (size_t m=0; m<m_models.size(); m++) {
     m_models[m].addModelToSEDML(m_sedml);
   }
+  for (size_t s=0; s<m_simulations.size(); s++) {
+    m_simulations[s]->addSimulationToSEDML(m_sedml);
+  }
 }
 
 bool Registry::finalize()
@@ -476,7 +507,7 @@ bool Registry::finalize()
   return false;
 }
 
-  void Registry::freeAll()
+void Registry::freeAll()
 {
   for (size_t i=0; i<m_charstars.size(); i++) {
     free(m_charstars[i]);
@@ -543,6 +574,29 @@ bool Registry::parseSEDML()
     PhrasedModel mod(m_sedml->getModel(m), m_sedml);
     m_models.push_back(mod);
   }
+  for (unsigned long s=0; s<m_sedml->getNumSimulations(); s++) {
+    SedSimulation* sedsim = m_sedml->getSimulation(s);
+    int sedtype = sedsim->getTypeCode();
+    if(sedtype==SEDML_SIMULATION_ONESTEP) {
+      SedOneStep* sedonestep = static_cast<SedOneStep*>(sedsim);
+      PhrasedOneStep* pone = new PhrasedOneStep(sedonestep);
+      m_simulations.push_back(pone);
+    }
+    else if (sedtype==SEDML_SIMULATION_STEADYSTATE) {
+      SedSteadyState* sedsteady = static_cast<SedSteadyState*>(sedsim);
+      PhrasedSteadyState* psteady = new PhrasedSteadyState(sedsteady);
+      m_simulations.push_back(psteady);
+    }
+    else if (sedtype==SEDML_SIMULATION_UNIFORMTIMECOURSE) {
+      SedUniformTimeCourse* seduniform = static_cast<SedUniformTimeCourse*>(sedsim);
+      PhrasedUniform* puniform = new PhrasedUniform(seduniform);
+      m_simulations.push_back(puniform);
+    }
+    else {
+      setError("SED-ML simulation '" + sedsim->getId() + "' has unknown type.", 0);
+      return true;
+    }
+  }
   //setError("Unable to parse SED-ML input at this time.");
   return false;
 }
@@ -605,6 +659,10 @@ void Registry::clearAll()
   m_errorLine = 0;
   m_warnings.clear();
   m_models.clear();
+  for (size_t s=0; s<m_simulations.size(); s++) {
+    delete m_simulations[s];
+  }
+  m_simulations.clear();
 }
 
 void Registry::clearSEDML()

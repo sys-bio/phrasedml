@@ -90,22 +90,38 @@ START_TEST (test_model_noimp4)
 END_TEST
 
 
+START_TEST (test_sim_uniform_noargs)
+{
+  testError("sim1 = simulate uniform", "Unable to parse line 1 ('sim1 = simulate uniform'): uniform and oneStep simulations must be defined with arguments to determine their properties, (i.e. 'sim1 = simulate uniform(0,10,100)' or 'sim2 = simulate oneStep(0.5)').");
+}
+END_TEST
+
+
+START_TEST (test_sim_onestep_noargs)
+{
+  testError("sim1 = simulate onestep", "Unable to parse line 1 ('sim1 = simulate onestep'): uniform and oneStep simulations must be defined with arguments to determine their properties, (i.e. 'sim1 = simulate uniform(0,10,100)' or 'sim2 = simulate oneStep(0.5)').");
+}
+END_TEST
+
+
 Suite *
 create_suite_Errors (void)
 {
   Suite *suite = suite_create("PhraSED-ML Errors");
   TCase *tcase = tcase_create("PhraSED-ML Errors");
 
-  tcase_add_test( tcase, test_model_noimp1);
-  tcase_add_test( tcase, test_model_noimp2);
-  tcase_add_test( tcase, test_model_noimp3);
-  tcase_add_test( tcase, test_model_noimp4);
+  tcase_add_test( tcase, test_sim_uniform_noargs);
+  tcase_add_test( tcase, test_sim_onestep_noargs);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);
   tcase_add_test( tcase, test_model_err3);
   tcase_add_test( tcase, test_model_changeerr1);
   tcase_add_test( tcase, test_model_changeerr2);
+  tcase_add_test( tcase, test_model_noimp1);
+  tcase_add_test( tcase, test_model_noimp2);
+  tcase_add_test( tcase, test_model_noimp3);
+  tcase_add_test( tcase, test_model_noimp4);
 
   suite_add_tcase(suite, tcase);
 

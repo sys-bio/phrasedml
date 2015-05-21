@@ -56,7 +56,7 @@ public:
 
   void langTypeToURI(language type) const;
 
-  bool finalize();
+  virtual bool finalize();
 private:
   void processSource();
   language getLanguageFromURI(std::string uri) const;

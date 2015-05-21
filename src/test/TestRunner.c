@@ -44,7 +44,8 @@
 BEGIN_C_DECLS
 
 
-Suite *create_suite_Basic(void);
+Suite *create_suite_Models(void);
+Suite *create_suite_Simulations(void);
 Suite *create_suite_Errors(void);
 /**
  * Global.
@@ -109,9 +110,11 @@ main (int argc, char* argv[])
 
   setTestDataDirectory();
 
-  SRunner *runner = srunner_create( create_suite_Basic() );
+  //SRunner *runner = srunner_create( create_suite_Models() );
+  SRunner *runner = srunner_create( create_suite_Simulations() );
   //SRunner *runner = srunner_create( create_suite_Errors() );
 
+  //srunner_add_suite( runner, create_suite_Simulations() );
   srunner_add_suite( runner, create_suite_Errors() );
 
 

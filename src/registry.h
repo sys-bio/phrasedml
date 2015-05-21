@@ -24,6 +24,7 @@
 //#include "enums.h"
 
 class PhrasedModel;
+class PhrasedSimulation;
 class ModelChange;
 
 class Registry
@@ -39,6 +40,7 @@ private:
 
   //The actual SEDML bits:
   std::vector<PhrasedModel> m_models;
+  std::vector<PhrasedSimulation*> m_simulations;
 
 public:
   Registry();
