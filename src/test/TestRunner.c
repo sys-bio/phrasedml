@@ -110,11 +110,11 @@ main (int argc, char* argv[])
 
   setTestDataDirectory();
 
-  //SRunner *runner = srunner_create( create_suite_Models() );
-  SRunner *runner = srunner_create( create_suite_Simulations() );
+  SRunner *runner = srunner_create( create_suite_Models() );
+  //SRunner *runner = srunner_create( create_suite_Simulations() );
   //SRunner *runner = srunner_create( create_suite_Errors() );
 
-  //srunner_add_suite( runner, create_suite_Simulations() );
+  srunner_add_suite( runner, create_suite_Simulations() );
   srunner_add_suite( runner, create_suite_Errors() );
 
 

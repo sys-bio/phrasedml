@@ -409,7 +409,7 @@ bool Registry::setName(vector<const string*>* id, vector<const string*>* is, con
   string idstr = getStringFrom(id);
   string isstr = getStringFrom(is);
   stringstream err;
-  if (CaselessStrCmp(isstr,"is")) {
+  if (!CaselessStrCmp(isstr,"is")) {
     err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << idstr << " " << isstr << " \"" << *name << "\"'): the only type of phraSED-ML content that fits the syntax '[ID] [keyword] \"[string]\"' is setting the names of elements, where 'keyword' is the word 'is' (i.e. 'mod1 is \"Biomodels file #322\"').  ";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
