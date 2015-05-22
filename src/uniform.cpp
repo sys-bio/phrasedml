@@ -67,22 +67,22 @@ bool PhrasedUniform::finalize()
   }
   stringstream err;
   if (m_start < 0) {
-    err << "The start time for a uniform time course simulation must be zero or greater.  The start time for simulation " << m_id << "' is '" << m_start << "', which is negative.";
+    err << "The start time for a uniform time course simulation must be zero or greater.  The start time for simulation '" << m_id << "' is '" << m_start << "', which is negative.";
     g_registry.setError(err.str(), 0);
     return true;
   }
-  if (m_start > m_outstart) {
-    err << "The output start time for a uniform time course simulation must be greater than or equal to the start time for the simulation.  The output start time for simulation " << m_id << "' is '" << m_outstart << "', which is greater than '" << m_start << "', the simulation start.";
+  if (m_outstart < m_start) {
+    err << "The output start time for a uniform time course simulation must be greater than or equal to the start time for the simulation.  The output start time for simulation '" << m_id << "' is '" << m_outstart << "', which is lower than '" << m_start << "', the simulation start.";
     g_registry.setError(err.str(), 0);
     return true;
   }
-  if (m_end > m_outstart) {
-    err << "The end time for a uniform time course simulation must be greater than or equal to the start time (and output start time) for the simulation.  The end time for simulation " << m_id << "' is '" << m_end << "', which is greater than '" << m_outstart << "'.";
+  if (m_end < m_outstart) {
+    err << "The end time for a uniform time course simulation must be greater than or equal to the start time (and output start time) for the simulation.  The end time for simulation '" << m_id << "' is '" << m_end << "', which is less than '" << m_outstart << "'.";
     g_registry.setError(err.str(), 0);
     return true;
   }
   if (m_numpts <= 0) {
-    err << "The number of points for a uniform time course simulation must be positive.  The number of points for simulation " << m_id << "' is '" << m_numpts << "', which is too small.";
+    err << "The number of points for a uniform time course simulation must be positive.  The number of points for simulation '" << m_id << "' is '" << m_numpts << "', which is negative.";
     g_registry.setError(err.str(), 0);
     return true;
   }

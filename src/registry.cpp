@@ -279,9 +279,71 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
 
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<double>* numlist)
 {
-
-  setError("Error in addEquals v6.", phrased_yylloc_last_line-1);
-  return true;
+  if (checkId(name)) {
+    return true;
+  }
+  string namestr = getStringFrom(name);
+  string key1str = getStringFrom(key1);
+  string key2str = getStringFrom(key2);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line << " ('" << namestr << " = " << key1str << " " << key2str << "(";
+  for (size_t n=0; n<numlist->size(); n++) {
+    if (n!=0) {
+      err << ", ";
+    }
+    err << (*numlist)[n];
+  }
+  err << ")'): ";
+  if (CaselessStrCmp(key1str,"simulate")) {
+    if (CaselessStrCmp(key2str,"steadystate")) {
+      if (numlist->size() != 0) {
+        err << "steady state simulations do not take any arguments.";
+        setError(err.str(), phrased_yylloc_last_line);
+        return true;
+      }
+      PhrasedSteadyState* pss = new PhrasedSteadyState(namestr);
+      m_simulations.push_back(pss);
+      return false;
+    }
+    else if (CaselessStrCmp(key2str,"onestep")) {
+      if (numlist->size() != 1) {
+        err << "onestep simulations must take exactly one argument.";
+        setError(err.str(), phrased_yylloc_last_line);
+        return true;
+      }
+      PhrasedOneStep* pone = new PhrasedOneStep(namestr, (*numlist)[0]);
+      m_simulations.push_back(pone);
+      return false;
+    }
+    else if (CaselessStrCmp(key2str,"uniform")) {
+      if (numlist->size() == 3) {
+        PhrasedUniform* puniform = new PhrasedUniform(namestr, (*numlist)[0], (*numlist)[0], (*numlist)[1], (long)(*numlist)[2]);
+        m_simulations.push_back(puniform);
+        return false;
+      }
+      else if (numlist->size() == 4) {
+        PhrasedUniform* puniform = new PhrasedUniform(namestr, (*numlist)[0], (*numlist)[1], (*numlist)[2], (long)(*numlist)[3]);
+        m_simulations.push_back(puniform);
+        return false;
+      }
+      else {
+        err << "uniform timecourse simulations must have either three arguments (start, stop, steps) or four (simulation_start, output_start, stop, steps).";
+        setError(err.str(), phrased_yylloc_last_line);
+        return true;
+      }
+    }
+    else {
+      err << "the only type of phraSED-ML content that fits the syntax '[ID] = [keyword] [keyword]([list of values])' is simulations (i.e. 'sim1 = simulate steadystate()' or 'sim2 = simulate uniform(0, 10, 100)').";
+      setError(err.str(), phrased_yylloc_last_line);
+      return true;
+    }
+  }
+  else {
+    err << "unsupported keyword '" << key1str << "'.  Try 'model' or 'simulate' in this context.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  return false;
 }
 
 
@@ -500,6 +562,11 @@ bool Registry::finalize()
   //Check the models
   for (size_t m=0; m<m_models.size(); m++) {
     if (m_models[m].finalize()) {
+      return true;
+    }
+  }
+  for (size_t s=0; s<m_simulations.size(); s++) {
+    if (m_simulations[s]->finalize()) {
       return true;
     }
   }

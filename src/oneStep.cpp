@@ -47,11 +47,13 @@ void PhrasedOneStep::addSimulationToSEDML(SedDocument* sedml) const
 
 bool PhrasedOneStep::finalize()
 {
-  if (Variable::finalize()) {
+  if (PhrasedSimulation::finalize()) {
     return true;
   }
-  if (m_type == simtype_unknown) {
-    g_registry.setError("Unknown oneStep type for oneStep '" + m_id + "'.", 0);
+  stringstream err;
+  if (m_step <= 0) {
+    err << "The step size for a one-step simulation must be positive.  The step size for simulation '" << m_id << "' is '" << m_step << "', which is too small.";
+    g_registry.setError(err.str(), 0);
     return true;
   }
   return false;

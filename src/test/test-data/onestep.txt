@@ -1,0 +1,3 @@
+//Created by libphrasedml v0.1
+// Simulations
+sim1 = simulate oneStep(0.5)

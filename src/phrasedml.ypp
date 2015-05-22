@@ -124,7 +124,9 @@ changelist:     varOrKeyword '=' NUM {$$ = new vector<ModelChange>; if (g_regist
 
 numlist:        /* empty */ {$$ = new vector<double>;}
         |       NUM {$$ = new vector<double>; $$->push_back($1);}
+        |       '-' NUM {$$ = new vector<double>; $$->push_back(-$2);}
         |       numlist ',' NUM {$$ = $1; $$->push_back($3);}
+        |       numlist ',' '-' NUM {$$ = $1; $$->push_back(-$4);}
         ;
 
 plot:           varOrKeyword varOrKeyword varOrKeyword plotlist {if (g_registry.addPlot($1, $2, $3, $4)) YYABORT;}
