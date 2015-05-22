@@ -215,6 +215,13 @@ START_TEST (test_sim_uniform_negsteps2)
 END_TEST
 
 
+START_TEST (test_nameerr)
+{
+  testError("sim1 isnt \"The name of this sim\"", "Unable to parse line 1 ('sim1 isnt \"The name of this sim\"'): the only type of phraSED-ML content that fits the syntax '[ID] [keyword] \"[string]\"' is setting the names of elements, where 'keyword' is the word 'is' (i.e. 'mod1 is \"Biomodels file #322\"').");
+}
+END_TEST
+
+
 
 Suite *
 create_suite_Errors (void)
@@ -222,8 +229,7 @@ create_suite_Errors (void)
   Suite *suite = suite_create("PhraSED-ML Errors");
   TCase *tcase = tcase_create("PhraSED-ML Errors");
 
-  tcase_add_test( tcase, test_sim_uniform_negsteps);
-  tcase_add_test( tcase, test_sim_uniform_negsteps2);
+  tcase_add_test( tcase, test_nameerr);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);
@@ -250,6 +256,9 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_sim_uniform_lower_end2);
   tcase_add_test( tcase, test_sim_uniform_lower_end3);
   tcase_add_test( tcase, test_sim_uniform_lower_end4);
+  tcase_add_test( tcase, test_sim_uniform_negsteps);
+  tcase_add_test( tcase, test_sim_uniform_negsteps2);
+
 
   suite_add_tcase(suite, tcase);
 
