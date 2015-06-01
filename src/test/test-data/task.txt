@@ -1,0 +1,9 @@
+//Created by libphrasedml v0.1
+// Models
+mod1 = model "sbml_model.xml"
+
+// Simulations
+sim1 = simulate steadyState
+
+// Tasks
+task1 = run sim1 on mod1

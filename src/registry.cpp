@@ -9,6 +9,7 @@
 #include "stringx.h"
 #include "model.h"
 #include "steadyState.h"
+#include "task.h"
 #include "uniform.h"
 #include "oneStep.h"
 
@@ -31,6 +32,8 @@ Registry::Registry()
   , m_warnings()
   , m_sedml(NULL)
   , m_models()
+  , m_simulations()
+  , m_tasks()
   , input(NULL)
 {
 }
@@ -255,9 +258,29 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
 
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<const string*>* key3, vector<const string*>* key4)
 {
-
-  setError("Error in addEquals v3.", phrased_yylloc_last_line-1);
-  return true;
+  if (checkId(name)) {
+    return true;
+  }
+  string namestr = getStringFrom(name);
+  string key1str = getStringFrom(key1);
+  string key2str = getStringFrom(key2);
+  string key3str = getStringFrom(key3);
+  string key4str = getStringFrom(key4);
+  stringstream err;
+  if (CaselessStrCmp(key1str,"run")) {
+    if (!CaselessStrCmp(key3str, "on")) {
+      err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << " " << key3str << " " << key4str << "'): the only type of phraSED-ML content that fits the syntax '[ID] = run [string] [keyword] [string]' is task definitions, where 'keyword' is the word 'on' (i.e. 'task1 = run sim1 on mod0').";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    return true;
+    }
+    PhrasedTask pt(namestr, key2str, key4str);
+    m_tasks.push_back(pt);
+    return false;
+  }
+  else {
+    setError("Error in addEquals v3:  unsupported keyword" + key1str, phrased_yylloc_last_line-1);
+    return true;
+  }
 }
 
 
@@ -465,16 +488,12 @@ char* Registry::getPhraSEDML() const
 {
   string retval  = "//Created by libphrasedml ";
   retval += LIBPHRASEDML_VERSION_STRING;
-  retval += "\n";
   string names = "";
   for (size_t m=0; m<m_models.size(); m++) {
     if (m==0) {
-      retval += "// Models\n";
+      retval += "\n// Models\n";
     }
     retval += m_models[m].getPhraSEDML();
-    if (m==m_models.size()-1) {
-      retval += "\n";
-    }
     if (m_models[m].getName() != "") {
       names += m_models[m].getId() + " is \"" + m_models[m].getName() + "\"\n";
     }
@@ -483,20 +502,27 @@ char* Registry::getPhraSEDML() const
 
   for (size_t s=0; s<m_simulations.size(); s++) {
     if (s==0) {
-      retval += "// Simulations\n";
+      retval += "\n// Simulations\n";
     }
     retval += m_simulations[s]->getPhraSEDML();
-    if (s==m_simulations.size()-1) {
-      retval += "\n";
-    }
     if (m_simulations[s]->getName() != "") {
       names += m_simulations[s]->getId() + " is \"" + m_simulations[s]->getName() + "\"\n";
     }
   }
 
 
+  for (size_t t=0; t<m_tasks.size(); t++) {
+    if (t==0) {
+      retval += "\n// Tasks\n";
+    }
+    retval += m_tasks[t].getPhraSEDML();
+    if (m_tasks[t].getName() != "") {
+      names += m_tasks[t].getId() + " is \"" + m_tasks[t].getName() + "\"\n";
+    }
+  }
+
   if (names != "") {
-    retval += "// Names\n" + names + "\n";
+    retval += "\n// Names\n" + names + "\n";
   }
   char* ret = strdup(retval.c_str());
   g_registry.m_charstars.push_back(ret);
@@ -545,6 +571,26 @@ PhrasedModel* Registry::getModel(string modid)
   return NULL;
 }
 
+const PhrasedSimulation* Registry::getSimulation(string simid) const
+{
+  for (size_t s=0; s<m_simulations.size(); s++) {
+    if (m_simulations[s]->getId() == simid) {
+      return m_simulations[s];
+    }
+  }
+  return NULL;
+}
+
+PhrasedSimulation* Registry::getSimulation(string simid)
+{
+  for (size_t s=0; s<m_simulations.size(); s++) {
+    if (m_simulations[s]->getId() == simid) {
+      return m_simulations[s];
+    }
+  }
+  return NULL;
+}
+
 void Registry::createSEDML()
 {
   delete m_sedml;
@@ -554,6 +600,9 @@ void Registry::createSEDML()
   }
   for (size_t s=0; s<m_simulations.size(); s++) {
     m_simulations[s]->addSimulationToSEDML(m_sedml);
+  }
+  for (size_t t=0; t<m_tasks.size(); t++) {
+    m_tasks[t].addTaskToSEDML(m_sedml);
   }
 }
 
@@ -567,6 +616,11 @@ bool Registry::finalize()
   }
   for (size_t s=0; s<m_simulations.size(); s++) {
     if (m_simulations[s]->finalize()) {
+      return true;
+    }
+  }
+  for (size_t t=0; t<m_tasks.size(); t++) {
+    if (m_tasks[t].finalize()) {
       return true;
     }
   }
@@ -664,6 +718,19 @@ bool Registry::parseSEDML()
       return true;
     }
   }
+  for (unsigned long t=0; t<m_sedml->getNumTasks(); t++) {
+    SedTask* sedtask = m_sedml->getTask(t);
+    if (sedtask->getTypeCode() == SEDML_TASK) {
+      PhrasedTask pt(sedtask);
+      m_tasks.push_back(pt);
+    }
+    else if (sedtask->getTypeCode() == SEDML_TASK_REPEATEDTASK) {
+    }
+    else {
+      setError("SED-ML task '" + sedtask->getId() + "' has unknown type.", 0);
+      return true;
+    }
+  }
   //setError("Unable to parse SED-ML input at this time.");
   return false;
 }
@@ -730,6 +797,7 @@ void Registry::clearAll()
     delete m_simulations[s];
   }
   m_simulations.clear();
+  m_tasks.clear();
 }
 
 void Registry::clearSEDML()

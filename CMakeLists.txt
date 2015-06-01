@@ -384,6 +384,7 @@ file(GLOB LIBPHRASEDML_SOURCES
           ${PHRASEDML_SRC_DIR}uniform.cpp
           ${PHRASEDML_SRC_DIR}steadystate.cpp
           ${PHRASEDML_SRC_DIR}stringx.cpp
+          ${PHRASEDML_SRC_DIR}task.cpp
           ${PHRASEDML_SRC_DIR}phrasedml_api.cpp
           ${PHRASEDML_SRC_DIR}variable.cpp
           )
@@ -398,6 +399,7 @@ file(GLOB LIBPHRASEDML_HEADERS
           ${PHRASEDML_SRC_DIR}uniform.h
           ${PHRASEDML_SRC_DIR}steadystate.h
           ${PHRASEDML_SRC_DIR}stringx.h
+          ${PHRASEDML_SRC_DIR}task.h
           ${PHRASEDML_SRC_DIR}phrasedml_api.h
           ${PHRASEDML_SRC_DIR}variable.h
           )

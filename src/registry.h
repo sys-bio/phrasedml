@@ -25,6 +25,7 @@
 
 class PhrasedModel;
 class PhrasedSimulation;
+class PhrasedTask;
 class ModelChange;
 
 class Registry
@@ -41,6 +42,7 @@ private:
   //The actual SEDML bits:
   std::vector<PhrasedModel> m_models;
   std::vector<PhrasedSimulation*> m_simulations;
+  std::vector<PhrasedTask> m_tasks;
 
 public:
   Registry();
@@ -60,6 +62,10 @@ public:
   char* getSEDML() const;
   const PhrasedModel* getModel(std::string modid) const;
   PhrasedModel* getModel(std::string modid);
+  const PhrasedSimulation* getSimulation(std::string simid) const;
+  PhrasedSimulation* getSimulation(std::string simid);
+  const PhrasedTask* getTask(std::string taskid) const;
+  PhrasedTask* getTask(std::string taskid);
 
   std::string getError() {return m_error;};
   int getErrorLine() {return m_errorLine;};

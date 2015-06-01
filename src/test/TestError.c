@@ -222,6 +222,13 @@ START_TEST (test_nameerr)
 END_TEST
 
 
+START_TEST (test_task_no_on)
+{
+  testError("task1 = run foo bar baz", "Unable to parse line 1 ('task1 = run foo bar baz'): the only type of phraSED-ML content that fits the syntax '[ID] = run [string] [keyword] [string]' is task definitions, where 'keyword' is the word 'on' (i.e. 'task1 = run sim1 on mod0').");
+}
+END_TEST
+
+
 
 Suite *
 create_suite_Errors (void)
@@ -229,7 +236,7 @@ create_suite_Errors (void)
   Suite *suite = suite_create("PhraSED-ML Errors");
   TCase *tcase = tcase_create("PhraSED-ML Errors");
 
-  tcase_add_test( tcase, test_nameerr);
+  tcase_add_test( tcase, test_task_no_on);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);
@@ -258,6 +265,7 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_sim_uniform_lower_end4);
   tcase_add_test( tcase, test_sim_uniform_negsteps);
   tcase_add_test( tcase, test_sim_uniform_negsteps2);
+  tcase_add_test( tcase, test_nameerr);
 
 
   suite_add_tcase(suite, tcase);
