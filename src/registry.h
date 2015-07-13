@@ -6,26 +6,13 @@
 #include <sstream>
 #include <set>
 
-#include "sedml\SedTypes.h"
-
-//#include <ctype.h>
-//#include <fstream>
-//#include <iostream>
-//#include <math.h>
-//#include <set>
-//#include <stdio.h>
-//#include <string>
-//#include <sstream>
-
-//#include "dnastrand.h"
-//#include "module.h"
-//#include "reactantlist.h"
-//#include "reaction.h"
-//#include "enums.h"
+#include "sedml/SedTypes.h"
+#include "sbml/math/L3ParserSettings.h"
 
 class PhrasedModel;
 class PhrasedSimulation;
 class PhrasedTask;
+class PhrasedRepeatedTask;
 class ModelChange;
 
 class Registry
@@ -43,6 +30,9 @@ private:
   std::vector<PhrasedModel> m_models;
   std::vector<PhrasedSimulation*> m_simulations;
   std::vector<PhrasedTask> m_tasks;
+  std::vector<PhrasedRepeatedTask> m_repeatedTasks;
+
+  L3ParserSettings         m_l3ps;
 
 public:
   Registry();
@@ -52,6 +42,8 @@ public:
 
   char* convertFile(const std::string& filename);
   char* convertString(std::string model);
+
+  L3ParserSettings* getL3ParserSettings() {return &m_l3ps;};
 
   void setError(std::string error, int line) {m_error = error; m_errorLine=line;};
   void addErrorPrefix(std::string error) {m_error = error + m_error;};
@@ -85,6 +77,9 @@ public:
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* key4, std::vector<const std::string*>* key5, std::vector<ModelChange>* changelist);
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<double>* numlist);
 
+  //Repeated tasks, multiple tasks:
+  bool addRepeatedTask(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<std::vector<const std::string*>*>*  key2, std::vector<const std::string*>* key3, std::vector<ModelChange>* changelist);
+
 
   //phraSED-ML lines that are clearly plots:
   bool addPlot(std::vector<const std::string*>* plot, std::vector<const std::string*>* name, std::vector<const std::string*>* vs,  std::vector<std::vector<const std::string*>*>* plotlist);
@@ -92,10 +87,12 @@ public:
   
   //ChangeList addition
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2);
-  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* name, double val);
-  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* name, std::vector<std::string>* formula);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* name, std::vector<std::string>* formula);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* name, std::vector<std::string>* formula, bool usedEquals);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* name, double val);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* name, double val);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<double>* numlist);
+  bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<double>* numlist);
   
   //Setting the 'name' attribute
   bool setName(std::vector<const std::string*>* id, std::vector<const std::string*>* is, const std::string* name);

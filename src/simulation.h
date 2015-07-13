@@ -13,7 +13,8 @@ enum simtype {
   simtype_unknown,
   simtype_steadystate, 
   simtype_onestep, 
-  simtype_uniform
+  simtype_uniform,
+  simtype_uniform_stochastic
 };
 
 class PhrasedSimulation : public Variable

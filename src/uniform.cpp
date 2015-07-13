@@ -14,12 +14,13 @@ using namespace std;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
-PhrasedUniform::PhrasedUniform(std::string id, double start, double outstart, double end, long numpts)
+PhrasedUniform::PhrasedUniform(std::string id, double start, double outstart, double end, long numpts, bool stochastic)
   : PhrasedSimulation(simtype_uniform, id)
   , m_start(start)
   , m_outstart(outstart)
   , m_end(end)
   , m_numpts(numpts)
+  , m_stochastic(stochastic)
 {
 }
 
@@ -30,6 +31,13 @@ PhrasedUniform::PhrasedUniform(SedUniformTimeCourse* seduniform)
   m_outstart = seduniform->getOutputStartTime();
   m_end = seduniform->getOutputEndTime();
   m_numpts = seduniform->getNumberOfPoints();
+  m_stochastic = false;
+  if (seduniform->isSetAlgorithm()) {
+    const SedAlgorithm* alg = seduniform->getAlgorithm();
+    if (alg->isSetKisaoID() && alg->getKisaoID() == "KISAO:0000241") {
+      m_stochastic = true;
+    }
+  }
 }
 
 PhrasedUniform::~PhrasedUniform()
@@ -39,8 +47,11 @@ PhrasedUniform::~PhrasedUniform()
 string PhrasedUniform::getPhraSEDML() const
 {
   stringstream ret;
-  ret << m_id << " = simulate uniform (";
-  ret << m_start << ", ";
+  ret << m_id << " = simulate uniform";
+  if (m_stochastic) {
+    ret << "_stochastic";
+  }
+  ret << "(" << m_start << ", ";
   if (m_start != m_outstart) {
     ret << m_outstart << ", ";
   }
@@ -58,6 +69,13 @@ void PhrasedUniform::addSimulationToSEDML(SedDocument* sedml) const
   uniform->setOutputStartTime(m_outstart);
   uniform->setOutputEndTime(m_end);
   uniform->setNumberOfPoints(m_numpts);
+  SedAlgorithm* alg = uniform->createAlgorithm();
+  if (m_stochastic) {
+    alg->setKisaoID("KISAO:0000241"); //stochastic simulation
+  }
+  else {
+    alg->setKisaoID("KISAO:0000019"); //non-stochastic simulation
+  }
 }
 
 bool PhrasedUniform::finalize()

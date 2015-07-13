@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <strstream>
 
 #include "variable.h"
 #include "sbml\SBMLDocument.h"
@@ -25,6 +26,9 @@ enum language {
   lang_CellML1_1, 
   lang_CellML1_2
 };
+
+class SedComputeChange;
+class SedModel;
 
 class PhrasedModel : public Variable
 {
@@ -56,11 +60,13 @@ public:
 
   void langTypeToURI(language type) const;
 
+  virtual bool changeListIsInappropriate(std::stringstream& err);
   virtual bool finalize();
 private:
   void processSource();
   language getLanguageFromURI(std::string uri) const;
   std::string getURIFromLanguage(language lang) const;
+  void addLocalVariablesToComputeChange(SedComputeChange* scc, SedModel* model) const;
 
 };
 

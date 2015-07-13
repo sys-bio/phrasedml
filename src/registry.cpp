@@ -8,6 +8,7 @@
 #include "registry.h"
 #include "stringx.h"
 #include "model.h"
+#include "repeatedTask.h"
 #include "steadyState.h"
 #include "task.h"
 #include "uniform.h"
@@ -34,8 +35,11 @@ Registry::Registry()
   , m_models()
   , m_simulations()
   , m_tasks()
+  , m_repeatedTasks()
+  , m_l3ps()
   , input(NULL)
 {
+  m_l3ps.setParseCollapseMinus(true);
 }
 
 Registry::~Registry()
@@ -205,7 +209,7 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
       m_simulations.push_back(pss);
       return false;
     }
-    else if (CaselessStrCmp(key2str,"onestep") || CaselessStrCmp(key2str,"uniform")) {
+    else if (CaselessStrCmp(key2str,"onestep") || CaselessStrCmp(key2str,"uniform") || CaselessStrCmp(key2str, "uniform_stochastic")) {
       err << "uniform and oneStep simulations must be defined with arguments to determine their properties, (i.e. 'sim1 = simulate uniform(0,10,100)' or 'sim2 = simulate oneStep(0.5)').";
       setError(err.str(), phrased_yylloc_last_line-1);
       return true;
@@ -235,21 +239,41 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
   string key2str = getStringFrom(key2);
   string key3str = getStringFrom(key3);
   stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << " " << key3str << " [...]'): ";
   if (CaselessStrCmp(key1str,"model")) {
     if (checkId(key2)) {
       return true;
     }
     if (!CaselessStrCmp(key3str,"with")) {
-      err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << " " << key3str << " [...]'): the only type of phraSED-ML content that fits the syntax '[ID] = model [string] [keyword] [...]' is model definitions, where 'keyword' is the word 'with' (i.e. 'mod1 = model mod0 with S1=3').";
+      err << "the only type of phraSED-ML content that fits the syntax '[ID] = model [string] [keyword] [...]' is model definitions, where 'keyword' is the word 'with' (i.e. 'mod1 = model mod0 with S1=3').";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
     }
     PhrasedModel pm(namestr, key2str, *changelist, false);
+    if (pm.changeListIsInappropriate(err)) {
+      return true;
+    }
     m_models.push_back(pm);
     return false;
   }
+  else if (CaselessStrCmp(key1str,"repeat")) {
+    if (!CaselessStrCmp(key3str, "for")) {
+      err << "the only type of phraSED-ML content that fits the syntax '[ID] = repeat [string] [keyword] [...]' is repeated tasks, where 'keyword' is the word 'for' (i.e. 'rt1 = repeat task1 for S1 in uniform(0,10,100)').";
+      setError(err.str(), phrased_yylloc_last_line-1);
+      return true;
+    }
+    if (checkId(key2)) {
+      return true;
+    }
+    PhrasedRepeatedTask rt(namestr, key2str, changelist);
+    if (rt.changeListIsInappropriate(err)) {
+      return true;
+    }
+    m_repeatedTasks.push_back(rt);
+  }
   else {
-    setError("Error in addEquals v2:  unsupported keyword" + key1str, phrased_yylloc_last_line-1);
+    err << "unsupported keyword '" << key1str << "'.  Try 'model' or 'repeat' in this context.";
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
   return false;
@@ -267,9 +291,10 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
   string key3str = getStringFrom(key3);
   string key4str = getStringFrom(key4);
   stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << " " << key3str << " " << key4str << "'): ";
   if (CaselessStrCmp(key1str,"run")) {
     if (!CaselessStrCmp(key3str, "on")) {
-      err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << key1str << " " << key2str << " " << key3str << " " << key4str << "'): the only type of phraSED-ML content that fits the syntax '[ID] = run [string] [keyword] [string]' is task definitions, where 'keyword' is the word 'on' (i.e. 'task1 = run sim1 on mod0').";
+      err << "the only type of phraSED-ML content that fits the syntax '[ID] = run [string] [keyword] [string]' is task definitions, where 'keyword' is the word 'on' (i.e. 'task1 = run sim1 on mod0').";
     setError(err.str(), phrased_yylloc_last_line-1);
     return true;
     }
@@ -278,7 +303,8 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
     return false;
   }
   else {
-    setError("Error in addEquals v3:  unsupported keyword" + key1str, phrased_yylloc_last_line-1);
+    err << "unsupported keyword '" << key1str << "'.  Try 'run' in this context.";
+    setError(err.str(), phrased_yylloc_last_line-1);
     return true;
   }
 }
@@ -299,6 +325,23 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
   return true;
 }
 
+bool Registry::addRepeatedTask(vector<const string*>* name, vector<const string*>* key1, vector<vector<const string*>*>*  key2, vector<const string*>* key3, vector<ModelChange>* changelist)
+{
+  if (key2==NULL) return true;
+  if (key2->size()==0) return true;
+  vector<const string*>* task = (*key2)[0];
+  if (addEquals(name, key1, task, key3, changelist)) {
+    return true;
+  }
+  for (size_t t=1; t<key2->size(); t++) {
+    vector<const string*>* task = (*key2)[t];
+    if (checkId(task)) {
+      return true;
+    }
+    m_repeatedTasks[m_repeatedTasks.size()-1].addTask(getStringFrom(task));
+  }
+  return false;
+}
 
 bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key1, vector<const string*>* key2, vector<double>* numlist)
 {
@@ -338,14 +381,15 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
       m_simulations.push_back(pone);
       return false;
     }
-    else if (CaselessStrCmp(key2str,"uniform")) {
+    else if (CaselessStrCmp(key2str,"uniform") || CaselessStrCmp(key2str, "uniform_stochastic")) {
+      bool stochastic=CaselessStrCmp(key2str, "uniform_stochastic");
       if (numlist->size() == 3) {
-        PhrasedUniform* puniform = new PhrasedUniform(namestr, (*numlist)[0], (*numlist)[0], (*numlist)[1], (long)(*numlist)[2]);
+        PhrasedUniform* puniform = new PhrasedUniform(namestr, (*numlist)[0], (*numlist)[0], (*numlist)[1], (long)(*numlist)[2], stochastic);
         m_simulations.push_back(puniform);
         return false;
       }
       else if (numlist->size() == 4) {
-        PhrasedUniform* puniform = new PhrasedUniform(namestr, (*numlist)[0], (*numlist)[1], (*numlist)[2], (long)(*numlist)[3]);
+        PhrasedUniform* puniform = new PhrasedUniform(namestr, (*numlist)[0], (*numlist)[1], (*numlist)[2], (long)(*numlist)[3], stochastic);
         m_simulations.push_back(puniform);
         return false;
       }
@@ -393,19 +437,23 @@ bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* k
 }
 
 
-bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* name, double val)
+bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* name, vector<string>* formula)
 {
-  ModelChange mc(name, val);
+  ModelChange mc(name, formula);
   cl->push_back(mc);
   return false;
 }
 
 
-bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* name, vector<string>* formula)
+bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* key1, vector<const string*>* name, vector<string>* formula, bool usedEquals)
 {
   stringstream err;
-  err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(name) << " = " << getStringFrom(formula) << "': changes to models of the form '[keyword] [id] = [formula]' (such as 'compute S1 = k1/k2') are not currently supported.  Future plans include incorporation of this functionality.";
-  setError(err.str(), phrased_yylloc_last_line-1);
+  if (usedEquals) {
+    err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(name) << " = " << getStringFrom(formula, " ") << "': changes to models of the form '[keyword] [id] = [formula]' (such as 'compute S1 = k1/k2') are not currently supported.  Future plans include incorporation of this functionality.";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    return true;
+  }
+  err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(name) << " (" << getStringFrom(formula, " ") << ")': changes to models of the form '[keyword] [keyword] ( [formula] )' (such as 'S1 in (uniform(0,10,100)+x)') are not currently supported.  Future plans include incorporation of this functionality.";
   return true;
 }
 
@@ -425,6 +473,71 @@ bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* k
   err << "Unable to parse line " << phrased_yylloc_last_line -1 << " at '" << getStringFrom(key1) << " " << getStringFrom(key2) << getStringFrom(key3) << getStringFrom(name) << " = " << val << "': changes to models of the form '[keyword] [id] [keyword] [id] = [value]' (such as 'change p1 to p3 = 5') are not currently supported.  Future plans include incorporation of this functionality.";
   setError(err.str(), phrased_yylloc_last_line-1);
   return true;
+}
+
+bool Registry::addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<double>* numlist)
+{
+  string key1str = getStringFrom(key1);
+  string key2str = getStringFrom(key2);
+  string key3str = getStringFrom(key3);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line << " at '" << key1str << " " << key2str << " " << key3str << "(";
+  for (size_t n=0; n<numlist->size(); n++) {
+    if (n!=0) {
+      err << ", ";
+    }
+    err << (*numlist)[n];
+  }
+  err << ")': ";
+
+  if (key2str != "in") {
+    err << "Changes of the form '[string] [keyword] [function()]' are only valid when [keyword] is 'in'.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  
+  change_type type = ctype_loop_uniformLinear;
+  if (CaselessStrCmp(key3str, "uniformLog") || CaselessStrCmp(key3str, "logUniform") ){
+    type = ctype_loop_uniformLog;
+  }
+  else if (!CaselessStrCmp(key3str, "uniform") && !CaselessStrCmp(key3str, "uniformLinear") && !CaselessStrCmp(key3str, "linearUniform") ) {
+    err << "Unrecognized function name '" << key3str << "'.  Known function names for changes in this format are 'uniform' and 'logUniform'.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  if (numlist->size() != 3) {
+    err << "Incorrect number of arguments to '" << key3str << "' function; expected three (start, stop, numPoints).";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  ModelChange mc(type, key1, numlist);
+  cl->push_back(mc);
+  return false;
+}
+
+bool Registry::addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<double>* numlist)
+{
+  string key1str = getStringFrom(key1);
+  string key2str = getStringFrom(key2);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line << " at '" << key1str << " " << key2str << " [";
+  for (size_t n=0; n<numlist->size(); n++) {
+    if (n!=0) {
+      err << ", ";
+    }
+    err << (*numlist)[n];
+  }
+  err << "]': ";
+
+  if (key2str != "in") {
+    err << "Changes of the form '[string] [keyword] [numlist]' are only valid when [keyword] is 'in'.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  
+  ModelChange mc(ctype_loop_vector, key1, numlist);
+  cl->push_back(mc);
+  return false;
 }
 
 bool Registry::setName(vector<const string*>* id, vector<const string*>* is, const string* name)
@@ -521,6 +634,16 @@ char* Registry::getPhraSEDML() const
     }
   }
 
+  for (size_t t=0; t<m_repeatedTasks.size(); t++) {
+    if (t==0) {
+      retval += "\n// Repeated Tasks\n";
+    }
+    retval += m_repeatedTasks[t].getPhraSEDML();
+    if (m_repeatedTasks[t].getName() != "") {
+      names += m_repeatedTasks[t].getId() + " is \"" + m_repeatedTasks[t].getName() + "\"\n";
+    }
+  }
+
   if (names != "") {
     retval += "\n// Names\n" + names + "\n";
   }
@@ -591,6 +714,36 @@ PhrasedSimulation* Registry::getSimulation(string simid)
   return NULL;
 }
 
+const PhrasedTask* Registry::getTask(string taskid) const
+{
+  for (size_t s=0; s<m_tasks.size(); s++) {
+    if (m_tasks[s].getId() == taskid) {
+      return &m_tasks[s];
+    }
+  }
+  for (size_t s=0; s<m_repeatedTasks.size(); s++) {
+    if (m_repeatedTasks[s].getId() == taskid) {
+      return &m_repeatedTasks[s];
+    }
+  }
+  return NULL;
+}
+
+PhrasedTask* Registry::getTask(string taskid)
+{
+  for (size_t s=0; s<m_tasks.size(); s++) {
+    if (m_tasks[s].getId() == taskid) {
+      return &m_tasks[s];
+    }
+  }
+  for (size_t s=0; s<m_repeatedTasks.size(); s++) {
+    if (m_repeatedTasks[s].getId() == taskid) {
+      return &m_repeatedTasks[s];
+    }
+  }
+  return NULL;
+}
+
 void Registry::createSEDML()
 {
   delete m_sedml;
@@ -603,6 +756,9 @@ void Registry::createSEDML()
   }
   for (size_t t=0; t<m_tasks.size(); t++) {
     m_tasks[t].addTaskToSEDML(m_sedml);
+  }
+  for (size_t rt=0; rt<m_repeatedTasks.size(); rt++) {
+    m_repeatedTasks[rt].addRepeatedTaskToSEDML(m_sedml);
   }
 }
 
@@ -624,6 +780,11 @@ bool Registry::finalize()
       return true;
     }
   }
+  for (size_t t=0; t<m_repeatedTasks.size(); t++) {
+    if (m_repeatedTasks[t].finalize()) {
+      return true;
+    }
+  }
 
   return false;
 }
@@ -634,34 +795,6 @@ void Registry::freeAll()
     free(m_charstars[i]);
   }
   m_charstars.clear();
-  /*
-  for (size_t i=0; i<m_charstarstars.size(); i++) {
-    free(m_charstarstars[i]);
-  }
-  m_charstarstars.clear();
-  for (size_t i=0; i<m_charstarstarstars.size(); i++) {
-    free(m_charstarstarstars[i]);
-  }
-  m_charstarstarstars.clear();
-
-  for (size_t i=0; i<m_doublestars.size(); i++) {
-    free(m_doublestars[i]);
-  }
-  m_doublestars.clear();
-  for (size_t i=0; i<m_doublestarstars.size(); i++) {
-    free(m_doublestarstars[i]);
-  }
-  m_doublestarstars.clear();
-
-  for (size_t i=0; i<m_ulongstars.size(); i++) {
-    free(m_ulongstars[i]);
-  }
-  m_ulongstars.clear();
-  for (size_t i=0; i<m_rd_typestars.size(); i++) {
-    free(m_rd_typestars[i]);
-  }
-  m_rd_typestars.clear();
-  */
 }
 
 
@@ -725,14 +858,16 @@ bool Registry::parseSEDML()
       m_tasks.push_back(pt);
     }
     else if (sedtask->getTypeCode() == SEDML_TASK_REPEATEDTASK) {
+      SedRepeatedTask* srt = static_cast<SedRepeatedTask*>(sedtask);
+      PhrasedRepeatedTask rt(srt);
+      m_repeatedTasks.push_back(rt);
     }
     else {
       setError("SED-ML task '" + sedtask->getId() + "' has unknown type.", 0);
       return true;
     }
   }
-  //setError("Unable to parse SED-ML input at this time.");
-  return false;
+  return finalize();
 }
 
 bool Registry::checkId(vector<const string*>* name)
@@ -798,6 +933,7 @@ void Registry::clearAll()
   }
   m_simulations.clear();
   m_tasks.clear();
+  m_repeatedTasks.clear();
 }
 
 void Registry::clearSEDML()

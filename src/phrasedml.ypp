@@ -70,6 +70,7 @@
 %type   <nums>          numlist
 %type   <number>        number
 %type   <changelist>    changelist
+%type   <nameslist>     taskslist
 
 %left '&' '|' /* Boolean functions and, or */
 %left '-' '+'
@@ -109,18 +110,25 @@ equals:         varOrKeyword '=' varOrKeyword TEXTSTRING {if (g_registry.addMode
         |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword varOrKeyword {if (g_registry.addEquals($1, $3, $4, $5, $6)) YYABORT;}
         |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword varOrKeyword varOrKeyword {if (g_registry.addEquals($1, $3, $4, $5, $6, $7)) YYABORT;}
         |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword varOrKeyword varOrKeyword ',' changelist {if (g_registry.addEquals($1, $3, $4, $5, $6, $7)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword '[' taskslist ']' varOrKeyword changelist {if (g_registry.addRepeatedTask($1, $3, $5, $7, $8)) YYABORT;}
         |       varOrKeyword '=' varOrKeyword varOrKeyword '(' numlist ')' {if (g_registry.addEquals($1, $3, $4, $6)) YYABORT;}
         ;
 
-changelist:     varOrKeyword '=' number {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $3)) YYABORT;}
-        |       varOrKeyword varOrKeyword '=' formula {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $4)) YYABORT;}
+changelist:     varOrKeyword '=' formula {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $3)) YYABORT;}
+        |       varOrKeyword varOrKeyword '=' formula {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $4, true)) YYABORT;}
         |       varOrKeyword varOrKeyword varOrKeyword '=' number {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $3, $5)) YYABORT;}
         |       varOrKeyword varOrKeyword varOrKeyword varOrKeyword '=' number {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $3, $4, $6)) YYABORT;}
+        |       varOrKeyword varOrKeyword varOrKeyword '(' numlist ')' {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $3, $5)) YYABORT;}
+        |       varOrKeyword varOrKeyword '[' numlist ']' {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $4)) YYABORT;}
+        |       varOrKeyword varOrKeyword '(' formula ')' {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $4, false)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword {$$ = $1; if (g_registry.addToChangeList($$, $3, $4)) YYABORT;}
-        |       changelist ',' varOrKeyword '=' number {$$ = $1; if (g_registry.addToChangeList($$, $3, $5)) YYABORT;}
-        |       changelist ',' varOrKeyword varOrKeyword '=' formula {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $6)) YYABORT;}
+        |       changelist ',' varOrKeyword '=' formula {$$ = $1; if (g_registry.addToChangeList($$, $3, $5)) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword '=' formula {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $6, true)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword varOrKeyword '=' number {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $5, $7)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword varOrKeyword varOrKeyword '=' number {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $5, $6, $8)) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword varOrKeyword '(' numlist ')' {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $5, $7)) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword '[' numlist ']' {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $6)) YYABORT;}
+        |       changelist ',' varOrKeyword varOrKeyword '(' formula ')' {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $6, false)) YYABORT;}
         ;
 
 numlist:        /* empty */ {$$ = new vector<double>;}
@@ -143,6 +151,10 @@ plotlist:       /* empty */ {$$ = new vector<vector<const string*>*>;}
         |       plotlist ',' varOrKeyword {$$ = $1; $$->push_back($3);}
         ;
 
+taskslist:      varOrKeyword {$$ = new vector<vector<const string*>*>; $$->push_back($1);}
+        |       taskslist ',' varOrKeyword {$$ = $1; $$->push_back($3);}
+        ;
+
 formula:        /* empty */ {$$ = new vector<string>(); }
         |       formula PHRASEWORD {$$ = $1; $1->push_back(*$2); }
         |       formula NUM  {$$ = $1; $1->push_back(g_registry.ftoa($2)); }
@@ -155,8 +167,19 @@ formula:        /* empty */ {$$ = new vector<string>(); }
                   delete $3;
                 }
         |       formula mathThing {$$ = $1; string mt; mt.push_back($2); $1->push_back(mt); }
-        |       formula '&' '&' {$$ = $1; $1->push_back("&"); $1->push_back("&"); }
-        |       formula '|' '|' {$$ = $1; $1->push_back("|"); $1->push_back("|"); }
+        |       formula '&' '&' {$$ = $1; $1->push_back("&&"); }
+        |       formula '|' '|' {$$ = $1; $1->push_back("||"); }
+        |       formula '.' {$$ = $1; $1->push_back("."); }
+        |       formula '[' numlist ']'
+                {
+                  $$ = $1;
+                  $$->push_back("[");
+                  for (size_t d=0; d<$3->size(); d++) {
+                    $$->push_back(g_registry.ftoa((*$3)[d]));
+                  }
+                  $$->push_back("]");
+                  delete $3;
+                }
         ;
 
 commaformula:   formula {$$ = $1;}

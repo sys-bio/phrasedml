@@ -80,4 +80,10 @@ void compareStringTranslation(const string& phrasedml, const string& sedml)
   free(phrased_rt);
 }
 
+void compareStringAndFileTranslation(const string& phrasedml, const string& base)
+{
+  compareStringTranslation(phrasedml, base+".xml");
+  compareFileTranslation(base);
+}
+
 END_C_DECLS

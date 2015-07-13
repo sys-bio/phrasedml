@@ -46,6 +46,24 @@ void PhrasedTask::addTaskToSEDML(SedDocument* sedml) const
   sedtask->setSimulationReference(m_simulation);
 }
 
+bool PhrasedTask::isRepeated() const
+{
+  return false;
+}
+
+set<PhrasedModel*> PhrasedTask::getModels() const
+{
+  set<PhrasedModel*> ret;
+  ret.insert(g_registry.getModel(m_model));
+  return ret;
+}
+
+bool PhrasedTask::isRecursive(set<PhrasedTask*>& tasks)
+{
+  return false;
+}
+
+
 bool PhrasedTask::finalize()
 {
   if (Variable::finalize()) {

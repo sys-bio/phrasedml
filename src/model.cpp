@@ -10,6 +10,8 @@
 #include "model.h"
 #include "modelChange.h"
 #include "sbml\SBMLTypes.h"
+#include "sbmlx.h"
+#include "stringx.h"
 
 using namespace std;
 
@@ -35,7 +37,7 @@ PhrasedModel::PhrasedModel(string id, string source, vector<ModelChange> changes
 {
   processSource();
   for (size_t mc=0; mc<m_changes.size(); mc++) {
-    m_changes[mc].setParent(id);
+    m_changes[mc].setModel(id);
   }
 }
 
@@ -52,8 +54,16 @@ PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
     m_isFile = false;
   }
   for (unsigned int ch=0; ch<sedmodel->getNumChanges(); ch++) {
-    ModelChange mc(sedmodel->getChange(ch), seddoc, m_id);
+    SedChange* sc = sedmodel->getChange(ch);
+    ModelChange mc(sc, seddoc, m_id);
     m_changes.push_back(mc);
+    if (sc->getTypeCode() == SEDML_CHANGE_COMPUTECHANGE) {
+      SedComputeChange* scc = static_cast<SedComputeChange*>(sc);
+      for (unsigned int p=0; p<scc->getNumParameters(); p++) {
+        ModelChange mc2(scc->getParameter(p));
+        m_changes.push_back(mc2);
+      }
+    }
   }
 }
 
@@ -94,7 +104,7 @@ SBMLDocument* PhrasedModel::getSBMLDocument()
   return &m_sbml;
 }
 
-  string PhrasedModel::getPhraSEDML() const
+string PhrasedModel::getPhraSEDML() const
 {
   string ret = m_id;
   ret += " = model ";
@@ -125,7 +135,46 @@ void PhrasedModel::addModelToSEDML(SedDocument* sedml) const
   model->setSource(m_source);
   model->setLanguage(getURIFromLanguage(m_type));
   for (size_t cl=0; cl<m_changes.size(); cl++) {
-    m_changes[cl].addModelChangeToSEDML(model);
+    m_changes[cl].addModelChangeToSEDMLModel(model);
+  }
+  //Now we need to create local variables for any ComputeChanges:
+  for (unsigned int c=0; c<model->getNumChanges(); c++) {
+    SedChange* sc = model->getChange(c);
+    if (sc->getTypeCode() == SEDML_CHANGE_COMPUTECHANGE) {
+      SedComputeChange* scc = static_cast<SedComputeChange*>(sc);
+      addLocalVariablesToComputeChange(scc, model);
+    }
+  }
+}
+
+void PhrasedModel::addLocalVariablesToComputeChange(SedComputeChange* scc, SedModel* model) const
+{
+  const ASTNode* astn = scc->getMath();
+  set<string> vars;
+  getVariablesFromASTNode(astn, vars);
+  for (set<string>::iterator v=vars.begin(); v != vars.end(); v++) {
+    vector<string> idvec;
+    idvec.push_back(*v);
+    string xpath = getElementXPathFromId(&idvec, getSBMLDocument());
+    if (xpath.empty()) {
+      //We need a local variable for it.  Check to see if one exists:
+      SedParameter* sp = scc->createParameter();
+      sp->setId(*v);
+      for (size_t c=0; c<m_changes.size(); c++) {
+        const ModelChange* mc = &m_changes[c];
+        if (mc->getType() == ctype_val_assignment && mc->getVariable()[0] == *v) {
+          //It actually exists!
+          sp->setValue(mc->getValues()[0]);
+          continue;
+        }
+      }
+    }
+    else {
+      SedVariable* sv = scc->createVariable();
+      sv->setModelReference(m_id);
+      sv->setTarget(xpath);
+      sv->setId(*v);
+    }
   }
 }
 
@@ -261,6 +310,23 @@ std::string PhrasedModel::getURIFromLanguage(language lang) const
   }
   assert(false); //uncaught enum
   return "urn:sedml:language:xml";
+}
+
+bool PhrasedModel::changeListIsInappropriate(stringstream& err)
+{
+  for (size_t c=0; c<m_changes.size(); c++) {
+    switch (m_changes[c].getType()) {
+    case ctype_val_assignment:
+    case ctype_formula_assignment:
+      break;
+    case ctype_loop_uniformLinear:
+    case ctype_loop_uniformLog:
+    case ctype_loop_vector:
+      err << "The model change '" << m_changes[c].getPhraSEDML() << "' is not the type of change that can be used on a single model.  These changes must be used in repeated tasks, instead.";
+      return true;
+    }
+  }
+  return false;
 }
 
 bool PhrasedModel::finalize()

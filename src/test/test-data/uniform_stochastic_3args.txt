@@ -1,0 +1,3 @@
+//Created by libphrasedml v0.1
+// Simulations
+sim1 = simulate uniform_stochastic(0, 10, 1000)

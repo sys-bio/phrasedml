@@ -4,6 +4,7 @@
 #include "stringx.h"
 #include "registry.h"
 #include "sbml/SBMLDocument.h"
+#include "model.h"
 
 using namespace std;
 extern bool CaselessStrCmp(const string& lhs, const string& rhs);
@@ -34,39 +35,82 @@ string getStringFrom(const vector<const string*>* name, string cc)
   return retval;
 }
 
-string getStringFrom(const vector<string>* name)
+string getStringFrom(const vector<string>* name, string cc)
 {
   string retval = "";
   for (size_t nn=0; nn<name->size(); nn++) {
     if (nn>0) {
-      retval += " ";
+      retval += cc;
     }
     retval += (*name)[nn];
   }
   return retval;
 }
 
-string getIdFromXPath(const string& xpath)
+string getStringFrom(const vector<double>& numbers)
 {
+  stringstream ret;
+  for (size_t nn=0; nn<numbers.size(); nn++) {
+    if (nn>0) {
+      ret << ", ";
+    }
+    ret << numbers[nn];
+  }
+  return ret.str();
+}
+
+vector<string> getIdFromXPath(const string& xpath)
+{
+  vector<string> ret;
   size_t atid = xpath.find("[@id=");
   size_t idend = xpath.find("]", atid);
-  string ret = xpath;
-  ret = ret.substr(atid+6, idend-atid-7);
+  while (atid != string::npos) {
+    string name = xpath;
+    name = name.substr(atid+6, idend-atid-7);
+    ret.push_back(name);
+    atid = xpath.find("[@id=", idend);
+    idend = xpath.find("]", atid);
+  }
   return ret;
 }
 
-string getValueXPathFromId(const string& id, SBMLDocument* doc)
+string getValueXPathFromId(const vector<string>* id, const SBMLDocument* doc)
 {
-  const SBase* ref = doc->getElementBySId(id);
-  if (ref==NULL) {
-    g_registry.setError("No such id in SBML document: '" + id + "'.", 0);
+  if (id == NULL || id->size()==0) {
+    g_registry.setError("The ID of the model element is missing entirely.", 0);
     return "";
+  }
+  string lastid = (*id)[id->size()-1];
+  SBMLDocument* vdoc = const_cast<SBMLDocument*>(doc);
+  const SBase* ref = vdoc->getElementBySId(lastid);
+  if (ref==NULL) {
+    g_registry.setError("No such id in SBML document: '" + getStringFrom(id, ".") + "'.", 0);
+    return "";
+  }
+  const SBase* parent = ref;
+  for (size_t n = id->size()-1; n != 0; n--) {
+    string parentid = (*id)[n-1];
+    bool foundparent = false;
+    parent = ref->getParentSBMLObject();
+    while (parent != NULL && parent->getTypeCode() != SBML_DOCUMENT) {
+      if (parent->getId() == parentid) {
+        foundparent = true;
+        parent = NULL;
+      }
+      else {
+        parent = parent->getParentSBMLObject();
+      }
+    }
+    if (!foundparent) {
+      g_registry.setError("No such id in SBML document: '" + getStringFrom(id, ".") + "'.", 0);
+      return "";
+    }
   }
   const Species* species;
   string ret = "/sbml:sbml/sbml:model/";
   switch(ref->getTypeCode()) {
   case SBML_SPECIES:
-    ret += "listOfSpecies/species[@id='" + id + "']/@";
+    ret += "listOfSpecies/species[@id='" + lastid + "']/@";
     species = static_cast<const Species*>(ref);
     if (species->isSetInitialAmount()) {
       ret += "initialAmount";
@@ -80,23 +124,76 @@ string getValueXPathFromId(const string& id, SBMLDocument* doc)
     }
     break;
   case SBML_COMPARTMENT:
-    ret += "listOfCompartments/compartment[@id='" + id + "']/@size";
+    ret += "listOfCompartments/compartment[@id='" + lastid + "']/@size";
     break;
   case SBML_PARAMETER:
-    ret += "listOfParameters/parameter[@id='" + id + "']/@value";
+    ret += "listOfParameters/parameter[@id='" + lastid + "']/@value";
     break;
   case SBML_LOCAL_PARAMETER:
     ret += "listOfReactions/reaction[@id='";
     ret += ref->getAncestorOfType(SBML_REACTION)->getId();
-    ret += "']/kineticLaw/listOfLocalParameters/localParameter[@id='" + id + "']/@value";
+    ret += "']/kineticLaw/listOfLocalParameters/localParameter[@id='" + lastid + "']/@value";
   default:
     //Set a warning? LS DEBUG
-    ret += "/descendant::*[@id='" + id + "']/@value";
+    ret += "/descendant::*[@id='" + lastid + "']/@value";
     break;
   }
   return ret;
 
 }
+
+string getElementXPathFromId(const vector<string>* id, const SBMLDocument* doc)
+{
+  if (id == NULL || id->size()==0) {
+    g_registry.setError("The ID of the model element is missing entirely.", 0);
+    return "";
+  }
+  string lastid = (*id)[id->size()-1];
+  SBMLDocument* vdoc = const_cast<SBMLDocument*>(doc);
+  const SBase* ref = vdoc->getElementBySId(lastid);
+  if (ref==NULL) {
+    g_registry.setError("No such id in SBML document: '" + getStringFrom(id, ".") + "'.", 0);
+    return "";
+  }
+  const SBase* parent = ref;
+  for (size_t n = id->size()-1; n != 0; n--) {
+    string parentid = (*id)[n-1];
+    bool foundparent = false;
+    parent = ref->getParentSBMLObject();
+    while (parent != NULL && parent->getTypeCode() != SBML_DOCUMENT) {
+      if (parent->getId() == parentid) {
+        foundparent = true;
+        parent = NULL;
+      }
+      else {
+        parent = parent->getParentSBMLObject();
+      }
+    }
+    if (!foundparent) {
+      g_registry.setError("No such id in SBML document: '" + getStringFrom(id, ".") + "'.", 0);
+      return "";
+    }
+  }
+  string ret = "/sbml:sbml/sbml:model/descendant::*[@id='" + (*id)[0] + "']";
+  for (size_t n=1; n<id->size(); n++) {
+    ret += "/descendant::*[@id='" + (*id)[n] + "']";
+  }
+  return ret;
+}
+
+void getElementXPathFromId(const string& id, set<PhrasedModel*> docs, string& xpath, string& modelref)
+{
+  vector<string> varid;
+  varid.push_back(id);
+  for (set<PhrasedModel*>::iterator d=docs.begin(); d != docs.end(); d++) {
+    xpath = getElementXPathFromId(&varid, (*d)->getSBMLDocument());
+    if (xpath != "") {
+      modelref = (*d)->getId();
+      return;
+    }
+  }
+}
+
 
 bool IsReal(const string& src)
 {
@@ -149,4 +246,3 @@ bool CaselessStrCmp(const string& lhs, const string& rhs)
   return true;
 
 } /* CaselessStrCmp */
-
