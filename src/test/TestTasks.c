@@ -67,6 +67,31 @@ START_TEST (repeatedtask_alltypes2)
 }
 END_TEST
 
+START_TEST (repeatedtask_assignment_with_range)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for loop in [0,1,5], S1 = loop+2", "repeatedtask_assignment_with_range");
+}
+END_TEST
+
+
+START_TEST (repeatedtask_assignment_with_range_and_model_variable)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for loop in [0,1,5], S1 = loop+p1+2", "repeatedtask_assignment_with_range_and_model_variable");
+}
+END_TEST
+
+START_TEST (repeatedtask_assignment_with_range_and_local_variable)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for loop in [0,1,5], S1 = loop+x+2, x=5.5", "repeatedtask_assignment_with_range_and_local_variable");
+}
+END_TEST
+
+START_TEST (repeatedtask_assignment_with_all_variables)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for loop in [0,1,5], S1 = loop+x+p1+2, x=5.5", "repeatedtask_assignment_with_all_variables");
+}
+END_TEST
+
 
 Suite *
 create_suite_Tasks (void)
@@ -74,7 +99,7 @@ create_suite_Tasks (void)
   Suite *suite = suite_create("phraSED-ML Tasks");
   TCase *tcase = tcase_create("phraSED-ML Tasks");
 
-  tcase_add_test( tcase, repeatedtask_alltypes2);
+  tcase_add_test( tcase, repeatedtask_assignment_with_all_variables);
 
   tcase_add_test( tcase, task);
   tcase_add_test( tcase, repeatedtask_uniform);
@@ -83,6 +108,10 @@ create_suite_Tasks (void)
   tcase_add_test( tcase, repeatedtask_two_uniform);
   tcase_add_test( tcase, repeatedtask_vector);
   tcase_add_test( tcase, repeatedtask_alltypes);
+  tcase_add_test( tcase, repeatedtask_alltypes2);
+  tcase_add_test( tcase, repeatedtask_assignment_with_range);
+  tcase_add_test( tcase, repeatedtask_assignment_with_range_and_model_variable);
+  tcase_add_test( tcase, repeatedtask_assignment_with_range_and_local_variable);
 
   suite_add_tcase(suite, tcase);
 
