@@ -378,6 +378,7 @@ file(GLOB LIBPHRASEDML_SOURCES
           ${PHRASEDML_SRC_DIR}model.cpp
           ${PHRASEDML_SRC_DIR}modelChange.cpp
           ${PHRASEDML_SRC_DIR}oneStep.cpp
+          ${PHRASEDML_SRC_DIR}output.cpp
           ${PHRASEDML_SRC_DIR}phrasedml.tab.cpp
           ${PHRASEDML_SRC_DIR}phrasedml_api.cpp
           ${PHRASEDML_SRC_DIR}registry.cpp
@@ -397,6 +398,7 @@ file(GLOB LIBPHRASEDML_HEADERS
           ${PHRASEDML_SRC_DIR}modelChange.h
           ${PHRASEDML_SRC_DIR}oneStep.h
           ${PHRASEDML_SRC_DIR}phrasedml_api.h
+          ${PHRASEDML_SRC_DIR}output.h
           ${PHRASEDML_SRC_DIR}registry.h
           ${PHRASEDML_SRC_DIR}repeatedTask.h
           ${PHRASEDML_SRC_DIR}sbmlx.h

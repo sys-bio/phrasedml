@@ -40,7 +40,7 @@
 #include "registry.h"
 //#include "module.h"
 //#include "unitdef.h"
-//#include "stringx.h"
+#include "stringx.h"
 
   class ModelChange;
 
@@ -57,6 +57,7 @@
   const string* word;
   vector<const string*>* words;
   vector<string>* wordstr;
+  vector<vector<string>*>* wordstrvec;
   vector<vector<const string*>* >* nameslist;
   double number;
   vector<double>* nums;
@@ -66,7 +67,7 @@
 %type   <character>     mathThing "mathematical symbol"
 %type   <words>         varOrKeyword 
 %type   <wordstr>       formula commaformula
-%type   <nameslist>     plotlist
+%type   <wordstrvec>    vslist
 %type   <nums>          numlist
 %type   <number>        number
 %type   <changelist>    changelist
@@ -136,7 +137,7 @@ numlist:        /* empty */ {$$ = new vector<double>;}
         |       numlist ',' number {$$ = $1; $$->push_back($3);}
         ;
 
-plot:           varOrKeyword varOrKeyword varOrKeyword plotlist {if (g_registry.addPlot($1, $2, $3, $4)) YYABORT;}
+plot:           varOrKeyword vslist {if (g_registry.addOutput($1, $2)) YYABORT;}
         ;
 
 name:           varOrKeyword varOrKeyword TEXTSTRING {if (g_registry.setName($1, $2, $3)) YYABORT;}
@@ -146,18 +147,22 @@ number:         NUM {$$ = $1;}
         |       '-' NUM {$$ = -$2;}
         ;
 
-plotlist:       /* empty */ {$$ = new vector<vector<const string*>*>;}
-        |       plotlist varOrKeyword {$$ = $1; $$->push_back($2);}
-        |       plotlist ',' varOrKeyword {$$ = $1; $$->push_back($3);}
-        ;
-
 taskslist:      varOrKeyword {$$ = new vector<vector<const string*>*>; $$->push_back($1);}
         |       taskslist ',' varOrKeyword {$$ = $1; $$->push_back($3);}
         ;
 
-formula:        /* empty */ {$$ = new vector<string>(); }
-        |       formula PHRASEWORD {$$ = $1; $1->push_back(*$2); }
+vslist:         formula {$$ = new vector<vector<string>* >; $$->push_back($1);}
+        |       vslist ',' formula {$$ = $1; $$->push_back($3);}
+        ;
+
+formula:        varOrKeyword {$$ = new vector<string>(); $$->push_back(getStringFrom($1, "_____")); }
+        |       NUM {$$ = new vector<string>(); $$->push_back(g_registry.ftoa($1)); }
+        |       '(' formula ')' {$$ = $2; $$->insert($$->begin(), "("); $$->push_back(")"); }
+        |       '-' {$$ = new vector<string>(); $$->push_back("-"); }
+        |       '!' {$$ = new vector<string>(); $$->push_back("!"); }
+        |       formula varOrKeyword {$$ = $1; $$->push_back(getStringFrom($2, "_____")); }
         |       formula NUM  {$$ = $1; $1->push_back(g_registry.ftoa($2)); }
+        |       formula '(' ')' {$$ = $1; $$->push_back("()");}
         |       formula '(' commaformula ')'
                 {
                   $$ = $1;
@@ -169,7 +174,6 @@ formula:        /* empty */ {$$ = new vector<string>(); }
         |       formula mathThing {$$ = $1; string mt; mt.push_back($2); $1->push_back(mt); }
         |       formula '&' '&' {$$ = $1; $1->push_back("&&"); }
         |       formula '|' '|' {$$ = $1; $1->push_back("||"); }
-        |       formula '.' {$$ = $1; $1->push_back("."); }
         |       formula '[' numlist ']'
                 {
                   $$ = $1;

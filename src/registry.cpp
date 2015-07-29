@@ -13,6 +13,7 @@
 #include "task.h"
 #include "uniform.h"
 #include "oneStep.h"
+#include "output.h"
 
 #include "sedml\SedDocument.h"
 extern char* getCharStar(const char* orig);
@@ -36,10 +37,12 @@ Registry::Registry()
   , m_simulations()
   , m_tasks()
   , m_repeatedTasks()
+  , m_outputs()
   , m_l3ps()
   , input(NULL)
 {
   m_l3ps.setParseCollapseMinus(true);
+  m_l3ps.setParseLog(L3P_PARSE_LOG_AS_LOG10);
 }
 
 Registry::~Registry()
@@ -413,18 +416,41 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
   return false;
 }
 
-
-
-
 //phraSED-ML lines that are clearly plots:
-bool Registry::addPlot(vector<const string*>* plot, vector<const string*>* name, vector<const string*>* vs,  vector<vector<const string*>*>* plotlist)
+bool Registry::addOutput(vector<const string*>* plot,  vector<vector<string>*>* plotlist)
 {
+  if (plotlist==NULL || plotlist->size()==0) {
+    setError("Error in addOutput:  no plotlist given.", phrased_yylloc_last_line-1);
+    return true;
+  }
+  string plotstr = getStringFrom(plot);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << plotstr << " ";
+  for (size_t pl=0; pl<plotlist->size(); pl++) {
+    if (pl>0) {
+      err << ", ";
+    }
+    err << getStringFrom((*plotlist)[pl], " ");
+  }
+  err << "'): ";
 
-  setError("Error in addPlot.", phrased_yylloc_last_line-1);
-  return true;
+  if (CaselessStrCmp(plotstr,"plot")) {
+    if (addPlot(plotlist, err)) {
+      return true;
+    }
+  }
+  else if (CaselessStrCmp(plotstr,"report")) {
+    if (addReport(plotlist, err)) {
+      return true;
+    }
+  }
+  else {
+    err << "lines of this type are only valid if the first word is 'plot' or 'report', such as 'plot task1.time vs task1.S1' or 'report task1.time, task1.S1, task1.S2'.";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    return true;
+  }
+  return false;
 }
-
-
 
 
 //ChangeList addition
@@ -644,6 +670,16 @@ char* Registry::getPhraSEDML() const
     }
   }
 
+  for (size_t t=0; t<m_outputs.size(); t++) {
+    if (t==0) {
+      retval += "\n// Outputs\n";
+    }
+    retval += m_outputs[t].getPhraSEDML();
+    if (m_outputs[t].getName() != "") {
+      names += m_outputs[t].getId() + " is \"" + m_outputs[t].getName() + "\"\n";
+    }
+  }
+
   if (names != "") {
     retval += "\n// Names\n" + names + "\n";
   }
@@ -744,6 +780,23 @@ PhrasedTask* Registry::getTask(string taskid)
   return NULL;
 }
 
+size_t Registry::getNumTasks() const
+{
+  return m_tasks.size() + m_repeatedTasks.size();
+}
+
+const PhrasedTask* Registry::getTask(size_t num) const
+{
+  if (num >= m_tasks.size()) {
+    num = num - m_tasks.size();
+    if (num >= m_repeatedTasks.size()) {
+      return NULL;
+    }
+    return &m_repeatedTasks[num];
+  }
+  return &m_tasks[num];
+}
+
 void Registry::createSEDML()
 {
   delete m_sedml;
@@ -759,6 +812,9 @@ void Registry::createSEDML()
   }
   for (size_t rt=0; rt<m_repeatedTasks.size(); rt++) {
     m_repeatedTasks[rt].addRepeatedTaskToSEDML(m_sedml);
+  }
+  for (size_t rt=0; rt<m_outputs.size(); rt++) {
+    m_outputs[rt].addOutputToSEDML(m_sedml);
   }
 }
 
@@ -784,6 +840,20 @@ bool Registry::finalize()
     if (m_repeatedTasks[t].finalize()) {
       return true;
     }
+  }
+  for (size_t o=0; o<m_outputs.size(); o++) {
+    if (m_outputs[o].finalize()) {
+      return true;
+    }
+    stringstream id;
+    if (m_outputs[o].isPlot()) {
+      id << "plot";
+    }
+    else {
+      id << "report";
+    }
+    id << "_" << o;
+    m_outputs[o].setId(id.str());
   }
 
   return false;
@@ -867,6 +937,11 @@ bool Registry::parseSEDML()
       return true;
     }
   }
+  for (unsigned long out=0; out<m_sedml->getNumOutputs(); out++) {
+    SedOutput* output = m_sedml->getOutput(out);
+    PhrasedOutput phrasedout(output, m_sedml);
+    m_outputs.push_back(phrasedout);
+  }
   return finalize();
 }
 
@@ -934,6 +1009,7 @@ void Registry::clearAll()
   m_simulations.clear();
   m_tasks.clear();
   m_repeatedTasks.clear();
+  m_outputs.clear();
 }
 
 void Registry::clearSEDML()
@@ -953,3 +1029,146 @@ bool Registry::file_exists (const string& filename)
   return stat(filename.c_str(), &buf) == 0;
 }
 
+bool Registry::addASTToCurve(const vector<string>* x, vector<ASTNode*>& curve, stringstream& err)
+{
+  ASTNode* xAST = parseFormula(getStringFrom(x, " "));
+  if (xAST==NULL) {
+    err << "unable to parse the formula '" << getStringFrom(x, " ") << "' as a valid mathematical expression.";
+    setError(err.str(), phrased_yylloc_last_line-1);
+    return true;
+  }
+  curve.push_back(xAST);
+  return false;
+}
+
+ASTNode* Registry::parseFormula(const string& formula)
+{
+  ASTNode* ret = SBML_parseL3FormulaWithSettings(formula.c_str(), &m_l3ps);
+  return fixTime(ret);
+}
+
+ASTNode* Registry::fixTime(ASTNode* astn)
+{
+  if (astn==NULL) return NULL;
+  if (astn->getType() == AST_NAME_TIME) {
+    astn->setName("time");
+    astn->setType(AST_NAME);
+    astn->setDefinitionURL("");
+  }
+  for (size_t c=0; c<astn->getNumChildren(); c++) {
+    fixTime(astn->getChild(c));
+  }
+  return astn;
+}
+
+bool Registry::addPlot( vector<vector<string>*>* plotlist, stringstream& err)
+{
+  //Break up the plotlist vector if it has 'vs' in it
+  vector<string> x;
+  vector<string> y;
+  vector<string> z;
+  vector<ASTNode*> curve;
+  vector<vector<ASTNode*> > curves;
+  vector<string> thisoutput;
+  int axis = 0;
+  for (size_t pl=0; pl<plotlist->size(); pl++) {
+    vector<string>* elements = (*plotlist)[pl];
+    for (size_t e=0; e<elements->size(); e++) {
+      string element = (*elements)[e];
+      if (CaselessStrCmp(element, "vs")) {
+        if (axis==0) {
+          x = thisoutput;
+          axis++;
+        }
+        else if (axis==1) {
+          y = thisoutput;
+          axis++;
+        }
+        else if (axis==2) {
+          err << "can only create plots of two or three dimensions.  Use 'report' instead of 'plot' to output four-dimensional or higher data.";
+          setError(err.str(), phrased_yylloc_last_line-1);
+          return true;
+        }
+        thisoutput.clear();
+      }
+      else {
+        thisoutput.push_back(element);
+      }
+    }
+    if (x.empty()) {
+      err << "can only create plots of two or three dimensions, not one.  Use 'report' instead of 'plot' to output one-dimensional data, or use 'vs' to distinguish axes in 2D or 3D data ('plot S1 vs S2').";
+      setError(err.str(), phrased_yylloc_last_line-1);
+      return true;
+    }
+    else if (y.empty()) {
+      y = thisoutput;
+    }
+    else if (z.empty()) {
+      z = thisoutput;
+    }
+    if (addASTToCurve(&x, curve, err)) {
+      return true;
+    }
+    if (addASTToCurve(&y, curve, err)) {
+      return true;
+    }
+    if (!z.empty()) {
+      if (addASTToCurve(&z, curve, err)) {
+        return true;
+      }
+    }
+    curves.push_back(curve);
+    axis = 0;
+    y.clear();
+    z.clear();
+    thisoutput.clear();
+    curve.clear();
+  }
+  size_t size = curves[0].size();
+  for (size_t c=1; c<curves.size(); c++) {
+    if (size != curves[c].size()) {
+      err << "unable to create a single plot with both 2d and 3d data.  Create these plots separately, or adjust the dimensionality of the data.";
+      setError(err.str(), phrased_yylloc_last_line-1);
+      return true;
+    }
+  }
+  PhrasedOutput pout(curves);
+  m_outputs.push_back(pout);
+  return false;
+}
+
+bool Registry::addReport( vector<vector<string>*>* plotlist, stringstream& err)
+{
+  //For reports, we treat 'vs' and commas as exactly the same thing:  everything simply gets listed.
+  vector<vector<string> > outputs;
+  vector<string> thisoutput;
+  for (size_t pl=0; pl<plotlist->size(); pl++) {
+    vector<string>* elements = (*plotlist)[pl];
+    for (size_t e=0; e<elements->size(); e++) {
+      string element = (*elements)[e];
+      if (CaselessStrCmp(element, "vs")) {
+        outputs.push_back(thisoutput);
+        thisoutput.clear();
+      }
+      else {
+        thisoutput.push_back(element);
+      }
+    }
+    outputs.push_back(thisoutput);
+    thisoutput.clear();
+  }
+  vector<ASTNode*> outputASTs;
+  for (size_t i=0; i<outputs.size(); i++) {
+    string wholeoutput = getStringFrom(&(outputs[i]), " ");
+    ASTNode* astn = parseFormula(wholeoutput);
+    if (astn == NULL) {
+      err << "unable to parse the formula '" << wholeoutput << "' as a valid mathematical expression.";
+      setError(err.str(), phrased_yylloc_last_line-1);
+      return true;
+    }
+    outputASTs.push_back(astn);
+  }
+  PhrasedOutput pout(outputASTs);
+  m_outputs.push_back(pout);
+  return false;
+}

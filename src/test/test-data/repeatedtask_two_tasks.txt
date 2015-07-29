@@ -1,0 +1,6 @@
+mod1 = model "sbml_model.xml"
+sim1 = simulate uniform(0,10,100)
+sim2 = simulate uniform(0,100,100)
+task1 = run sim1 on mod1
+task2 = run sim2 on mod1
+task3 = repeat [task1, task2] for S1 in [0,1,5]

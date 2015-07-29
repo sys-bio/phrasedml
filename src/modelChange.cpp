@@ -51,7 +51,7 @@ ModelChange::ModelChange(vector<const string*>* name, std::vector<std::string>* 
     m_variable.push_back(*(*name)[n]);
   }
   m_formula = getStringFrom(formula, " ");
-  m_astnode = SBML_parseL3FormulaWithSettings(m_formula.c_str(), g_registry.getL3ParserSettings());
+  m_astnode = g_registry.parseFormula(m_formula);
   if (m_astnode->isNumber()) {
     m_values.push_back(m_astnode->getValue());
     delete m_astnode;
@@ -445,7 +445,7 @@ bool ModelChange::addModelChangeToSEDMLRepeatedTask(SedRepeatedTask* sedrt, vect
 bool ModelChange::setFormulaString(const std::string& formula)
 {
   m_formula = formula;
-  m_astnode = SBML_parseL3FormulaWithSettings(formula.c_str(), g_registry.getL3ParserSettings());
+  m_astnode = g_registry.parseFormula(formula);
   return (m_astnode == NULL);
 }
 

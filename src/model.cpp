@@ -149,7 +149,7 @@ void PhrasedModel::addModelToSEDML(SedDocument* sedml) const
 
 void PhrasedModel::addLocalVariablesToComputeChange(SedComputeChange* scc, SedModel* model) const
 {
-  const ASTNode* astn = scc->getMath();
+  ASTNode* astn = const_cast<ASTNode*>(scc->getMath());
   set<string> vars;
   getVariablesFromASTNode(astn, vars);
   for (set<string>::iterator v=vars.begin(); v != vars.end(); v++) {

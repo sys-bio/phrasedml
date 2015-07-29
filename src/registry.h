@@ -14,6 +14,7 @@ class PhrasedSimulation;
 class PhrasedTask;
 class PhrasedRepeatedTask;
 class ModelChange;
+class PhrasedOutput;
 
 class Registry
 {
@@ -27,10 +28,11 @@ private:
   std::string              m_workingDirectory;
 
   //The actual SEDML bits:
-  std::vector<PhrasedModel> m_models;
-  std::vector<PhrasedSimulation*> m_simulations;
-  std::vector<PhrasedTask> m_tasks;
+  std::vector<PhrasedModel>        m_models;
+  std::vector<PhrasedSimulation*>  m_simulations;
+  std::vector<PhrasedTask>         m_tasks;
   std::vector<PhrasedRepeatedTask> m_repeatedTasks;
+  std::vector<PhrasedOutput>       m_outputs;
 
   L3ParserSettings         m_l3ps;
 
@@ -56,6 +58,8 @@ public:
   PhrasedModel* getModel(std::string modid);
   const PhrasedSimulation* getSimulation(std::string simid) const;
   PhrasedSimulation* getSimulation(std::string simid);
+  size_t getNumTasks() const;
+  const PhrasedTask* getTask(size_t num) const;
   const PhrasedTask* getTask(std::string taskid) const;
   PhrasedTask* getTask(std::string taskid);
 
@@ -82,7 +86,7 @@ public:
 
 
   //phraSED-ML lines that are clearly plots:
-  bool addPlot(std::vector<const std::string*>* plot, std::vector<const std::string*>* name, std::vector<const std::string*>* vs,  std::vector<std::vector<const std::string*>*>* plotlist);
+  bool addOutput(std::vector<const std::string*>* plot, std::vector<std::vector<std::string>*>* plotlist);
 
   
   //ChangeList addition
@@ -102,6 +106,8 @@ public:
   const std::string* addWord(std::string word);
   void setWorkingDirectory(const char* directory);
   std::string getWorkingFilename(const std::string& filename);
+
+  ASTNode* parseFormula(const std::string& formula);
 
   //When we're done, make sure the whole thing is coherent.
   bool finalize();
@@ -127,7 +133,11 @@ private:
 
   void createSEDML();
   bool file_exists (const std::string& filename);
+  bool addASTToCurve(const std::vector<std::string>* x, std::vector<ASTNode*>& curve, std::stringstream& err);
+  bool addPlot(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err);
+  bool addReport(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err);
 
+  ASTNode* fixTime(ASTNode* astn);
 };
 
 extern Registry g_registry;

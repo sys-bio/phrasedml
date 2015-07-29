@@ -96,7 +96,7 @@ string PhrasedRepeatedTask::getPhraSEDML() const
 
 void PhrasedRepeatedTask::addLocalVariablesToSetValue(SedSetValue* ssv, SedRepeatedTask* srt) const
 {
-  const ASTNode* astn = ssv->getMath();
+  ASTNode* astn = const_cast<ASTNode*>(ssv->getMath());
   set<string> vars;
   getVariablesFromASTNode(astn, vars);
   for (set<string>::iterator v=vars.begin(); v != vars.end(); v++) {
@@ -159,6 +159,17 @@ void PhrasedRepeatedTask::addRepeatedTaskToSEDML(SedDocument* sedml) const
 bool PhrasedRepeatedTask::isRepeated() const
 {
   return true;
+}
+
+const ModelChange* PhrasedRepeatedTask::getModelChangeFor(std::string varname) const
+{
+  for (size_t mc=0; mc<m_changes.size(); mc++) {
+    vector<string> variable = m_changes[mc].getVariable();
+    if (variable.size() == 1 && varname == variable[0]) {
+      return &(m_changes[mc]);
+    }
+  }
+  return NULL;
 }
 
 bool PhrasedRepeatedTask::changeListIsInappropriate(stringstream& err)

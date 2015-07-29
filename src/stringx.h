@@ -8,11 +8,15 @@
 class SBMLDocument;
 class PhrasedModel;
 
+//String functions
 std::string SizeTToString(size_t num);
 std::string DoubleToString(double num);
 std::string getStringFrom(const std::vector<const std::string*>* name, std::string cc=".");
 std::string getStringFrom(const std::vector<std::string>* name, std::string cc=".");
 std::string getStringFrom(const std::vector<double>& numbers);
+std::vector<std::string> getStringVecFromDelimitedString(const std::string& var, std::string delimiter="_____");
+
+//Xpath functions
 std::vector<std::string> getIdFromXPath(const std::string& xpath);
 std::string getValueXPathFromId(const std::vector<std::string>* id, const SBMLDocument* doc);
 std::string getElementXPathFromId(const std::vector<std::string>* id, const SBMLDocument* doc);

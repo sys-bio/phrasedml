@@ -63,6 +63,10 @@ bool PhrasedTask::isRecursive(set<PhrasedTask*>& tasks)
   return false;
 }
 
+const ModelChange* PhrasedTask::getModelChangeFor(std::string varname) const
+{
+  return NULL;
+}
 
 bool PhrasedTask::finalize()
 {

@@ -92,6 +92,12 @@ START_TEST (repeatedtask_assignment_with_all_variables)
 }
 END_TEST
 
+START_TEST (repeatedtask_two_tasks)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\nsim2 = simulate uniform(0,100,100)\ntask1 = run sim1 on mod1\ntask2 = run sim2 on mod1\ntask3 = repeat [task1, task2] for S1 in [0,1,5]", "repeatedtask_two_tasks");
+}
+END_TEST
+
 
 Suite *
 create_suite_Tasks (void)
@@ -99,7 +105,7 @@ create_suite_Tasks (void)
   Suite *suite = suite_create("phraSED-ML Tasks");
   TCase *tcase = tcase_create("phraSED-ML Tasks");
 
-  tcase_add_test( tcase, repeatedtask_assignment_with_all_variables);
+  tcase_add_test( tcase, repeatedtask_two_tasks);
 
   tcase_add_test( tcase, task);
   tcase_add_test( tcase, repeatedtask_uniform);
@@ -112,6 +118,7 @@ create_suite_Tasks (void)
   tcase_add_test( tcase, repeatedtask_assignment_with_range);
   tcase_add_test( tcase, repeatedtask_assignment_with_range_and_model_variable);
   tcase_add_test( tcase, repeatedtask_assignment_with_range_and_local_variable);
+  tcase_add_test( tcase, repeatedtask_assignment_with_all_variables);
 
   suite_add_tcase(suite, tcase);
 

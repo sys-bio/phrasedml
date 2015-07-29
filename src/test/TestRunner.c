@@ -33,6 +33,10 @@
 
 #include <check.h>
 
+#ifdef _MSC_VER
+//#  define strcat _strcat
+//#  define getenv _dupenv_s
+#endif
 
 /**
  * Test suite creation function prototypes.
@@ -47,6 +51,7 @@ BEGIN_C_DECLS
 Suite *create_suite_Models(void);
 Suite *create_suite_Simulations(void);
 Suite *create_suite_Tasks(void);
+Suite *create_suite_Outputs(void);
 Suite *create_suite_Errors(void);
 /**
  * Global.
@@ -114,10 +119,12 @@ main (int argc, char* argv[])
   SRunner *runner = srunner_create( create_suite_Models() );
   //SRunner *runner = srunner_create( create_suite_Simulations() );
   //SRunner *runner = srunner_create( create_suite_Tasks() );
+  //SRunner *runner = srunner_create( create_suite_Outputs() );
   //SRunner *runner = srunner_create( create_suite_Errors() );
 
   srunner_add_suite( runner, create_suite_Simulations() );
   srunner_add_suite( runner, create_suite_Tasks() );
+  srunner_add_suite( runner, create_suite_Outputs() );
   srunner_add_suite( runner, create_suite_Errors() );
 
 

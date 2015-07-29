@@ -59,6 +59,23 @@ string getStringFrom(const vector<double>& numbers)
   return ret.str();
 }
 
+vector<string> getStringVecFromDelimitedString(const string& var, string delimiter)
+{
+  vector<string> ret;
+  size_t begin = 0;
+  size_t end = var.find(delimiter);
+  while (end != string::npos) {
+    string substr = var.substr(begin, end-begin);
+    ret.push_back(substr);
+    begin = end+5;
+    end = var.find(delimiter, begin);
+  }
+  string substr = var.substr(begin, end);
+  ret.push_back(substr);
+  return ret;
+}
+
+
 vector<string> getIdFromXPath(const string& xpath)
 {
   vector<string> ret;

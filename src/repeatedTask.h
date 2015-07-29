@@ -34,6 +34,8 @@ public:
   virtual std::string getPhraSEDML() const;
   virtual void addRepeatedTaskToSEDML(SedDocument* sedml) const;
 
+  virtual const ModelChange* getModelChangeFor(std::string varname) const;
+
   virtual bool changeListIsInappropriate(std::stringstream& err);
   virtual std::set<PhrasedModel*> getModels() const;
   virtual bool isRecursive(std::set<PhrasedTask*>& tasks);

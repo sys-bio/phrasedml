@@ -7,6 +7,6 @@
 
 class ASTNode;
 
-void getVariablesFromASTNode(const ASTNode* astn, std::set<std::string>& variables);
+void getVariablesFromASTNode(ASTNode* astn, std::set<std::string>& variables);
 
 #endif //SBMLX_h

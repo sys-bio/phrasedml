@@ -370,6 +370,20 @@ START_TEST (test_repeated_unknown_task)
 END_TEST
 
 
+START_TEST (test_repeated_unknown_multitasks)
+{
+  testError("task1 = repeat [task2, task3] for p1 in [3]", "Error in repeatedTask 'task1':  no such referenced task 'task2'.");
+}
+END_TEST
+
+
+START_TEST (test_repeated_unknown_multitasks2)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat [task1, task3] for p1 in [12]", "Error in repeatedTask 'task2':  no such referenced task 'task3'.");
+}
+END_TEST
+
+
 START_TEST (test_repeated_task_recursive)
 {
   testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = repeat task2 for p1 in [3]\ntask2 = repeat task1 for p1 in [12]", "Error in repeatedTask 'task1':  this task, or a task it references, is recursive, which is not allowed.");
@@ -405,14 +419,113 @@ START_TEST (test_repeated_task_duplicate_assignments2)
 END_TEST
 
 
+START_TEST (test_plot_wrongkey)
+{
+  testError("ploot S1 vs S2", "Unable to parse line 1 ('ploot S1 vs S2'): lines of this type are only valid if the first word is 'plot' or 'report', such as 'plot task1.time vs task1.S1' or 'report task1.time, task1.S1, task1.S2'.");
+}
+END_TEST
+
+
+START_TEST (test_plot_plot4d)
+{
+  testError("plot S1 vs S2 vs S3 vs S4", "Unable to parse line 1 ('plot S1 vs S2 vs S3 vs S4'): can only create plots of two or three dimensions.  Use 'report' instead of 'plot' to output four-dimensional or higher data.");
+}
+END_TEST
+
+
+START_TEST (test_plot_plot1d)
+{
+  testError("plot S1", "Unable to parse line 1 ('plot S1'): can only create plots of two or three dimensions, not one.  Use 'report' instead of 'plot' to output one-dimensional data, or use 'vs' to distinguish axes in 2D or 3D data ('plot S1 vs S2').");
+}
+END_TEST
+
+
+START_TEST (test_plot_invalid_math)
+{
+  testError("plot S1++ vs S2", "Unable to parse line 1 ('plot S1 + + vs S2'): unable to parse the formula 'S1 + +' as a valid mathematical expression.");
+}
+END_TEST
+
+
+START_TEST (test_plot_2d_and_3d)
+{
+  testError("plot S1 vs S2, S3 vs S4 vs S6", "Unable to parse line 1 ('plot S1 vs S2, S3 vs S4 vs S6'): unable to create a single plot with both 2d and 3d data.  Create these plots separately, or adjust the dimensionality of the data.");
+}
+END_TEST
+
+
+START_TEST (test_report_invalid_math)
+{
+  testError("report S1++, S2", "Unable to parse line 1 ('report S1 + +, S2'): unable to parse the formula 'S1 + +' as a valid mathematical expression.");
+}
+END_TEST
+
+
+START_TEST (test_plot_novar_1d)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot p1 vs nothing", "Error:  an output plot or report references variable 'nothing' which cannot be found in task 'task1's model 'mod1'.");
+}
+END_TEST
+
+
+START_TEST (test_plot_novar_2d)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot p1 vs task1.nothing", "Error:  an output plot or report references variable 'task1.nothing' which cannot be found in task 'task1's model 'mod1'.");
+}
+END_TEST
+
+
+START_TEST (test_plot_novar_2dv2)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot p1 vs mod1.nothing", "Error:  an output plot or report references variable 'mod1.nothing' which cannot be found in task 'task1's model 'mod1'.");
+}
+END_TEST
+
+
+START_TEST (test_plot_novar_3d)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot p1 vs task1.mod1.nothing", "Error:  an output plot or report references variable 'task1.mod1.nothing' which cannot be found in task 'task1's model 'mod1'.");
+}
+END_TEST
+
+
+START_TEST (test_plot_nomod_2d)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot p1 vs mod2.nothing", "Error:  an output plot or report references variable 'mod2.nothing' which cannot be found in task 'task1's model 'mod1'.");
+}
+END_TEST
+
+
+START_TEST (test_plot_nomod_3d)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot p1 vs task1.mod2.nothing", "Error:  an output plot or report references variable 'task1.mod2.nothing' which cannot be found in task 'task1's model 'mod1'.");
+}
+END_TEST
+
+
+
+START_TEST (test_plot_ambiguous_task)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1 with S1=3\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = run sim1 on mod2\ntask3 = repeat [task1, task2] for S3 in [0,3]\nplot p1 vs S1", "Error:  an output plot or report references variable 'S1' without referencing a valid task it came from (i.e. 'task1.S1').  This is only legal if there is exactly one defined task, but here, there are 3.");
+}
+END_TEST
+
+
+START_TEST (test_plot_ambiguous_model)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1 with S1=3\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = run sim1 on mod2\ntask3 = repeat [task1, task2] for S3 in [0,3]\nplot task3.p1 vs task3.S1", "Error:  an output plot or report references variable 'task3.S1' but there is no task subvariable named 'S1', either as a local variable for that task, or as a model variable that can be clearly mapped to a single model.  Variables in plot and report mathematics must be unambiguous, or defined clearly as 'task.model.varname'.");
+}
+END_TEST
+
+
 Suite *
 create_suite_Errors (void)
 {
   Suite *suite = suite_create("PhraSED-ML Errors");
   TCase *tcase = tcase_create("PhraSED-ML Errors");
 
-  tcase_add_test( tcase, test_repeated_task_duplicate_assignments);
-  tcase_add_test( tcase, test_repeated_task_duplicate_assignments2);
+  tcase_add_test( tcase, test_plot_ambiguous_task);
+  tcase_add_test( tcase, test_plot_ambiguous_model);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);
@@ -467,9 +580,25 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_repeated_task_unknown_function);
   tcase_add_test( tcase, test_repeated_task_no_loop);
   tcase_add_test( tcase, test_repeated_unknown_task);
+  tcase_add_test( tcase, test_repeated_unknown_multitasks);
+  tcase_add_test( tcase, test_repeated_unknown_multitasks2);
   tcase_add_test( tcase, test_repeated_task_recursive);
   tcase_add_test( tcase, test_repeated_task_recursive2);
   tcase_add_test( tcase, test_repeated_task_recursive3);
+  tcase_add_test( tcase, test_repeated_task_duplicate_assignments);
+  tcase_add_test( tcase, test_repeated_task_duplicate_assignments2);
+  tcase_add_test( tcase, test_plot_wrongkey);
+  tcase_add_test( tcase, test_plot_plot4d);
+  tcase_add_test( tcase, test_plot_plot1d);
+  tcase_add_test( tcase, test_plot_invalid_math);
+  tcase_add_test( tcase, test_report_invalid_math);
+  tcase_add_test( tcase, test_plot_2d_and_3d);
+  tcase_add_test( tcase, test_plot_novar_1d);
+  tcase_add_test( tcase, test_plot_novar_2d);
+  tcase_add_test( tcase, test_plot_novar_2dv2);
+  tcase_add_test( tcase, test_plot_novar_3d);
+  tcase_add_test( tcase, test_plot_nomod_2d);
+  tcase_add_test( tcase, test_plot_nomod_3d);
 
 
   suite_add_tcase(suite, tcase);
