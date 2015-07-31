@@ -618,7 +618,7 @@ void Registry::setWorkingDirectory(const char* directory)
 string Registry::getWorkingFilename(const string& filename)
 {
   if (file_exists(filename)) return filename;
-  string newfile = m_workingDirectory + filename;
+  string newfile = m_workingDirectory + "/" + filename;
   if (file_exists(newfile)) return newfile;
   return "";
 }

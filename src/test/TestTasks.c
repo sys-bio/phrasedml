@@ -37,6 +37,12 @@ START_TEST (repeatedtask_uniform_stoch)
 }
 END_TEST
 
+START_TEST (repeatedtask_uniform_stoch_reset)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform_stochastic(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for X in uniform(0,1,10), reset=true", "repeatedtask_uniform_stoch_reset");
+}
+END_TEST
+
 START_TEST (repeatedtask_uniform_plus_assignment)
 {
   compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform_stochastic(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for X in uniform(0,1,10), mod1.p1 = 12", "repeatedtask_uniform_plus_assignment");
@@ -105,7 +111,7 @@ create_suite_Tasks (void)
   Suite *suite = suite_create("phraSED-ML Tasks");
   TCase *tcase = tcase_create("phraSED-ML Tasks");
 
-  tcase_add_test( tcase, repeatedtask_two_tasks);
+  tcase_add_test( tcase, repeatedtask_uniform_stoch_reset);
 
   tcase_add_test( tcase, task);
   tcase_add_test( tcase, repeatedtask_uniform);
@@ -119,6 +125,7 @@ create_suite_Tasks (void)
   tcase_add_test( tcase, repeatedtask_assignment_with_range_and_model_variable);
   tcase_add_test( tcase, repeatedtask_assignment_with_range_and_local_variable);
   tcase_add_test( tcase, repeatedtask_assignment_with_all_variables);
+  tcase_add_test( tcase, repeatedtask_two_tasks);
 
   suite_add_tcase(suite, tcase);
 

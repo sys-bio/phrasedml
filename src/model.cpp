@@ -230,7 +230,7 @@ void PhrasedModel::processSource()
       }
       break;
     }
-    if (doc->getNumErrors(LIBSBML_SEV_ERROR) == 0 && doc->getNumErrors(LIBSBML_SEV_FATAL) == 0) {
+    if (doc->getNumErrors(LIBSBML_SEV_ERROR) != 0 || doc->getNumErrors(LIBSBML_SEV_FATAL) != 0) {
       g_registry.addWarning("The SBML model '" + m_source + "' has one or more validation errors, and may not be simulatable on all systems.");
     }
   }

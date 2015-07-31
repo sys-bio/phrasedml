@@ -10,7 +10,7 @@
   </listOfModels>
   <listOfTasks>
     <task id="task1" modelReference="mod1" simulationReference="sim1"/>
-    <repeatedTask id="task2" range="loop">
+    <repeatedTask id="task2" range="loop" resetModel="false">
       <listOfRanges>
         <vectorRange id="loop">
           <value> 0 </value>

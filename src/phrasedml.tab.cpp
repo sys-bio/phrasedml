@@ -2266,6 +2266,9 @@ int phrased_yylex(void)
     //Otherwise, it's a user-defined variable:
     phrased_yylval.word = g_registry.addWord(word);
     //cout << "\tRead word '" << word << "'." << endl;
+    if (word == "vs" && g_registry.input->peek() == '.') {
+      g_registry.input->get(cc);
+    }
     return PHRASEWORD;
   }
 

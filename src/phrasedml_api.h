@@ -27,7 +27,7 @@
 #define PHRASEDML_API_H
 
 #ifndef LIBPHRASEDML_VERSION_STRING //Should be defined in the makefile (from CMakeLists.txt)
-#define LIBPHRASEDML_VERSION_STRING "v0.1"
+#define LIBPHRASEDML_VERSION_STRING "v0.3 beta"
 #endif
 
 #include "libutil.h"
@@ -62,6 +62,11 @@ LIB_EXTERN char* convertString(const char* model);
 LIB_EXTERN char*  getLastError();
 
 /**
+ * When translating some other format to phraSEDML, elements that are unable to be translated are saved as warnings, retrievable with this function (returns NULL if no warnings present).
+ */
+LIB_EXTERN char*  getWarnings();
+
+/**
  * If a previous 'convert' call was successful, the library retains an internal representation of the SEDML and the PhraSEDML.  This call converts that representation to SEDML and returns the value, returning an empty string if no such model exists.
  */
 LIB_EXTERN char*  getLastSEDML();
@@ -70,11 +75,6 @@ LIB_EXTERN char*  getLastSEDML();
  * If a previous 'convert' call was successful, the library retains an internal representation of the SEDML and the PhraSEDML.  This call converts that representation to PhraSEDML and returns the value, returning an empty string if no such model exists.
  */
 LIB_EXTERN char*  getLastPhraSEDML();
-
-/**
- * When translating some other format to phraSEDML, elements that are unable to be translated are saved as warnings, retrievable with this function (returns NULL if no warnings present).
- */
-LIB_EXTERN char*  getWarnings();
 
 /**
  * Sets the working directory for phraSED-ML to look for referenced files.

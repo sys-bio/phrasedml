@@ -13,9 +13,6 @@
 #include <check.h>
 #include <iostream>
 
-#include "sbml/math/L3Parser.h"
-#include "sedml\SedDataGenerator.h"
-#include "sedml\SedDocument.h"
 #include "output.h"
 
 using namespace std;
@@ -78,6 +75,18 @@ START_TEST (report_log_formula)
 }
 END_TEST
 
+START_TEST (plot_basic_with_period)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot time vs. S1", "plot_basic_with_period");
+}
+END_TEST
+
+START_TEST (plot_two_plots)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot time vs S1, S2", "plot_two_plots");
+}
+END_TEST
+
 START_TEST (sedml_bug)
 {
   PhrasedOutput::testSedmlBug();
@@ -90,6 +99,7 @@ create_suite_Outputs (void)
   Suite *suite = suite_create("phraSED-ML Outputs");
   TCase *tcase = tcase_create("phraSED-ML Outputs");
 
+  tcase_add_test( tcase, plot_two_plots);
   //tcase_add_test( tcase, sedml_bug);
 
 
@@ -103,6 +113,7 @@ create_suite_Outputs (void)
   tcase_add_test( tcase, report_formula);
   tcase_add_test( tcase, plot3d_basic);
   tcase_add_test( tcase, plot3d_formula);
+  tcase_add_test( tcase, plot_basic_with_period);
 
   suite_add_tcase(suite, tcase);
 

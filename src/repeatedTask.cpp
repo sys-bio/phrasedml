@@ -20,6 +20,7 @@ PhrasedRepeatedTask::PhrasedRepeatedTask(std::string id, std::string task, vecto
   : PhrasedTask(id, "", "")
   , m_tasks()
   , m_changes(*changes)
+  , m_resetModel(false)
 {
   m_tasks.push_back(task);
 }
@@ -28,7 +29,11 @@ PhrasedRepeatedTask::PhrasedRepeatedTask(SedRepeatedTask* sedRepeatedTask)
   : PhrasedTask(sedRepeatedTask)
   , m_tasks()
   , m_changes()
+  , m_resetModel(false)
 {
+  if (sedRepeatedTask->isSetResetModel()) {
+    m_resetModel = sedRepeatedTask->getResetModel();
+  }
   for (unsigned long t=0; t<sedRepeatedTask->getNumSubTasks(); t++) {
     SedSubTask* sst = sedRepeatedTask->getSubTask(t);
     m_tasks.push_back(sst->getTask());
@@ -90,6 +95,9 @@ string PhrasedRepeatedTask::getPhraSEDML() const
     }
     ret += m_changes[c].getPhraSEDML();
   }
+  if (m_resetModel) {
+    ret += ", reset=true";
+  }
   ret += "\n";
   return ret;
 }
@@ -141,6 +149,7 @@ void PhrasedRepeatedTask::addRepeatedTaskToSEDML(SedDocument* sedml) const
   SedRepeatedTask* sedRepeatedTask = sedml->createRepeatedTask();
   sedRepeatedTask->setId(m_id);
   sedRepeatedTask->setName(m_name);
+  sedRepeatedTask->setResetModel(m_resetModel);
   for (size_t t=0; t<m_tasks.size(); t++) {
     SedSubTask* subtask = sedRepeatedTask->createSubTask();
     subtask->setOrder(t);
@@ -281,6 +290,27 @@ bool PhrasedRepeatedTask::finalize()
       g_registry.setError(err, 0);
       return true;
     }
+  }
+
+  //Check if one of the model changes is there to reset the model.
+  for (vector<ModelChange>::iterator change=m_changes.begin(); change != m_changes.end(); ) {
+    if (change->getType() == ctype_formula_assignment) {
+      vector<string> var = change->getVariable();
+      if (var.size()==1 && (CaselessStrCmp(var[0], "reset") || CaselessStrCmp(var[0], "resetModel"))) {
+        const ASTNode* astn = change->getASTNode();
+        if (astn && astn->getType() == AST_CONSTANT_TRUE) {
+          m_resetModel = true;
+          change = m_changes.erase(change);
+          continue;
+        }
+        else if (astn->getType() == AST_CONSTANT_FALSE) {
+          m_resetModel = false;
+          change = m_changes.erase(change);
+          continue;
+        }
+      }
+    }
+    change++;
   }
 
   //Collapse elements that are only there as placeholders:

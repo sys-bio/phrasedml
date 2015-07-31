@@ -1,0 +1,410 @@
+<!doctype html>
+<header>
+<img src="phrasedml_logo.png"/>
+	<h1>PhraSED-ML:  The Paraphrased Human-Readable Adaptation of SED-ML</h1>
+	
+<h3>Revision 3</h3>
+</header>
+<body>
+
+<h2>Overview</h2>
+<p>PhraSED-ML is designed to do for SED-ML what Antimony does for SBML:  provide a text-based environment to read, summarize, and create SED-ML files.  Like SED-ML, PhraSED-ML allows you to define models, simulations, tasks, and output.  A very simple (but complete) simulation can be encoded using the libphrasedml Python bindings as follows:</p>
+
+<code><pre>phrasedmlStr = '''
+  mod1 = model "sbml_model.xml"
+  sim1 = simulate uniform(0,10,100)
+  task1 = run sim1 on mod1
+  plot time vs S1
+'''</pre></code>
+
+<p>This can be translated to SED-ML with the 'translateString' function:</p>
+
+<code><pre>import phrasedml
+sedml = phrasedml.convertString(phrasedmlStr)</pre></code>
+
+<p>Eventually, tellurium functions will be created that will take an antimony and a phrasedml string, and perform the entire simulation (as defined in phrasedml) on the given model (as defined in antimony).
+</p>
+
+<p>For now, PhraSED-ML only allows manipulation of SBML files that it can find.  Future updates to PhraSED-ML may add support for unknown SBML files and/or CellML files.<br/><br/></p>
+
+<h3>Models</h3>
+
+Load models in with appropriate changes to be made prior to simulation.<br/>
+<blockquote>
+<code>model_id = <i>model</i> sources <i>with</i> changes</code></blockquote>
+
+<code>Sources</code>: Sources can currently point to local models or to other models defined in the phraSED-ML.<br/>
+<blockquote>
+<code>model1 = model "C:/The/path/to/the/model.xml"</code><br/>
+<code>model2 = model model1</code>
+</blockquote>
+
+<code>Changes</code>: PhraSED-ML supports a subset of all the possible XML-based changes that SED-ML allows.  You can (for now) change the initial value of an element to a single value or a formula.  This makes the ability to define a new model in terms of an old one more useful:<br/>
+
+<blockquote><code>model_id = <i>model</i> source <i>with</i> model_variable_id = formula, model_variable_id2 = formula2, ...</code></blockquote>
+
+For example:
+
+<blockquote>
+<code>model1 = model "C:/The/path/to/the/model.xml"</code><br/>
+<code>model2 = model model1 with S1=0.3, S2 = S1+4</code>
+</blockquote>
+
+You can even define local variables to use inside the formulas.  To do this, the local variable ID must not exist inside the model in question:
+
+<blockquote>
+<code>model1 = model "C:/The/path/to/the/model.xml"</code><br/>
+<code>model2 = model model1 with x = 4, S1 = x^2, S2 = x^4</code>
+</blockquote>
+
+Here, S1 and S2 are model variables, and 'x', since it does not exist in the model, is a local variable.
+
+<h3>Simulations</h3>
+
+<p>Supporting uniform time course, onestep, and steady state simulation, which will be distinguished based on the type of arg.</p>
+<blockquote>
+<code>sim_id = <i>simulate</i> simulation_type</code></blockquote>
+
+<code>Simulation_type 'uniform'</code>: A uniform time course simulation can either be regular ('<code>uniform</code>') or stochastic ('<code>uniform_stochastic</code>') and can have either three or four arguments:<br/>
+
+<blockquote>
+<code>uniform(<i>start</i>, <i>end</i>, <i>numberOfPoints</i>)</code><br/>
+<code>uniform(<i>initialTime</i>, <i>outputStartTime</i>, <i>end</i>, <i>numberOfPoints</i>)</code><br/>
+<code>uniform_stochastic(<i>start</i>, <i>end</i>, <i>numberOfPoints</i>)</code><br/>
+<code>uniform_stochastic(<i>initialTime</i>, <i>outputStartTime</i>, <i>end</i>, <i>numberOfPoints</i>)</code><br/>
+</blockquote>
+
+<blockquote>
+examples:
+</blockquote>
+
+<blockquote>
+<code>sim_uniform1 = simulate uniform(0, 10, 100)</code><br/>
+<code>sim_uniform2 = simulate uniform(0, 5, 10, 50)</code><br/>
+<code>stoch_uniform1 = simulate uniform_stochastic(0, 10, 100)</code><br/>
+<code>stoch_uniform2 = simulate uniform_stochastic(0, 5, 10, 50)</code><br/>
+</blockquote>
+
+<code>Simulation_type 'onestep'</code>: A single simulation step of a given time interval can be encoded using the 'onestep' simulation type.  This simulation type is typically used for repeated tasks (see below):<br/>
+
+<blockquote>
+<code>onestep(<i>time_interval</i>)</code><br/>
+</blockquote>
+
+<blockquote>
+examples:
+</blockquote>
+
+<blockquote>
+<code>sim_onestep = simulate onestep(0.5)</code><br/>
+</blockquote>
+
+
+<code>Simulation_type 'steadystate'</code>: A simulation to the steady state can be encoded using the 'steadystate' simulation type:<br/>
+
+<blockquote>
+<code>steadystate</code>
+</blockquote>
+
+<blockquote>
+examples:
+</blockquote>
+
+<blockquote>
+<code>sim_steady = simulate steadystate</code><br/>
+</blockquote>
+
+<br/>
+<h3>Tasks</h3>
+
+<p>Links models to simulations.</p>
+<blockquote>
+<code>task_id = <i>run</i> simulation_id <i>on</i> model_id</code></blockquote>
+
+<blockquote>
+example:
+</blockquote>
+
+<blockquote>
+<code>task1 = run sim1 on model1</code><br/>
+</blockquote>
+
+
+<br/>
+<h3>Repeated Tasks</h3>
+
+<p>Repeated task allows multiple simulations to be done by specifying loops.
+
+<blockquote>
+<code>repeatedtask_id = <i>repeat</i> task_id <i>for</i> target_id <i>in</i> repeat_type</code>
+</blockquote>
+
+The '<code>repeat_type</code>' may be an explicit vector or a uniform function (either log or linear).  Vectors are defined with numerical values in square brackets ('<code>[1, 3, 10]</code>'), and uniform functions are defined with three arguments: start, end, and number of points:
+
+<blockquote>
+<code>repeat1 = repeat task1 for S1 in [1, 3, 10] </code><br/>
+<code>repeat2 = repeat task1 for S2 in uniform(1, 10, 50) </code><br/>
+<code>repeat3 = repeat task1 for S3 in logUniform(1, 10, 20) </code><br/>
+</blockquote>
+
+
+In addition, several variations on this can be used, such as repeating multiple tasks at once:
+
+
+<blockquote>
+<code>repeatedtask_id = <i>repeat</i> [task_id1, task_id2, ...] <i>for</i> target_id <i>in</i> repeat_type</code>
+</blockquote>
+
+or declaring that other elements change at the same time:
+
+<blockquote>
+<code>repeatedtask_id = <i>repeat</i> task_id <i>for</i> target_id <i>in</i> repeat_type, target_id = repeat_type, ... </code><br/>
+<code>repeatedtask_id = <i>repeat</i> task_id <i>for</i> target_id <i>in</i> repeat_type, target_id = formula, ... </code><br/>
+</blockquote>
+
+or declaring that the model should be reset between repeats (particularly useful for stochastic tasks):
+
+<blockquote>
+<code>repeatedtask_id = <i>repeat</i> task_id <i>for</i> target_id <i>in</i> repeat_type, <i>repeat = true</i>, ...</code>
+</blockquote><br/>
+
+These variations may all be used in concert with one another, however they need to be mixed and matched.  The main loop can either be a model or a local variable, and used in other assignment formulas.  If there are multiple models in the tasks being repeated, they can be distinguished by using the dot notation for ID's, '<code>model_id.variable_id</code>':
+
+<blockquote>
+<code>repeat1 = repeat task1 for S1 in [1, 3, 5], S2 in uniform(0, 10, 3)</code><br/>
+<code>repeat2 = repeat [task1, task2] for X in uniform(0, 10, 100), mod1.S1 = X, mod2.S1 = X+3</code><br/>
+<code>repeat3 = repeat task1 for S2 in logUniform(0, 10, 3), reset=true</code><br/>
+</blockquote>
+<br/>
+
+<h3>Outputs</h3>
+
+<p>Plotting will start with <i>plot</i> notation followed by a x variable <i>vs</i> y variables (<i>vs</i> z variables). Each variable will be preceded by the task it is running on, separated with a dot, unless there is only one task/model, in which case the simple variable may be used instead.  For simulations with multiple tasks with multiple models, using the notation '<i>task_id.model_id.variable_id</i>' may be necessary.  Functions involving defined elements/attributes for x and y variables are supported..<br/>
+<blockquote>
+<code><i>plot</i> [task.x formula] <i>vs</i> [task.y1 formula], [task.y2 formula], ...</code></blockquote></p>
+
+<p>3D plots are also possible:
+
+<blockquote>
+<code><i>plot</i> [task.x formula] <i>vs</i> [task.y1 formula] <i>vs</i> [task.z1 formula], ...</code>
+</blockquote>
+</p>
+
+<p>Examples:<br/>
+
+<blockquote>
+<code>plot task1.time vs task1.S1, task1.S2</code><br/>
+<code>plot task2.time vs task2.S1/task2.compartment1, task2.S2/task2.compartment1</code><br/>
+<code>plot S1/S2 vs S3/S4</code><br/>
+<code>plot task1.time vs task1.S1, task2.time vs task2.S1 </code><br/>
+<code>plot task1.time vs task1.S1 vs task2.S1 </code><br/>
+</blockquote>
+
+If all you need is data output, use 'report' instead of plot.  Just use commas to delineate what to output:
+
+<blockquote>
+<code>report task1.time, task1.S1, task1.S2</code><br/>
+<code>report task2.time, task2.S1/task2.compartment1, task2.S2/task2.compartment1</code><br/>
+<code>report S1/S2, S3/S4</code><br/>
+<code>report task1.time, task1.S1, task2.time, task2.S1 </code><br/>
+<code>report task1.time, task1.S1, task2.S1 </code><br/>
+</blockquote>
+
+</p>
+
+<br/>
+<h3>API and Python bindings</h3>
+
+<p>
+The API for libphrasedml is relatively simple, and consists of only eight functions (seven for the Python bindings):
+</p>
+
+<code>
+convertString(string input)<br/>
+convertFile(string filename)
+</code>
+<blockquote>
+These are the main functions in the API.  Each takes phraSED-ML or SED-ML input, and outputs SED-ML or phraSED-ML, respectively.  If an error occurs, a blank string is returned.
+</blockquote>
+
+<br/>
+<code>
+getLastError()<br/>
+getWarnings()
+</code>
+<blockquote>
+When something goes wrong, these functions can be queried to help diagnose what happened.
+</blockquote>
+
+<br/>
+<code>
+setWorkingDirectory(string directory)<br/>
+</code>
+<blockquote>
+Both phraSED-ML and SED-ML accept relative file names for referenced models.  By default, models will be searched for in the working directory of the program.  By using this function, you can set a new working directory in which your models are stored.
+</blockquote>
+
+<br/>
+<code>
+getLastPhraSEDML()<br/>
+getLastSEDML()
+</code>
+<blockquote>
+These are mostly testing functions for round-tripping phraSED-ML or SED-ML.  If you use the 'convert' functions, above, these functions will give you the SED-ML or phraSED-ML versions of the input.
+</blockquote>
+
+<br/>
+<code>
+freeAll()<br/>
+</code>
+<blockquote>
+This function will free all the strings (char*'s) that the API has handed out at once.  This can only safely be called if the user has not freed any of them by hand.  It is not available in the Python API, which handles all memory management separately.
+</blockquote>
+
+
+<h2>Examples</h2>
+
+<h3>Le Loup Model</h3>
+
+<code><pre>phrasedmlStr = '''
+  model1 = model "urn:miriam:biomodels.db:BIOMD0000000021";
+  model2 = model model1 with V_mT = 0.28, V_dT = 4.8;
+  simulation1 = simulate uniform(0, 380, 1000);
+  task1 = run simulation1 on model1;
+  task2 = run simulation1 on model2;
+  plot task1.time vs task1.Mt;
+  plot task2.time vs task2.Mt;
+  plot task1.Cn vs task1.Mt;
+  plot task2.Cn vs task2.Mt;
+end
+'''</pre></code><br/>
+
+<h3>The IkappaB-NF-kappaB signaling module</h3>
+
+<code><pre>phrasedmlStr = '''
+  model1 = model "urn:miriam:biomodels.db:BIOMD0000000140";
+  simulation1 = simulate uniform(0, 2500, 1000);
+  task1 = run simulation1 on model1;
+  plot task1.time vs task1.Total_NFkBn, task1.Total_IkBbeta, task1.Total_IkBeps, task1.Total_IkBalpha;
+'''</pre></code><br/>
+
+<h3>Perturbation</h3>
+
+<code><pre>phrasedmlStr = '''
+  model1 = model "oscli.xml";
+  stepper = simulate onestep(0.1);
+  task0 = run stepper on model1;
+  task1 = repeat task0 for x in uniform(0, 10, 100), J0_v0 = piecewise(8, x<4, 0.1, 4<=x<6, 8));
+  plot task1.time vs task1.S1, task1.S2, task1.J0_v0;
+'''</pre></code><br/>
+
+<h3>Repeated stochastic simulation</h3>
+
+<code><pre>phrasedmlStr = '''
+  model1 = model "C:\borisejb.xml";
+  timecourse1 = simulate uniform(0, 4000, 1000);
+  task0 = run model1 with timecourse1;
+  task1 = repeat task0 for uniform(0, 10, 10) with reset;
+  plot task1.time vs task1.MAPK, task1.MAPK_P, task1.MAPK_PP, task1.MKK, task1.MKK_P, task1.MKKK, task1.MKKK_P;
+'''</pre></code><br/>
+
+<h3>1D time course parameter scan</h3>
+
+<code><pre>phrasedmlStr = '''
+  model1 = model "http://sourceforge.net/p/libsedml/code/119/tree/trunk/Samples/models/oscli.xml?format=raw";
+  timecourse1 = simulate uniform(0, 20, 1000);
+  task0 = run model1 with timecourse1;
+  task1 = repeat task0 for J0_v0 in vector([8, 4, 0.4]) with reset;
+  plot task1.time vs task1.S1, task1.S2;
+'''</pre></code><br/>
+
+<h3>2D steady state parameter scan</h3>
+
+<code><pre>phrasedmlStr = '''
+  model_3 = model Borisejb;
+  sim_repeat = simulate steadystate;
+  task_1 = run model_3 with sim_repeat;
+  repeatedtask_1 = repeat task_1 for J1_KK2 in vector([1, 5, 10, 50, 60, 70, 80, 90, 100]);
+  repeatedtask_2 = repeat repeatedtask_1 for J4_KK5 in uniform(1, 40, 100);
+  plot repeatedtask_2.J4_KK1 vs repeatedtask_2.MKK_1, repeatedtask_2.MKK_P_1;
+'''</pre></code>
+
+
+<p>Possible future enhancements:
+
+
+<h3>Uniform time course simulation using Antimony</h3>
+
+<code><pre>Model_00001_sbml_l3v1 = '''
+//Created by libAntimony v2.6.0
+model *case00001()
+  // Compartments and Species:
+  compartment compartment_;
+  species S1 in compartment_, S2 in compartment_;
+
+  // Reactions:
+  reaction1: S1 => S2; compartment_*k1*S1;
+
+  // Species initializations:
+  S1 = 0.00015/compartment_;
+  S1 has substance_per_volume;
+  S2 = 0;
+  S2 has substance_per_volume;
+
+  // Compartment initializations:
+  compartment_ = 1;
+  compartment_ has volume;
+
+  // Variable initializations:
+  k1 = 1;
+
+  // Other declarations:
+  const compartment_, k1;
+
+  // Unit definitions:
+  unit volume = litre;
+  unit substance = mole;
+  unit time_unit = time_unit;
+  unit substance_per_volume = mole / litre;
+end
+'''
+
+phrasedmlStr = '''
+  // list of models
+  model_1 = model Model_00001_sbml_l3v1;
+  
+  // type of simulations
+  sim_1 = simulate uniform(0, 5, 51);
+  
+  // list of tasks
+  task_1 = run model_1 with sim_1;
+  
+  // plotting
+  plot task_1.time vs task_1.S1/compartment_, task_1.S2/compartment_;
+  
+  // A simplified method of plotting
+  plot time vs S1/compartment_, S2/compartment_;
+'''
+
+import tellurium as te
+
+//The following code does not yet exist, but could.  It would need to write out the Antimony model as SBML internally
+te.execute(Model_00001_sbml_l3v1, phrasedmlStr)</pre></code><br/></p>
+
+
+
+<h3>More model changes</h3>
+<code>addXML = <i>model</i> source <i>with</i> <u>add</u> parameter V_mT = 0.7</code></blockquote>
+<blockquote>Change XML: Replace XML elements<br/>
+
+<code>changeXML = <i>model</i> source <i>with</i> <u>change</u> V_mT <u>to</u> V_mT_1 = 0.5, V_mT_2 = 0.3</code></blockquote>
+<blockquote>Remove XML: Delete specified XML elements or attributes<br/>
+
+<code>removexml = <i>model</i> source <i>with</i> <u>remove</u> J1, J2</code></blockquote>
+<blockquote>Compute change XML: Allows to compute change for numerical values of elements or attribute<br/>
+
+<blockquote>Add XML: Add new XML element as a child element of specified target<br/>
+
+
+
+</body>

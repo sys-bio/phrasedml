@@ -22,6 +22,7 @@ private:
 protected:
   std::vector<std::string> m_tasks;
   std::vector<ModelChange> m_changes;
+  bool m_resetModel;
 
 public:
 

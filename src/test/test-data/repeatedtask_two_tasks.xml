@@ -14,7 +14,7 @@
   <listOfTasks>
     <task id="task1" modelReference="mod1" simulationReference="sim1"/>
     <task id="task2" modelReference="mod1" simulationReference="sim2"/>
-    <repeatedTask id="task3" range="vector_for_S1">
+    <repeatedTask id="task3" range="vector_for_S1" resetModel="false">
       <listOfRanges>
         <vectorRange id="vector_for_S1">
           <value> 0 </value>

@@ -11,9 +11,9 @@ project(libphrasedml)
 # Set up version information.
 #
 SET(LIBPHRASEDML_VERSION_MAJOR 0)
-SET(LIBPHRASEDML_VERSION_MINOR 1)
+SET(LIBPHRASEDML_VERSION_MINOR 3)
 SET(LIBPHRASEDML_VERSION_PATCH "")
-SET(LIBPHRASEDML_VERSION_RELEASE "")
+SET(LIBPHRASEDML_VERSION_RELEASE "beta")
 
 
 ####################################################################
@@ -37,6 +37,8 @@ SET(CPACK_PACKAGE_VERSION_RELEASE "${LIBPHRASEDML_VERSION_RELEASE}")
 INCLUDE(CPack)
 
 option(BUILD_SHARED_LIBS  "Build shared library (Set to OFF to build static libraries)" ON)
+option(WITH_SWIG   "Regenerate SWIG-based language bindings." ON )
+option(WITH_PYTHON       "Generate Python language bindings." OFF)
 set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS are used), Debug, Release, RelWithDebInfo, MinSizeRel" )
 
 
@@ -46,7 +48,7 @@ set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, op
 #
 
 # which language bindings should be build
-option(WITH_STATIC_SEDML    "Use the static version of the libsedml library"      ON )
+    option(WITH_STATIC_SEDML    "Use the static version of the libsedml library"     ON )
     option(WITH_STATIC_SBML     "Use the static version of the libsbml library"      ON )
     OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat library."  OFF)
     OPTION(WITH_LIBSBML_LIBXML "Set if libsbml was compiled with a separate libxml library." ON)
@@ -410,23 +412,30 @@ file(GLOB LIBPHRASEDML_HEADERS
           ${PHRASEDML_SRC_DIR}variable.h
           )
 
+
 ##### Build the main library #####
-add_library(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_HEADERS} ${LIBPHRASEDML_SOURCES} ${LIBPHRASEDML_TRANSLATORS})
+add_library(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_HEADERS} ${LIBPHRASEDML_SOURCES})
 target_link_libraries(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_LIBS})
+    message(STATUS "  Target link libraries = ${LIBPHRASEDML_LIBS}")
 add_definitions(-DLIB_EXPORTS)
 install(TARGETS ${LIBPHRASEDML_LIBRARY} DESTINATION lib)
 install(FILES   ${LIBPHRASEDML_HEADERS} DESTINATION include)
 
+if (WIN32 AND NOT CYGWIN)
+    # don't decorate static library 
+    set_target_properties(${LIBPHRASEDML_LIBRARY} PROPERTIES COMPILE_DEFINITIONS "LIBLAX_STATIC=1;LIBSEDML_STATIC=1;LIBSBML_STATIC=1")
+endif(WIN32 AND NOT CYGWIN)
+
 if (NOT UNIX)
   add_definitions(-DWIN32 -DLIBSBML_EXPORTS -DLIBLAX_EXPORTS)
-#  if (WITH_PYTHON)
-#     INSTALL(TARGETS ${LIBPHRASEDML_LIBRARY} DESTINATION bindings/python/phrasedml )
-#  endif()
+  if (WITH_PYTHON)
+     INSTALL(TARGETS ${LIBPHRASEDML_LIBRARY} DESTINATION bindings/python/phrasedml )
+  endif()
 endif(NOT UNIX)
 
 
 ##### Build the static library #####
-add_library (${LIBPHRASEDML_LIBRARY}-static STATIC ${LIBPHRASEDML_SOURCES} )
+add_library (${LIBPHRASEDML_LIBRARY}-static STATIC ${LIBPHRASEDML_HEADERS} ${LIBPHRASEDML_SOURCES})
 
 if (WIN32 AND NOT CYGWIN)
     # don't decorate static library 
@@ -446,7 +455,7 @@ INSTALL(TARGETS ${LIBPHRASEDML_LIBRARY}-static
 # Build the bindings.
 #
 
-#add_subdirectory(src/bindings)
+add_subdirectory(src/bindings)
 
 
 
