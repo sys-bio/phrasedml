@@ -8,7 +8,7 @@
 
 #include "registry.h"
 #include "simulation.h"
-#include "sedml\SedSimulation.h"
+#include "sedml/SedSimulation.h"
 
 using namespace std;
 

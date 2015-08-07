@@ -8,7 +8,7 @@
 
 #include "registry.h"
 #include "steadystate.h"
-#include "sedml\SedSteadyState.h"
+#include "sedml/SedSteadyState.h"
 
 using namespace std;
 

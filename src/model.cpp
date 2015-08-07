@@ -9,7 +9,7 @@
 #include "registry.h"
 #include "model.h"
 #include "modelChange.h"
-#include "sbml\SBMLTypes.h"
+#include "sbml/SBMLTypes.h"
 #include "sbmlx.h"
 #include "stringx.h"
 

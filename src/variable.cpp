@@ -9,7 +9,7 @@
 #include "variable.h"
 #include "registry.h"
 
-#include "sedml\SedBase.h"
+#include "sedml/SedBase.h"
 
 using namespace std;
 

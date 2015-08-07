@@ -15,7 +15,7 @@
 #include "oneStep.h"
 #include "output.h"
 
-#include "sedml\SedDocument.h"
+#include "sedml/SedDocument.h"
 extern char* getCharStar(const char* orig);
 extern int phrased_yyparse();
 extern int phrased_yylloc_last_line;

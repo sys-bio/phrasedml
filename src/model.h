@@ -6,7 +6,7 @@
 #include <strstream>
 
 #include "variable.h"
-#include "sbml\SBMLDocument.h"
+#include "sbml/SBMLDocument.h"
 #include "modelChange.h"
 
 enum language {

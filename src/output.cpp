@@ -5,11 +5,11 @@
 #include "task.h"
 #include "model.h"
 
-#include "sedml\SedPlot2D.h"
-#include "sedml\SedPlot3D.h"
-#include "sedml\SedDataGenerator.h"
-#include "sedml\SedOutput.h"
-#include "sedml\SedDocument.h"
+#include "sedml/SedPlot2D.h"
+#include "sedml/SedPlot3D.h"
+#include "sedml/SedDataGenerator.h"
+#include "sedml/SedOutput.h"
+#include "sedml/SedDocument.h"
 
 using namespace std;
 

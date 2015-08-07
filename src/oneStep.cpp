@@ -8,7 +8,7 @@
 
 #include "registry.h"
 #include "oneStep.h"
-#include "sedml\SedOneStep.h"
+#include "sedml/SedOneStep.h"
 
 using namespace std;
 

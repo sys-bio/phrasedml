@@ -7,7 +7,7 @@
 #include <map>
 
 #include "variable.h"
-#include "sbml\SBMLDocument.h"
+#include "sbml/SBMLDocument.h"
 #include "modelChange.h"
 
 class SedPlot;
@@ -23,7 +23,7 @@ private:
 
   bool m_isPlot;
   std::vector<std::vector<ASTNode*> > m_outputVariables;
-  std::map<std::string, std::vector<std::string>> m_variableMap;
+  std::map<std::string, std::vector<std::string> > m_variableMap;
 
 public:
 

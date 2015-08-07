@@ -8,7 +8,7 @@
 
 #include "registry.h"
 #include "uniform.h"
-#include "sedml\SedUniformTimeCourse.h"
+#include "sedml/SedUniformTimeCourse.h"
 
 using namespace std;
 

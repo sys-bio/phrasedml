@@ -41,6 +41,7 @@
 //#include "module.h"
 //#include "unitdef.h"
 #include "stringx.h"
+#include "modelChange.h"
 
   class ModelChange;
 

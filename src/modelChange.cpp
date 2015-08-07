@@ -12,13 +12,13 @@
 #include "stringx.h"
 #include "task.h"
 
-#include "sedml\SedChange.h"
-#include "sedml\SedChangeAttribute.h"
-#include "sedml\SedSetValue.h"
-#include "sedml\SedDocument.h"
+#include "sedml/SedChange.h"
+#include "sedml/SedChangeAttribute.h"
+#include "sedml/SedSetValue.h"
+#include "sedml/SedDocument.h"
 
-#include "sbml\math\L3Parser.h"
-#include "sbml\math\L3FormulaFormatter.h"
+#include "sbml/math/L3Parser.h"
+#include "sbml/math/L3FormulaFormatter.h"
 
 using namespace std;
 

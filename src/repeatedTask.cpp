@@ -10,7 +10,7 @@
 #include "repeatedTask.h"
 #include "stringx.h"
 #include "sbmlx.h"
-#include "sedml\SedRepeatedTask.h"
+#include "sedml/SedRepeatedTask.h"
 
 using namespace std;
 
@@ -286,7 +286,8 @@ bool PhrasedRepeatedTask::finalize()
   set<vector<string> > changetargets;
   for (size_t c=0; c<m_changes.size(); c++) {
     if (changetargets.insert(m_changes[c].getVariable()).second == false) {
-      err += "the variable '" + getStringFrom(&m_changes[c].getVariable(), ".") + "' is defined multiple times.";
+      std::vector<std::string> v = m_changes[c].getVariable();
+      err += "the variable '" + getStringFrom(&v, ".") + "' is defined multiple times.";
       g_registry.setError(err, 0);
       return true;
     }

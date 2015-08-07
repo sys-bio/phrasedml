@@ -8,7 +8,7 @@
 
 #include "registry.h"
 #include "task.h"
-#include "sedml\SedTask.h"
+#include "sedml/SedTask.h"
 
 using namespace std;
 
