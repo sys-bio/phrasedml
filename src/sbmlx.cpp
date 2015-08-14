@@ -21,3 +21,16 @@ void getVariablesFromASTNode(ASTNode* astn, set<string>& variables)
   }
 }
 
+void replaceVariablesInASTNodeWith(ASTNode* astn, const map<string, string>& replacements)
+{
+  if (astn->getType() == AST_NAME) {
+    map<string, string>::const_iterator rep = replacements.find(astn->getName());
+    if (rep != replacements.end()) {
+      astn->setName(rep->second.c_str());
+    }
+  }
+  for (size_t c=0; c<astn->getNumChildren(); c++) {
+    replaceVariablesInASTNodeWith(astn->getChild(c), replacements);
+  }
+
+}

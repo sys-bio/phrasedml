@@ -37,8 +37,8 @@
   <listOfOutputs>
     <report id="report_0">
       <listOfDataSets>
-        <dataSet id="report_0_0_0_dataset" label="report_0_0_0" dataReference="report_0_0_0"/>
-        <dataSet id="report_0_0_1_dataset" label="report_0_0_1" dataReference="report_0_0_1"/>
+        <dataSet id="report_0_0_0_dataset" label="time" dataReference="report_0_0_0"/>
+        <dataSet id="report_0_0_1_dataset" label="S1/C1" dataReference="report_0_0_1"/>
       </listOfDataSets>
     </report>
   </listOfOutputs>

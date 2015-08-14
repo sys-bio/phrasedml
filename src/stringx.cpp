@@ -168,27 +168,30 @@ string getElementXPathFromId(const vector<string>* id, const SBMLDocument* doc)
   string lastid = (*id)[id->size()-1];
   SBMLDocument* vdoc = const_cast<SBMLDocument*>(doc);
   const SBase* ref = vdoc->getElementBySId(lastid);
-  if (ref==NULL) {
-    g_registry.setError("No such id in SBML document: '" + getStringFrom(id, ".") + "'.", 0);
-    return "";
-  }
-  const SBase* parent = ref;
-  for (size_t n = id->size()-1; n != 0; n--) {
-    string parentid = (*id)[n-1];
-    bool foundparent = false;
-    parent = ref->getParentSBMLObject();
-    while (parent != NULL && parent->getTypeCode() != SBML_DOCUMENT) {
-      if (parent->getId() == parentid) {
-        foundparent = true;
-        parent = NULL;
-      }
-      else {
-        parent = parent->getParentSBMLObject();
-      }
-    }
-    if (!foundparent) {
+  if (doc->getModel() != NULL) {
+    //We can error check.  Otherwise, we assume the model has the relevant ID.
+    if (ref==NULL) {
       g_registry.setError("No such id in SBML document: '" + getStringFrom(id, ".") + "'.", 0);
       return "";
+    }
+    const SBase* parent = ref;
+    for (size_t n = id->size()-1; n != 0; n--) {
+      string parentid = (*id)[n-1];
+      bool foundparent = false;
+      parent = ref->getParentSBMLObject();
+      while (parent != NULL && parent->getTypeCode() != SBML_DOCUMENT) {
+        if (parent->getId() == parentid) {
+          foundparent = true;
+          parent = NULL;
+        }
+        else {
+          parent = parent->getParentSBMLObject();
+        }
+      }
+      if (!foundparent) {
+        g_registry.setError("No such id in SBML document: '" + getStringFrom(id, ".") + "'.", 0);
+        return "";
+      }
     }
   }
   string ret = "/sbml:sbml/sbml:model/descendant::*[@id='" + (*id)[0] + "']";

@@ -14,6 +14,7 @@
 #include "uniform.h"
 #include "oneStep.h"
 #include "output.h"
+#include "sbmlx.h"
 
 #include "sedml/SedDocument.h"
 extern char* getCharStar(const char* orig);
@@ -33,6 +34,8 @@ Registry::Registry()
   , m_errorLine(0)
   , m_warnings()
   , m_sedml(NULL)
+  , m_workingDirectory()
+  , m_separator("_____")
   , m_models()
   , m_simulations()
   , m_tasks()
@@ -585,7 +588,30 @@ bool Registry::setName(vector<const string*>* id, vector<const string*>* is, con
       return false;
     }
   }
-
+  for (size_t s=0; s<m_simulations.size(); s++) {
+    if (m_simulations[s]->getId() == idstr) {
+      m_simulations[s]->setName(*name);
+      return false;
+    }
+  }
+  for (size_t t=0; t<m_tasks.size(); t++) {
+    if (m_tasks[t].getId() == idstr) {
+      m_tasks[t].setName(*name);
+      return false;
+    }
+  }
+  for (size_t rt=0; rt<m_repeatedTasks.size(); rt++) {
+    if (m_repeatedTasks[rt].getId() == idstr) {
+      m_repeatedTasks[rt].setName(*name);
+      return false;
+    }
+  }
+  for (size_t o=0; o<m_outputs.size(); o++) {
+    if (m_outputs[o].getId() == idstr) {
+      m_outputs[o].setName(*name);
+      return false;
+    }
+  }
   err << "Error in line " << phrased_yylloc_last_line-1 << ": no such id '" << idstr << "' exists to set its name.";
   setError(err.str(), phrased_yylloc_last_line-1);
   return true;
@@ -708,6 +734,11 @@ char* Registry::getSEDML() const
     replace = ret.find("&quot;");
   }
   return getCharStar(ret.c_str());
+}
+
+size_t Registry::getNumModels() const
+{
+  return m_models.size();
 }
 
 const PhrasedModel* Registry::getModel(string modid) const
@@ -1044,6 +1075,8 @@ bool Registry::addASTToCurve(const vector<string>* x, vector<ASTNode*>& curve, s
 ASTNode* Registry::parseFormula(const string& formula)
 {
   ASTNode* ret = SBML_parseL3FormulaWithSettings(formula.c_str(), &m_l3ps);
+  //set<string> variables;
+  //getVariablesFromASTNode(ret->deepCopy(), variables);
   return fixTime(ret);
 }
 

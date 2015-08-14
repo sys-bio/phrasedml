@@ -105,13 +105,20 @@ START_TEST (repeatedtask_two_tasks)
 END_TEST
 
 
+START_TEST (repeatedtask_3repeats)
+{
+  compareOriginalXMLTranslations("repeatedtask_3repeats");
+}
+END_TEST
+
+
 Suite *
 create_suite_Tasks (void)
 {
   Suite *suite = suite_create("phraSED-ML Tasks");
   TCase *tcase = tcase_create("phraSED-ML Tasks");
 
-  tcase_add_test( tcase, repeatedtask_uniform_stoch_reset);
+  tcase_add_test( tcase, repeatedtask_3repeats);
 
   tcase_add_test( tcase, task);
   tcase_add_test( tcase, repeatedtask_uniform);
@@ -126,6 +133,7 @@ create_suite_Tasks (void)
   tcase_add_test( tcase, repeatedtask_assignment_with_range_and_local_variable);
   tcase_add_test( tcase, repeatedtask_assignment_with_all_variables);
   tcase_add_test( tcase, repeatedtask_two_tasks);
+  tcase_add_test( tcase, repeatedtask_uniform_stoch_reset);
 
   suite_add_tcase(suite, tcase);
 

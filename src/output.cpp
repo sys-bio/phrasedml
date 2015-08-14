@@ -10,6 +10,7 @@
 #include "sedml/SedDataGenerator.h"
 #include "sedml/SedOutput.h"
 #include "sedml/SedDocument.h"
+#include "sedml/SedVariable.h"
 
 using namespace std;
 
@@ -43,6 +44,45 @@ ASTNode* getASTNodeFrom(SedDataGenerator* datagen, SedDocument* seddoc, bool isL
     newroot->addChild(astn);
     return newroot;
   }
+  //And now we need to fix the IDs so that they match the actual thing they point to.
+  map<string, string> dg2modvar;
+  for (unsigned long v=0; v<datagen->getNumVariables(); v++) {
+    SedVariable* var = datagen->getVariable(v);
+    string id = var->getId();
+    string task = var->getTaskReference();
+    string model = var->getModelReference();
+    vector<string> element;
+    if (var->isSetTarget()) {
+      element = getIdFromXPath(var->getTarget());
+    }
+    else if (var->isSetSymbol()) {
+      if (var->getSymbol() == "urn:sedml:symbol:time") {
+        element.push_back("time");
+      }
+      else {
+        g_registry.addWarning("Unknown variable symbol '" + var->getSymbol() + "'.");
+        element.push_back(id);
+      }
+    }
+    else {
+      g_registry.addWarning("Variable found without a symbol or a target: '" + id + "'.");
+      element.push_back(id);
+    }
+    if (!model.empty()) {
+      element.insert(element.begin(), model);
+    }
+    if (!task.empty()) {
+      element.insert(element.begin(), task);
+    }
+    string newid = getStringFrom(&element, g_registry.getSeparator());
+    dg2modvar.insert(make_pair(id, newid));
+  }
+  for (unsigned long p=0; p<datagen->getNumParameters(); p++) {
+    SedParameter* param = datagen->getParameter(p);
+    string id = param->getId();
+    assert(false); 
+  }
+  replaceVariablesInASTNodeWith(astn, dg2modvar);
   return astn;
 }
 
@@ -116,11 +156,23 @@ string PhrasedOutput::getPhraSEDML() const
   else {
     ret += "report ";
   }
-  for (size_t p=0; p<m_outputVariables.size(); p++) {
+  std::vector<std::vector<ASTNode*> > truncatedvars = m_outputVariables;
+  if (m_isPlot) {
+    char* firstx = SBML_formulaToL3String(truncatedvars[0][0]);
+    for (size_t p=1; p<truncatedvars.size(); p++) {
+      char* thisx = SBML_formulaToL3String(truncatedvars[p][0]);
+      if ((string)firstx == (string)thisx) {\
+        truncatedvars[p].erase(truncatedvars[p].begin());
+      }
+      free(thisx);
+    }
+    free(firstx);
+  }
+  for (size_t p=0; p<truncatedvars.size(); p++) {
     if (p>0) {
       ret += ", ";
     }
-    for (size_t a=0; a<m_outputVariables[p].size(); a++) {
+    for (size_t a=0; a<truncatedvars[p].size(); a++) {
       if (a>0) {
         if (m_isPlot) {
           ret += " vs ";
@@ -129,16 +181,61 @@ string PhrasedOutput::getPhraSEDML() const
           ret += ", ";
         }
       }
-      ret += SBML_formulaToL3String(m_outputVariables[p][a]);
+      ret += SBML_formulaToL3String(truncatedvars[p][a]);
     }
   }
-  return ret;
+  string sep = g_registry.getSeparator();
+  size_t underscores = ret.find(sep);
+  while (underscores != string::npos) {
+    ret.replace(underscores, sep.size(), ".");
+    underscores = ret.find(sep);
+  }
+  size_t t=0;
+  const PhrasedTask* task = g_registry.getTask(t);
+  set<PhrasedModel*> taskmodels;
+  if (task) {
+    taskmodels = task->getModels();
+  }
+  if (g_registry.getNumTasks() == 1) {
+    //We can delete the 'task.' bit from everything.
+    sep = task->getId() + ".";
+    size_t lonetask = ret.find(sep);
+    while (lonetask != string::npos) {
+      ret.replace(lonetask, sep.size(), "");
+      lonetask = ret.find(sep);
+    }
+  }
+  if (g_registry.getNumModels() == 1 ||
+      (g_registry.getNumTasks() == 1 && taskmodels.size()==1))
+  {
+    sep = (*taskmodels.begin())->getId() + ".";
+    size_t lonemod = ret.find(sep);
+    while (lonemod != string::npos) {
+      ret.replace(lonemod, sep.size(), "");
+      lonemod = ret.find(sep);
+    }
+  }
+  return ret + "\n";
 }
 
 string PhrasedOutput::getMatchingDataGenerator(SedDocument* sedml, ASTNode* astnode) const
 {
+  string ret = "";
+  char* match_str = SBML_formulaToL3String(astnode);
 
-  return "";
+  for (unsigned long dg=0; dg<sedml->getNumDataGenerators(); dg++) {
+    SedDataGenerator* datagenerator = sedml->getDataGenerator(dg);
+    const ASTNode* dg_astn = datagenerator->getMath();
+    char* dg_str = SBML_formulaToL3String(dg_astn);
+    if ((string)dg_str == (string) match_str) {
+      free(dg_str);
+      free(match_str);
+      return datagenerator->getId();
+    }
+  }
+  free(match_str);
+
+  return ret;
 }
 
 string PhrasedOutput::addDataGeneratorToSEDML(SedDocument* sedml, ASTNode* astnode, int num1, int num2) const
@@ -182,10 +279,25 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
 
   for (size_t ov=0; ov<m_outputVariables.size(); ov++) {
     vector<string> datagennames;
+    vector<string> datagenlabels;
     const vector<ASTNode*>* vec = &(m_outputVariables[ov]);
     //Create Data Generators for each element.
     for (size_t an=0; an<vec->size(); an++) {
       datagennames.push_back(addDataGeneratorToSEDML(sedml, (*vec)[an], ov, an));
+      char* cformula = SBML_formulaToL3String((*vec)[an]);
+      string formula = cformula;
+      size_t space = formula.find(" ");
+      while (space != string::npos) {
+        formula.replace(space, 1, "");
+        space = formula.find(" ");
+      }
+      size_t separators = formula.find(g_registry.getSeparator());
+      while (space != string::npos) {
+        formula.replace(separators, g_registry.getSeparator().size(), ".");
+        separators = formula.find(g_registry.getSeparator());
+      }
+      datagenlabels.push_back(formula);
+      free(cformula);
     }
     //Map those data generators to the plot/reports
     if (m_isPlot) {
@@ -210,32 +322,13 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
       for (size_t d=0; d<datagennames.size(); d++) {
         SedDataSet* dataset = report->createDataSet();
         dataset->setDataReference(datagennames[d]);
-        dataset->setLabel(datagennames[d]);
+        dataset->setLabel(datagenlabels[d]);
         dataset->setId(datagennames[d] + "_dataset");
       }
     }
   }
 }
   
-
-void PhrasedOutput::testSedmlBug()
-{
-  SedDocument doc;
-  SedDataGenerator* sdg = doc.createDataGenerator();
-  ASTNode* astn = SBML_parseL3Formula("S1/S2");
-  sdg->setMath(astn);
-  ostringstream stream;
-  SedWriter sw;
-  sw.writeSedML(&doc, stream);
-  string v1 = stream.str();
-  stream.str("");
-  astn = SBML_parseL3Formula("log(S1/S2)");
-  sdg->setMath(astn->getChild(1));
-  sw.writeSedML(&doc, stream);
-  string v2 = stream.str();
-  assert(v1==v2);
-}
-
 
 bool PhrasedOutput::finalize()
 {
@@ -319,7 +412,7 @@ bool getVariable(vector<string>& varname, vector<string>& mapname, const Phrased
   if (varname.size() == 0) {
     err << "which couldn't be resolved.";
   }
-  string fullvarname = getStringFrom(&varname, "_____");
+  string fullvarname = getStringFrom(&varname, g_registry.getSeparator());
   if (varname[varname.size()-1] == "time") {
     mapname.push_back("time");
     return false;

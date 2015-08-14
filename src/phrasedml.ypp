@@ -85,7 +85,7 @@
 %token  <word> TEXTSTRING "text string in quotes"
 %token  <word> ERROR "an error"
 
-%name-prefix="phrased_yy"
+%define api.prefix {phrased_yy}
 %debug
 %error-verbose
 %% /* The grammar: */
@@ -156,12 +156,12 @@ vslist:         formula {$$ = new vector<vector<string>* >; $$->push_back($1);}
         |       vslist ',' formula {$$ = $1; $$->push_back($3);}
         ;
 
-formula:        varOrKeyword {$$ = new vector<string>(); $$->push_back(getStringFrom($1, "_____")); }
+formula:        varOrKeyword {$$ = new vector<string>(); $$->push_back(getStringFrom($1, g_registry.getSeparator())); }
         |       NUM {$$ = new vector<string>(); $$->push_back(g_registry.ftoa($1)); }
         |       '(' formula ')' {$$ = $2; $$->insert($$->begin(), "("); $$->push_back(")"); }
         |       '-' {$$ = new vector<string>(); $$->push_back("-"); }
         |       '!' {$$ = new vector<string>(); $$->push_back("!"); }
-        |       formula varOrKeyword {$$ = $1; $$->push_back(getStringFrom($2, "_____")); }
+        |       formula varOrKeyword {$$ = $1; $$->push_back(getStringFrom($2, g_registry.getSeparator())); }
         |       formula NUM  {$$ = $1; $1->push_back(g_registry.ftoa($2)); }
         |       formula '(' ')' {$$ = $1; $$->push_back("()");}
         |       formula '(' commaformula ')'
@@ -212,8 +212,10 @@ lineend:        ';' {}
 
 void phrased_yyerror(char const *s)
 {
+  stringstream err;
+  err << "Error in line " << phrased_yylloc_last_line << ": " << s;
   if (g_registry.getError()=="") {
-    g_registry.setError(s, phrased_yylloc_last_line);
+    g_registry.setError(err.str(), phrased_yylloc_last_line);
   }
 }
 

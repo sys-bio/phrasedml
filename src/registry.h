@@ -26,6 +26,7 @@ private:
 
   SedDocument*             m_sedml;
   std::string              m_workingDirectory;
+  std::string              m_separator;
 
   //The actual SEDML bits:
   std::vector<PhrasedModel>        m_models;
@@ -52,8 +53,11 @@ public:
   void addWarning(std::string warning) {m_warnings.push_back(warning);};
   void clearWarnings() {m_warnings.clear();};
 
+  std::string getSeparator() const {return m_separator;};
+
   char* getPhraSEDML() const;
   char* getSEDML() const;
+  size_t getNumModels() const;
   const PhrasedModel* getModel(std::string modid) const;
   PhrasedModel* getModel(std::string modid);
   const PhrasedSimulation* getSimulation(std::string simid) const;

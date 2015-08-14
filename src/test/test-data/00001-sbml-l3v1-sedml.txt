@@ -1,0 +1,13 @@
+//Created by libphrasedml v0.4beta
+// Models
+model_1 = model "00001-sbml-l3v1.xml"
+
+// Simulations
+simulation_1 = simulate uniform(0, 5, 51)
+
+// Tasks
+task_1 = run simulation_1 on model_1
+
+// Outputs
+plot time vs S1 / compartment, S2 / compartment
+report time, S1 / compartment, S2 / compartment

@@ -38,8 +38,6 @@ public:
   std::string addDataGeneratorToSEDML(SedDocument* sedml, ASTNode* astnodes, int num1, int num2) const;
   void addOutputToSEDML(SedDocument* sedml) const;
 
-  static void testSedmlBug();
-
   virtual bool finalize();
 private:
   bool addVariableToMap(const std::string& var);

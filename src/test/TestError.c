@@ -44,7 +44,7 @@ END_TEST
 
 START_TEST (test_model_err3)
 {
-  testError("0sbml_model = model \"sbml_model.xml\"", "syntax error, unexpected number");
+  testError("0sbml_model = model \"sbml_model.xml\"", "Error in line 1: syntax error, unexpected number");
 }
 END_TEST
 

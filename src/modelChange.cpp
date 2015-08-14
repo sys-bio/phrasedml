@@ -128,11 +128,15 @@ ModelChange::ModelChange(SedRange* sr)
     {
       SedUniformRange* uniform = static_cast<SedUniformRange*>(sr);
       string type = uniform->getType();
-      if (type == "linear") {
+      if (CaselessStrCmp(type, "linear")) {
         m_type = ctype_loop_uniformLinear;
       }
-      else if (type == "log") {
+      else if (CaselessStrCmp(type, "log")) {
         m_type = ctype_loop_uniformLog;
+      }
+      else {
+        g_registry.addWarning("Unknown range type '" + type + "'; assuming 'linear'.");
+        m_type = ctype_loop_uniformLinear;
       }
       m_values.push_back(uniform->getStart());
       m_values.push_back(uniform->getEnd());
@@ -518,8 +522,9 @@ bool ModelChange::finalize(set<PhrasedModel*> models)
   //Add the model name to m_variable
   string xpath = "";
   for (set<PhrasedModel*>::iterator model = models.begin(); model != models.end(); model++) {
-    xpath = getElementXPathFromId(&m_variable, (*model)->getSBMLDocument());
-    if (!xpath.empty()) {
+    const SBMLDocument* doc = (*model)->getSBMLDocument();
+    xpath = getElementXPathFromId(&m_variable, doc);
+    if (!xpath.empty() && doc->getModel() != NULL) {
       m_variable.insert(m_variable.begin(), (*model)->getId());
       break;
     }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version2" level="1" version="2">
+  <listOfSimulations>
+    <uniformTimeCourse id="Simulation0" name="Simulation0" initialTime="0" outputStartTime="0" outputEndTime="30" numberOfPoints="1000">
+      <algorithm kisaoID="KISAO:0000019"/>
+    </uniformTimeCourse>
+  </listOfSimulations>
+  <listOfModels>
+    <model id="Application0" name="Application0" language="urn:sedml:language:xml" source="./asedml3repeat_Application0.xml"/>
+  </listOfModels>
+  <listOfTasks>
+    <task id="task_0_0" name="task_0_0" modelReference="Application0" simulationReference="Simulation0"/>
+    <repeatedTask id="repeatedTask_0_0" name="repeatedTask_0_0" range="uniform_linear_for_s1" resetModel="true">
+      <listOfRanges>
+        <uniformRange id="uniform_linear_for_s1" start="10" end="30" numberOfPoints="3" type="linear"/>
+      </listOfRanges>
+      <listOfChanges>
+        <setValue range="uniform_linear_for_s1" modelReference="Application0" target="/sbml:sbml/sbml:model/descendant::*[@id='s1']">
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <ci> uniform_linear_for_s1 </ci>
+          </math>
+        </setValue>
+      </listOfChanges>
+      <listOfSubTasks>
+        <subTask order="0" task="task_0_0"/>
+      </listOfSubTasks>
+    </repeatedTask>
+  </listOfTasks>
+  <listOfDataGenerators>
+    <dataGenerator id="plot_0_0_0">
+      <listOfVariables>
+        <variable id="repeatedTask_0_0_____time" symbol="urn:sedml:symbol:time" taskReference="repeatedTask_0_0"/>
+      </listOfVariables>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> repeatedTask_0_0_____time </ci>
+      </math>
+    </dataGenerator>
+    <dataGenerator id="plot_0_0_1">
+      <listOfVariables>
+        <variable id="repeatedTask_0_0_____Application0_____s0" target="/sbml:sbml/sbml:model/descendant::*[@id='s0']" taskReference="repeatedTask_0_0" modelReference="Application0"/>
+      </listOfVariables>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> repeatedTask_0_0_____Application0_____s0 </ci>
+      </math>
+    </dataGenerator>
+    <dataGenerator id="plot_0_1_1">
+      <listOfVariables>
+        <variable id="repeatedTask_0_0_____Application0_____s1" target="/sbml:sbml/sbml:model/descendant::*[@id='s1']" taskReference="repeatedTask_0_0" modelReference="Application0"/>
+      </listOfVariables>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <ci> repeatedTask_0_0_____Application0_____s1 </ci>
+      </math>
+    </dataGenerator>
+  </listOfDataGenerators>
+  <listOfOutputs>
+    <plot2D id="plot_0">
+      <listOfCurves>
+        <curve logX="false" logY="false" xDataReference="plot_0_0_0" yDataReference="plot_0_0_1"/>
+        <curve logX="false" logY="false" xDataReference="plot_0_0_0" yDataReference="plot_0_1_1"/>
+      </listOfCurves>
+    </plot2D>
+  </listOfOutputs>
+</sedML>

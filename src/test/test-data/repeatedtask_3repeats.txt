@@ -1,0 +1,22 @@
+//Created by libphrasedml v0.4beta
+// Models
+Application0 = model "./asedml3repeat_Application0.xml"
+
+// Simulations
+Simulation0 = simulate uniform(0, 30, 1000)
+
+// Tasks
+task_0_0 = run Simulation0 on Application0
+
+// Repeated Tasks
+repeatedTask_0_0 = repeat task_0_0 for Application0.s1 in uniform(10, 30, 3), reset=true
+
+// Outputs
+plot repeatedTask_0_0.time vs repeatedTask_0_0.Application0.s0, repeatedTask_0_0.Application0.s1
+
+// Names
+Application0 is "Application0"
+Simulation0 is "Simulation0"
+task_0_0 is "task_0_0"
+repeatedTask_0_0 is "repeatedTask_0_0"
+

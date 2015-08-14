@@ -12,7 +12,7 @@
     <task id="task1" modelReference="mod1" simulationReference="sim1"/>
   </listOfTasks>
   <listOfDataGenerators>
-    <dataGenerator id="report_0_0_0">
+    <dataGenerator id="plot_0_0_0">
       <listOfVariables>
         <variable id="time" symbol="urn:sedml:symbol:time" taskReference="task1"/>
       </listOfVariables>
@@ -20,21 +20,38 @@
         <ci> time </ci>
       </math>
     </dataGenerator>
-    <dataGenerator id="report_0_0_1">
+    <dataGenerator id="plot_0_0_1">
       <listOfVariables>
         <variable id="S1" target="/sbml:sbml/sbml:model/descendant::*[@id='S1']" taskReference="task1" modelReference="mod1"/>
+        <variable id="C1" target="/sbml:sbml/sbml:model/descendant::*[@id='C1']" taskReference="task1" modelReference="mod1"/>
       </listOfVariables>
       <math xmlns="http://www.w3.org/1998/Math/MathML">
-        <ci> S1 </ci>
+        <apply>
+          <divide/>
+          <ci> S1 </ci>
+          <ci> C1 </ci>
+        </apply>
+      </math>
+    </dataGenerator>
+    <dataGenerator id="plot_0_0_2">
+      <listOfVariables>
+        <variable id="S2" target="/sbml:sbml/sbml:model/descendant::*[@id='S2']" taskReference="task1" modelReference="mod1"/>
+        <variable id="C1" target="/sbml:sbml/sbml:model/descendant::*[@id='C1']" taskReference="task1" modelReference="mod1"/>
+      </listOfVariables>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <divide/>
+          <ci> S2 </ci>
+          <ci> C1 </ci>
+        </apply>
       </math>
     </dataGenerator>
   </listOfDataGenerators>
   <listOfOutputs>
-    <report id="report_0">
-      <listOfDataSets>
-        <dataSet id="report_0_0_0_dataset" label="time" dataReference="report_0_0_0"/>
-        <dataSet id="report_0_0_1_dataset" label="S1" dataReference="report_0_0_1"/>
-      </listOfDataSets>
-    </report>
+    <plot3D id="plot_0">
+      <listOfSurfaces>
+        <surface logX="false" logY="false" xDataReference="plot_0_0_0" yDataReference="plot_0_0_1" logZ="false" zDataReference="plot_0_0_2"/>
+      </listOfSurfaces>
+    </plot3D>
   </listOfOutputs>
 </sedML>

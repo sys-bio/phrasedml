@@ -53,6 +53,9 @@ PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
   if (referenced != NULL && referenced != sedmodel) {
     m_isFile = false;
   }
+  else {
+    processSource();
+  }
   for (unsigned int ch=0; ch<sedmodel->getNumChanges(); ch++) {
     SedChange* sc = sedmodel->getChange(ch);
     ModelChange mc(sc, seddoc, m_id);

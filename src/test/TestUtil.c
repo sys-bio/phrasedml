@@ -29,7 +29,7 @@ void compareFileTranslation(const string& base)
     fail_unless(false);
     return;
   }
-  cout << "SED-ML generated from " << base << ".txt" << endl << sed_gen << endl;
+  //cout << "SED-ML generated from " << base << ".txt" << endl << sed_gen << endl;
   char* phrased_rt = getLastPhraSEDML();
 
   char* phrased_gen = convertFile(sedfile.c_str());
@@ -38,7 +38,7 @@ void compareFileTranslation(const string& base)
     fail_unless(false);
     return;
   }
-  cout << "phraSED-ML generated from " << base << ".xml" << endl << phrased_gen << endl;
+  //cout << "phraSED-ML generated from " << base << ".xml" << endl << phrased_gen << endl;
   char* sed_rt = getLastSEDML();
 
   fail_unless((string)phrased_rt == (string)phrased_gen);
@@ -85,5 +85,44 @@ void compareStringAndFileTranslation(const string& phrasedml, const string& base
   compareStringTranslation(phrasedml, base+".xml");
   compareFileTranslation(base);
 }
+
+void compareOriginalXMLTranslations(const string& base)
+{
+  string dir(TestDataDirectory);
+  string phrasedfile = dir + base + ".txt";
+  string sedfile = dir + base + ".xml";
+  string sedrtfile = dir + base + "_rt.xml";
+  char* sed_gen = convertFile(phrasedfile.c_str());
+  if (sed_gen==NULL) {
+    cout << getLastError() << endl << endl;
+    fail_unless(false);
+    return;
+  }
+  //cout << "SED-ML generated from " << base << ".txt" << endl << sed_gen << endl;
+  char* phrased_rt = getLastPhraSEDML();
+
+  char* phrased_gen = convertFile(sedfile.c_str());
+  if (phrased_gen==NULL) {
+    cout << getLastError() << endl << endl;
+    fail_unless(false);
+    return;
+  }
+  //cout << "phraSED-ML generated from " << base << ".xml" << endl << phrased_gen << endl;
+
+
+  char* phrased_rt_gen = convertFile(sedrtfile.c_str());
+  char* sed_rt = getLastSEDML();
+
+  fail_unless((string)phrased_rt == (string)phrased_gen);
+  fail_unless((string)phrased_rt == (string)phrased_rt_gen);
+  fail_unless((string)sed_rt     == (string)sed_gen);
+
+  free(sed_gen);
+  free(sed_rt);
+  free(phrased_gen);
+  free(phrased_rt);
+  free(phrased_rt_gen);
+}
+
 
 END_C_DECLS
