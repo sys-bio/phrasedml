@@ -131,10 +131,11 @@ endif()
 
 #message(STATUS "libraries: ${LIBPHRASEDML_LIBS}\nphrasedml:${LIBPHRASEDML_LIBRARY}")
 
-target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBS} ${LIBPHRASEDML_LIBRARY}-static ${PYTHON_LIBRARIES})
-
 if(APPLE)
   set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBS} ${LIBPHRASEDML_LIBRARY}-static)
+else()
+  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBS} ${LIBPHRASEDML_LIBRARY}-static ${PYTHON_LIBRARIES})
 endif()
 
 # 
