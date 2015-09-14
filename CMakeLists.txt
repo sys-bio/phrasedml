@@ -387,7 +387,7 @@ file(GLOB LIBPHRASEDML_SOURCES
           ${PHRASEDML_SRC_DIR}repeatedTask.cpp
           ${PHRASEDML_SRC_DIR}sbmlx.cpp
           ${PHRASEDML_SRC_DIR}simulation.cpp
-          ${PHRASEDML_SRC_DIR}steadystate.cpp
+          ${PHRASEDML_SRC_DIR}steadyState.cpp
           ${PHRASEDML_SRC_DIR}stringx.cpp
           ${PHRASEDML_SRC_DIR}task.cpp
           ${PHRASEDML_SRC_DIR}uniform.cpp
@@ -411,7 +411,6 @@ file(GLOB LIBPHRASEDML_HEADERS
           ${PHRASEDML_SRC_DIR}uniform.h
           ${PHRASEDML_SRC_DIR}variable.h
           )
-
 
 ##### Build the main library #####
 add_library(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_HEADERS} ${LIBPHRASEDML_SOURCES})
