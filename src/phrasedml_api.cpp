@@ -92,6 +92,16 @@ LIB_EXTERN void setWorkingDirectory(const char* directory)
   g_registry.setWorkingDirectory(directory);
 }
 
+LIB_EXTERN void setReferencedSBML(const char* filename, SBMLDocument* doc)
+{
+  g_registry.setReferencedSBML(filename, doc);
+}
+
+LIB_EXTERN void clearReferencedSBML()
+{
+  g_registry.clearReferencedSBML();
+}
+
 LIB_EXTERN void freeAll()
 {
   g_registry.freeAll();

@@ -41,6 +41,7 @@ Registry::Registry()
   , m_tasks()
   , m_repeatedTasks()
   , m_outputs()
+  , m_referencedSBML()
   , m_l3ps()
   , input(NULL)
 {
@@ -889,6 +890,26 @@ bool Registry::finalize()
 
   return false;
 }
+
+void Registry::setReferencedSBML(const char* filename, SBMLDocument* doc)
+{
+  m_referencedSBML.insert(make_pair((string)filename, doc));
+}
+
+void Registry::clearReferencedSBML()
+{
+  m_referencedSBML.clear();
+}
+
+SBMLDocument* Registry::getSavedSBML(std::string filename)
+{
+  map<string, SBMLDocument*>::iterator ret = m_referencedSBML.find(filename);
+  if (ret != m_referencedSBML.end()) {
+    return ret->second;
+  }
+  return NULL;
+}
+
 
 void Registry::freeAll()
 {

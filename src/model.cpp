@@ -184,12 +184,15 @@ void PhrasedModel::addLocalVariablesToComputeChange(SedComputeChange* scc, SedMo
 void PhrasedModel::processSource()
 {
   if (m_isFile) {
-    string actualsource = g_registry.getWorkingFilename(m_source);
-    if (actualsource.empty()) {
-      //The file cannot be found, so we'll have to punt
-      return;
+    SBMLDocument* doc = g_registry.getSavedSBML(m_source);
+    if (doc == NULL) {
+      string actualsource = g_registry.getWorkingFilename(m_source);
+      if (actualsource.empty()) {
+        //The file cannot be found, so we'll have to punt
+        return;
+      }
+      doc = readSBMLFromFile(actualsource.c_str());
     }
-    SBMLDocument* doc = readSBMLFromFile(actualsource.c_str());
     m_sbml = *doc;
     m_type = lang_SBML; //In case the levels/versions below don't work.
     switch(m_sbml.getLevel()) {

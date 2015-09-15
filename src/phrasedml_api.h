@@ -27,10 +27,11 @@
 #define PHRASEDML_API_H
 
 #ifndef LIBPHRASEDML_VERSION_STRING //Should be defined in the makefile (from CMakeLists.txt)
-#define LIBPHRASEDML_VERSION_STRING "v0.3 beta"
+#define LIBPHRASEDML_VERSION_STRING "v0.4 beta"
 #endif
 
 #include "libutil.h"
+#include <sbml/common/sbmlfwd.h>
 
 BEGIN_C_DECLS
 
@@ -82,6 +83,20 @@ LIB_EXTERN char*  getLastPhraSEDML();
  * @param directory The directory as a character string.  May be either absolute or relative to the directory the executable is being run from.
  */
 LIB_EXTERN void setWorkingDirectory(const char* directory);
+
+/**
+ * Allows phrasedml to use the given SBML document as the filename, instead of looking for the file on disk.
+ *
+ * @param filename The string that, when used in phrasedml, should reference the @p doc.
+ * @param doc The SBML Document to use when the @p filename is encountered.
+ */
+LIB_EXTERN void setReferencedSBML(const char* filename, SBMLDocument* doc);
+
+/**
+ * Clears and removes all referenced SBML documents.
+ */
+LIB_EXTERN void clearReferencedSBML();
+
 
 /**
  * Frees all pointers handed to you by libphraSEDML.

@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <set>
+#include <map>
 
 #include "sedml/SedTypes.h"
 #include "sbml/math/L3ParserSettings.h"
@@ -15,6 +16,7 @@ class PhrasedTask;
 class PhrasedRepeatedTask;
 class ModelChange;
 class PhrasedOutput;
+class SBMLDocument;
 
 class Registry
 {
@@ -34,6 +36,9 @@ private:
   std::vector<PhrasedTask>         m_tasks;
   std::vector<PhrasedRepeatedTask> m_repeatedTasks;
   std::vector<PhrasedOutput>       m_outputs;
+
+  //Any saved SBML documents the user has set:
+  std::map<std::string, SBMLDocument*> m_referencedSBML;
 
   L3ParserSettings         m_l3ps;
 
@@ -115,6 +120,11 @@ public:
 
   //When we're done, make sure the whole thing is coherent.
   bool finalize();
+
+  //For parsing filenames that the user has given to us in memory instead:
+  void setReferencedSBML(const char* filename, SBMLDocument* doc);
+  void clearReferencedSBML();
+  SBMLDocument* getSavedSBML(std::string filename);
 
   //Keeping track of malloc'd stuff so we can free it ourselves if need be.
   std::vector<char*>    m_charstars;

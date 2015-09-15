@@ -53,6 +53,7 @@ Suite *create_suite_Simulations(void);
 Suite *create_suite_Tasks(void);
 Suite *create_suite_Outputs(void);
 Suite *create_suite_Errors(void);
+Suite *create_suite_Saved_Models(void);
 /**
  * Global.
  *
@@ -121,11 +122,13 @@ main (int argc, char* argv[])
   //SRunner *runner = srunner_create( create_suite_Tasks() );
   //SRunner *runner = srunner_create( create_suite_Outputs() );
   //SRunner *runner = srunner_create( create_suite_Errors() );
+  //SRunner *runner = srunner_create( create_suite_Saved_Models() );
 
   srunner_add_suite( runner, create_suite_Simulations() );
   srunner_add_suite( runner, create_suite_Tasks() );
   srunner_add_suite( runner, create_suite_Outputs() );
   srunner_add_suite( runner, create_suite_Errors() );
+  srunner_add_suite( runner, create_suite_Saved_Models() );
 
 
 #ifdef TRACE_MEMORY
