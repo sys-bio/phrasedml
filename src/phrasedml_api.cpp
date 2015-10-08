@@ -9,6 +9,7 @@
 
 #include "phrasedml_api.h"
 #include "registry.h"
+#include <sbml/SBMLReader.h>
 
 
 #ifdef _MSC_VER
@@ -92,8 +93,9 @@ LIB_EXTERN void setWorkingDirectory(const char* directory)
   g_registry.setWorkingDirectory(directory);
 }
 
-LIB_EXTERN void setReferencedSBML(const char* filename, SBMLDocument* doc)
+LIB_EXTERN void setReferencedSBML(const char* filename, const char* docstr)
 {
+  SBMLDocument* doc = readSBMLFromString(docstr);
   g_registry.setReferencedSBML(filename, doc);
 }
 

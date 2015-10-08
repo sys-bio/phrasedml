@@ -27,9 +27,29 @@
       </listOfVariables>
       <math xmlns="http://www.w3.org/1998/Math/MathML">
         <apply>
-          <divide/>
-          <ci> S1 </ci>
-          <ci> C1 </ci>
+          <log/>
+          <logbase>
+            <cn type="integer"> 10 </cn>
+          </logbase>
+          <apply>
+            <divide/>
+            <ci> S1 </ci>
+            <ci> C1 </ci>
+          </apply>
+        </apply>
+      </math>
+    </dataGenerator>
+    <dataGenerator id="report_0_0_2">
+      <listOfVariables>
+        <variable id="S2" target="/sbml:sbml/sbml:model/descendant::*[@id='S2']" taskReference="task1" modelReference="mod1"/>
+      </listOfVariables>
+      <math xmlns="http://www.w3.org/1998/Math/MathML">
+        <apply>
+          <log/>
+          <logbase>
+            <cn type="integer"> 10 </cn>
+          </logbase>
+          <ci> S2 </ci>
         </apply>
       </math>
     </dataGenerator>
@@ -37,8 +57,9 @@
   <listOfOutputs>
     <report id="report_0">
       <listOfDataSets>
-        <dataSet id="report_0_0_0_dataset" label="report_0_0_0" dataReference="report_0_0_0"/>
-        <dataSet id="report_0_0_1_dataset" label="report_0_0_1" dataReference="report_0_0_1"/>
+        <dataSet id="report_0_0_0_dataset" label="time" dataReference="report_0_0_0"/>
+        <dataSet id="report_0_0_1_dataset" label="log10(S1/C1)" dataReference="report_0_0_1"/>
+        <dataSet id="report_0_0_2_dataset" label="log10(S2)" dataReference="report_0_0_2"/>
       </listOfDataSets>
     </report>
   </listOfOutputs>

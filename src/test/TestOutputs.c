@@ -99,19 +99,20 @@ START_TEST (test_00001_sbml_l3v1_sedml)
 }
 END_TEST
 
+START_TEST (plot_named)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\nplot \"Figure 1\" time vs S1", "plot_named");
+}
+END_TEST
+
 Suite *
 create_suite_Outputs (void)
 {
   Suite *suite = suite_create("phraSED-ML Outputs");
   TCase *tcase = tcase_create("phraSED-ML Outputs");
 
-  tcase_add_test( tcase, test_00001_sbml_l3v1_sedml);
-
-  //tcase_add_test( tcase, plot_log_formula);
-
-  //tcase_add_test( tcase, plot_log_formula);
-  //tcase_add_test( tcase, plot3d_log_formula);
-  //tcase_add_test( tcase, report_log_formula);
+  tcase_add_test( tcase, plot3d_log_formula);
+  tcase_add_test( tcase, report_log_formula);
 
   tcase_add_test( tcase, plot_basic);
   tcase_add_test( tcase, plot_formula);
@@ -122,6 +123,9 @@ create_suite_Outputs (void)
   tcase_add_test( tcase, plot_basic_with_period);
   tcase_add_test( tcase, plot_and_report);
   tcase_add_test( tcase, plot_two_plots);
+  tcase_add_test( tcase, test_00001_sbml_l3v1_sedml);
+  tcase_add_test( tcase, plot_log_formula);
+  tcase_add_test( tcase, plot_named);
 
   suite_add_tcase(suite, tcase);
 

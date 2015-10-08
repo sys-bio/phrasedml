@@ -61,6 +61,7 @@ ADD_CUSTOM_COMMAND(
             -I${CMAKE_CURRENT_BINARY_DIR} 
             -I${CMAKE_SOURCE_DIR}/src
             -I${CMAKE_SOURCE_DIR}/include
+            -I${LIBSBML_INCLUDE_DIR}
             -c++
             -python        
             ${SWIG_EXTRA_ARGS}         
@@ -78,6 +79,7 @@ ADD_CUSTOM_COMMAND(
             -I${CMAKE_CURRENT_BINARY_DIR} 
             -I${CMAKE_SOURCE_DIR}/src
             -I${CMAKE_SOURCE_DIR}/include
+            -I${LIBSBML_INCLUDE_DIR}
             -c++
             -python        
             ${SWIG_EXTRA_ARGS}         
@@ -99,10 +101,12 @@ add_custom_target(binding_python_swig ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ph
 # Build native library
 #
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../swig)
-include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories(${INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_SOURCE_DIR}/../swig)
+include_directories(${INCLUDE_DIRECTORIES} ${CMAKE_SOURCE_DIR}/include)
+include_directories(${INCLUDE_DIRECTORIES} ${PYTHON_INCLUDE_DIRS})
+include_directories(${INCLUDE_DIRECTORIES} ${LIBSBML_INCLUDE_DIR})
+include_directories(${INCLUDE_DIRECTORIES} ${LIBSEDML_INCLUDE_DIR})
 if (EXTRA_INCLUDE_DIRS) 
  include_directories(${EXTRA_INCLUDE_DIRS})
 endif(EXTRA_INCLUDE_DIRS)

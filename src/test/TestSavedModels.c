@@ -30,9 +30,10 @@ START_TEST (test_saved_model_basic)
   param->setValue(3);
   model->setId("memory_model");
 
-  setReferencedSBML("memory_model.xml", &doc);
+  char* docstr = writeSBMLToString(&doc);
+  setReferencedSBML("memory_model.xml", docstr);
   compareStringAndFileTranslation("sbml_model = model \"memory_model.xml\"", "saved_model_basic");
-
+  free(docstr);
   
 }
 END_TEST
@@ -47,8 +48,10 @@ START_TEST (test_saved_model_complete)
   param->setValue(3);
   model->setId("memory_model");
 
-  setReferencedSBML("memory_model.xml", &doc);
+  char* docstr = writeSBMLToString(&doc);
+  setReferencedSBML("memory_model.xml", docstr);
   compareStringAndFileTranslation("mod1 = model \"memory_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for p1 in uniform(0,1,10)\nplot task2.time vs task2.p1", "saved_model_complete");
+  free(docstr);
 }
 END_TEST
 

@@ -424,16 +424,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   265
+#define YYLAST   261
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  28
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  15
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  74
+#define YYNRULES  75
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  134
+#define YYNSTATES  136
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -484,10 +484,10 @@ static const yytype_uint8 yyrline[] =
      103,   106,   107,   108,   109,   110,   111,   112,   113,   114,
      115,   116,   119,   120,   121,   122,   123,   124,   125,   126,
      127,   128,   129,   130,   131,   132,   133,   136,   137,   138,
-     141,   144,   147,   148,   151,   152,   155,   156,   159,   160,
-     161,   162,   163,   164,   165,   166,   167,   175,   176,   177,
-     178,   190,   191,   194,   195,   196,   197,   198,   199,   200,
-     201,   202,   203,   206,   207
+     141,   142,   145,   148,   149,   152,   153,   156,   158,   162,
+     163,   164,   165,   166,   167,   168,   169,   170,   178,   179,
+     180,   181,   193,   194,   197,   198,   199,   200,   201,   202,
+     203,   204,   205,   206,   209,   210
 };
 #endif
 
@@ -517,10 +517,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -68
+#define YYPACT_NINF -70
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-68)))
+  (!!((Yystate) == (-70)))
 
 #define YYTABLE_NINF -1
 
@@ -531,20 +531,20 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     -68,     5,   -68,   -68,   -68,   -68,   -68,   -68,   107,   -14,
-     -14,   -14,   -68,   -68,   -68,   -10,    11,   226,   -68,    44,
-      10,   200,   -68,   -68,   -68,   -68,    -5,    22,   134,   -68,
-     226,    41,    48,   -68,   -68,   -68,   -68,   -68,   -68,   -68,
-     -68,    -2,   214,   -68,   -68,   -68,    22,   -68,    11,    11,
-      38,   -68,   200,   -68,   -68,   106,   -68,    52,   -68,   -68,
-     200,    12,    84,    22,    67,    -2,    84,   -68,    -2,   -68,
-     226,   -68,    50,   108,    11,    11,    34,    50,   108,   -68,
-     200,   226,   227,    11,    22,    84,   -68,   237,   200,   226,
-      11,    -2,   226,     6,    82,    50,   108,    11,   200,   108,
-      90,   156,    -2,    -2,   105,   226,    23,   244,   108,   -68,
-     -68,   -68,    85,    -2,   200,   226,    -2,   226,    62,   -68,
-     -68,   200,   109,   178,    -2,    -2,   132,   -68,   -68,   -68,
-      93,    -2,   -68,   -68
+     -70,    10,   -70,   -70,   -70,   -70,   -70,   -70,   100,     6,
+       6,     6,   -70,   -70,   -70,    -4,    13,    41,    -4,   -70,
+      71,    42,   187,   -70,   -70,   -70,    54,    42,   -70,    26,
+     121,   -70,    -4,    78,    99,   -70,   -70,   -70,   -70,   -70,
+     -70,   -70,   -70,     0,   201,   -70,   -70,   -70,    54,   -70,
+      41,    41,    58,   -70,   187,   -70,   -70,    98,   -70,    72,
+     -70,   -70,   187,     2,    25,    54,    91,     0,    25,   -70,
+       0,   -70,    -4,   -70,    84,   102,    41,    41,    37,    84,
+     102,   -70,   187,    -4,   212,    41,    54,    25,   -70,   219,
+     187,    -4,    41,     0,    -4,    31,   202,    84,   102,    41,
+     187,   102,   117,   143,     0,     0,   163,    -4,   226,   233,
+     102,   -70,   -70,   -70,    44,     0,   187,    -4,     0,    -4,
+     240,   -70,   -70,   187,   139,   165,     0,     0,   185,   -70,
+     -70,   -70,    50,     0,   -70,   -70
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -552,34 +552,34 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       2,     0,     1,     7,     9,     8,    73,    74,     0,     0,
-       0,     0,     6,    51,    49,     0,     0,     0,    52,    48,
-      40,    46,     3,     4,     5,    10,     0,    48,     0,    41,
-       0,     0,     0,    64,    63,    65,    66,    71,    67,    54,
-      72,    37,     0,    70,    68,    69,    53,    57,    11,     0,
-      15,    50,    47,    58,    59,     0,    42,     0,    38,    55,
-      61,     0,     0,    44,     0,    37,     0,    43,     0,    60,
-       0,    56,     0,    12,     0,     0,     0,    17,    16,    39,
-      62,     0,    13,     0,    45,     0,    21,    18,    22,     0,
-       0,    37,     0,     0,     0,     0,    20,     0,    23,    14,
-       0,     0,     0,    37,     0,     0,    29,     0,    19,    27,
-      28,    24,     0,     0,    30,     0,    37,     0,     0,    26,
-      25,    31,     0,     0,     0,    37,     0,    35,    36,    32,
-       0,     0,    34,    33
+       2,     0,     1,     7,     9,     8,    74,    75,     0,     0,
+       0,     0,     6,    52,    50,     0,     0,     0,     0,    53,
+      49,    40,    47,     3,     4,     5,    49,    41,    10,     0,
+       0,    42,     0,     0,     0,    65,    64,    66,    67,    72,
+      68,    55,    73,    37,     0,    71,    69,    70,    54,    58,
+      11,     0,    15,    51,    48,    59,    60,     0,    43,     0,
+      38,    56,    62,     0,     0,    45,     0,    37,     0,    44,
+       0,    61,     0,    57,     0,    12,     0,     0,     0,    17,
+      16,    39,    63,     0,    13,     0,    46,     0,    21,    18,
+      22,     0,     0,    37,     0,     0,     0,     0,    20,     0,
+      23,    14,     0,     0,     0,    37,     0,     0,    29,     0,
+      19,    27,    28,    24,     0,     0,    30,     0,    37,     0,
+       0,    26,    25,    31,     0,     0,     0,    37,     0,    35,
+      36,    32,     0,     0,    34,    33
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -68,   -68,    -1,   -68,   -64,   -48,   -68,   -68,   -67,   -68,
-     -68,    20,   -68,   -68,   122
+     -70,   -70,    -1,   -70,   -65,   -62,   -70,   -70,   -69,   -70,
+     103,   -14,   -70,   -70,     4
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,    46,     9,    73,    57,    10,    11,    58,    64,
-      20,    21,    61,    47,    12
+      -1,     1,    26,     9,    75,    59,    10,    11,    60,    66,
+      21,    22,    63,    49,    12
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -587,64 +587,64 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       8,    79,    78,    25,    55,     2,     3,    19,     4,    48,
-      56,    15,     6,     7,    49,    26,    27,    76,     4,     4,
-       5,    96,    15,   102,     4,    50,    99,   103,    30,    27,
-      70,     6,     7,   108,    71,   111,     4,    28,    15,    15,
-     115,    27,   116,   100,   117,    53,   120,    62,    63,    66,
-      52,     4,    68,    54,    15,   112,    86,   129,    29,    65,
-      15,    72,    60,     4,   133,    77,    15,    81,   122,    27,
-      68,    82,    69,    84,    85,     4,    87,   130,    15,   124,
-      27,    93,    94,   125,    95,    74,    93,    75,    27,    95,
-      80,    27,   104,   106,   107,     4,    95,     4,    15,   105,
-      15,    88,     0,    68,    27,   118,    93,   119,    68,    98,
-     109,    68,   101,    13,    27,   132,    27,   126,    67,    14,
-       4,    15,   113,    15,    16,   114,    83,    68,    17,   127,
-      18,    22,    23,    24,     0,   121,     0,   123,    31,    32,
-      33,    34,    35,    36,    37,    38,    39,     4,    15,   131,
-       0,    40,     0,    41,     0,    42,    51,    43,    44,    45,
-      31,    32,    33,    34,    35,    36,    37,    38,    39,     4,
-       0,     0,     0,    40,     0,    41,     0,    42,   110,    43,
-      44,    45,    31,    32,    33,    34,    35,    36,    37,    38,
-      39,     4,     0,     0,     0,    40,     0,    41,     0,    42,
-     128,    43,    44,    45,    31,    32,    33,    34,    35,    36,
-      37,    38,    39,     4,     0,     0,     0,    40,     0,    41,
-      13,    42,     0,    43,    44,    45,    14,     4,     0,     0,
-       0,     0,    13,     0,     0,    17,    59,    18,    14,     4,
-       4,     0,     0,    15,    89,    90,    91,    17,    92,    18,
-       4,     0,     0,    15,    89,    97,    91,     4,    92,     0,
-      15,    89,     0,    91,     0,    92
+       8,    81,    13,    80,    30,    78,    57,    20,    14,     4,
+       2,     3,    58,    23,    24,    25,    29,    18,    54,    19,
+      72,    48,    98,     4,    73,     5,    28,   101,    52,    48,
+      62,   102,     6,     7,   110,   113,     6,     7,     4,     4,
+      50,    16,    16,   114,     4,    51,   122,    16,   104,    64,
+      65,    68,   105,    48,     4,    70,   124,   131,    82,    88,
+      32,    48,    70,    74,   135,   132,   121,    79,    70,    90,
+      16,     4,   134,    84,    16,    86,    87,   100,    89,    67,
+     103,    48,    55,    95,    96,    31,    97,    16,    95,    48,
+      70,    97,    71,   116,   106,   108,   109,     4,    97,    48,
+      16,    83,    48,   123,    56,   125,    13,   120,    95,    76,
+      69,    77,    14,     4,    15,    48,    16,    17,    27,   128,
+      85,    18,    48,    19,    48,    33,    34,    35,    36,    37,
+      38,    39,    40,    41,     4,    70,     0,   111,    42,     0,
+      43,     0,    44,    53,    45,    46,    47,    33,    34,    35,
+      36,    37,    38,    39,    40,    41,     4,    70,     0,   129,
+      42,     0,    43,     0,    44,   112,    45,    46,    47,    33,
+      34,    35,    36,    37,    38,    39,    40,    41,     4,    16,
+     115,     0,    42,     0,    43,     0,    44,   130,    45,    46,
+      47,    33,    34,    35,    36,    37,    38,    39,    40,    41,
+       4,    16,   133,     0,    42,     0,    43,    13,    44,     0,
+      45,    46,    47,    14,     4,     4,     0,     0,    16,   107,
+       0,     0,    18,    61,    19,     4,     0,     0,    16,    91,
+      92,    93,     4,    94,     0,    16,    91,    99,    93,     4,
+      94,     0,    16,   117,     0,   118,     4,   119,     0,    16,
+      91,     0,    93,     4,    94,     0,    16,   126,     0,     0,
+       0,   127
 };
 
 static const yytype_int16 yycheck[] =
 {
-       1,    68,    66,    13,     6,     0,     1,     8,    13,    14,
-      12,    16,    26,    27,    19,    16,    17,    65,    13,    13,
-      15,    85,    16,    17,    13,    26,    90,    21,    18,    30,
-      18,    26,    27,    97,    22,   102,    13,    17,    16,    16,
-      17,    42,    19,    91,    21,     4,   113,    48,    49,    50,
-      30,    13,    18,     5,    16,   103,    22,   124,    14,    21,
-      16,    62,    42,    13,   131,    66,    16,    17,   116,    70,
-      18,    72,    20,    74,    75,    13,    77,   125,    16,    17,
-      81,    82,    83,    21,    85,    18,    87,    20,    89,    90,
-      70,    92,    93,    94,    95,    13,    97,    13,    16,    17,
-      16,    81,    -1,    18,   105,   106,   107,    22,    18,    89,
-      20,    18,    92,     6,   115,    22,   117,   118,    12,    12,
-      13,    16,    17,    16,    17,   105,    18,    18,    21,    20,
-      23,     9,    10,    11,    -1,   115,    -1,   117,     4,     5,
-       6,     7,     8,     9,    10,    11,    12,    13,    16,    17,
-      -1,    17,    -1,    19,    -1,    21,    22,    23,    24,    25,
-       4,     5,     6,     7,     8,     9,    10,    11,    12,    13,
-      -1,    -1,    -1,    17,    -1,    19,    -1,    21,    22,    23,
-      24,    25,     4,     5,     6,     7,     8,     9,    10,    11,
-      12,    13,    -1,    -1,    -1,    17,    -1,    19,    -1,    21,
-      22,    23,    24,    25,     4,     5,     6,     7,     8,     9,
-      10,    11,    12,    13,    -1,    -1,    -1,    17,    -1,    19,
-       6,    21,    -1,    23,    24,    25,    12,    13,    -1,    -1,
-      -1,    -1,     6,    -1,    -1,    21,    22,    23,    12,    13,
-      13,    -1,    -1,    16,    17,    18,    19,    21,    21,    23,
-      13,    -1,    -1,    16,    17,    18,    19,    13,    21,    -1,
-      16,    17,    -1,    19,    -1,    21
+       1,    70,     6,    68,    18,    67,     6,     8,    12,    13,
+       0,     1,    12,     9,    10,    11,    17,    21,    32,    23,
+      18,    22,    87,    13,    22,    15,    13,    92,    29,    30,
+      44,    93,    26,    27,    99,   104,    26,    27,    13,    13,
+      14,    16,    16,   105,    13,    19,   115,    16,    17,    50,
+      51,    52,    21,    54,    13,    18,   118,   126,    72,    22,
+      18,    62,    18,    64,   133,   127,    22,    68,    18,    83,
+      16,    13,    22,    74,    16,    76,    77,    91,    79,    21,
+      94,    82,     4,    84,    85,    14,    87,    16,    89,    90,
+      18,    92,    20,   107,    95,    96,    97,    13,    99,   100,
+      16,    17,   103,   117,     5,   119,     6,   108,   109,    18,
+      12,    20,    12,    13,    14,   116,    16,    17,    15,   120,
+      18,    21,   123,    23,   125,     4,     5,     6,     7,     8,
+       9,    10,    11,    12,    13,    18,    -1,    20,    17,    -1,
+      19,    -1,    21,    22,    23,    24,    25,     4,     5,     6,
+       7,     8,     9,    10,    11,    12,    13,    18,    -1,    20,
+      17,    -1,    19,    -1,    21,    22,    23,    24,    25,     4,
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    16,
+      17,    -1,    17,    -1,    19,    -1,    21,    22,    23,    24,
+      25,     4,     5,     6,     7,     8,     9,    10,    11,    12,
+      13,    16,    17,    -1,    17,    -1,    19,     6,    21,    -1,
+      23,    24,    25,    12,    13,    13,    -1,    -1,    16,    17,
+      -1,    -1,    21,    22,    23,    13,    -1,    -1,    16,    17,
+      18,    19,    13,    21,    -1,    16,    17,    18,    19,    13,
+      21,    -1,    16,    17,    -1,    19,    13,    21,    -1,    16,
+      17,    -1,    19,    13,    21,    -1,    16,    17,    -1,    -1,
+      -1,    21
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -652,19 +652,19 @@ static const yytype_int16 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,    29,     0,     1,    13,    15,    26,    27,    30,    31,
-      34,    35,    42,     6,    12,    16,    17,    21,    23,    30,
-      38,    39,    42,    42,    42,    13,    30,    30,    39,    14,
-      18,     4,     5,     6,     7,     8,     9,    10,    11,    12,
-      17,    19,    21,    23,    24,    25,    30,    41,    14,    19,
-      30,    22,    39,     4,     5,     6,    12,    33,    36,    22,
-      39,    40,    30,    30,    37,    21,    30,    12,    18,    20,
-      18,    22,    30,    32,    18,    20,    33,    30,    32,    36,
-      39,    17,    30,    18,    30,    30,    22,    30,    39,    17,
-      18,    19,    21,    30,    30,    30,    32,    18,    39,    32,
-      33,    39,    17,    21,    30,    17,    30,    30,    32,    20,
-      22,    36,    33,    17,    39,    17,    19,    21,    30,    22,
-      36,    39,    33,    39,    17,    21,    30,    20,    22,    36,
-      33,    17,    22,    36
+      34,    35,    42,     6,    12,    14,    16,    17,    21,    23,
+      30,    38,    39,    42,    42,    42,    30,    38,    13,    30,
+      39,    14,    18,     4,     5,     6,     7,     8,     9,    10,
+      11,    12,    17,    19,    21,    23,    24,    25,    30,    41,
+      14,    19,    30,    22,    39,     4,     5,     6,    12,    33,
+      36,    22,    39,    40,    30,    30,    37,    21,    30,    12,
+      18,    20,    18,    22,    30,    32,    18,    20,    33,    30,
+      32,    36,    39,    17,    30,    18,    30,    30,    22,    30,
+      39,    17,    18,    19,    21,    30,    30,    30,    32,    18,
+      39,    32,    33,    39,    17,    21,    30,    17,    30,    30,
+      32,    20,    22,    36,    33,    17,    39,    17,    19,    21,
+      30,    22,    36,    39,    33,    39,    17,    21,    30,    20,
+      22,    36,    33,    17,    22,    36
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -674,10 +674,10 @@ static const yytype_uint8 yyr1[] =
       30,    31,    31,    31,    31,    31,    31,    31,    31,    31,
       31,    31,    32,    32,    32,    32,    32,    32,    32,    32,
       32,    32,    32,    32,    32,    32,    32,    33,    33,    33,
-      34,    35,    36,    36,    37,    37,    38,    38,    39,    39,
+      34,    34,    35,    36,    36,    37,    37,    38,    38,    39,
       39,    39,    39,    39,    39,    39,    39,    39,    39,    39,
-      39,    40,    40,    41,    41,    41,    41,    41,    41,    41,
-      41,    41,    41,    42,    42
+      39,    39,    40,    40,    41,    41,    41,    41,    41,    41,
+      41,    41,    41,    41,    42,    42
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -687,10 +687,10 @@ static const yytype_uint8 yyr2[] =
        3,     4,     6,     7,     9,     4,     6,     6,     7,     9,
        8,     7,     3,     4,     5,     6,     6,     5,     5,     4,
        5,     6,     7,     8,     8,     7,     7,     0,     1,     3,
-       2,     3,     1,     2,     1,     3,     1,     3,     1,     1,
-       3,     1,     1,     2,     2,     3,     4,     2,     3,     3,
-       4,     1,     3,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1
+       2,     3,     3,     1,     2,     1,     3,     1,     3,     1,
+       1,     3,     1,     1,     2,     2,     3,     4,     2,     3,
+       3,     4,     1,     3,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1
 };
 
 
@@ -1367,325 +1367,331 @@ yyreduce:
   switch (yyn)
     {
         case 3:
-#line 94 "phrasedml.ypp" /* yacc.c:1661  */
+#line 94 "phrasedml.ypp" /* yacc.c:1646  */
     {}
-#line 1373 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1373 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 95 "phrasedml.ypp" /* yacc.c:1661  */
+#line 95 "phrasedml.ypp" /* yacc.c:1646  */
     {}
-#line 1379 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1379 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 96 "phrasedml.ypp" /* yacc.c:1661  */
+#line 96 "phrasedml.ypp" /* yacc.c:1646  */
     {}
-#line 1385 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1385 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 97 "phrasedml.ypp" /* yacc.c:1661  */
+#line 97 "phrasedml.ypp" /* yacc.c:1646  */
     {}
-#line 1391 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1391 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 98 "phrasedml.ypp" /* yacc.c:1661  */
+#line 98 "phrasedml.ypp" /* yacc.c:1646  */
     {YYABORT;}
-#line 1397 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1397 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 99 "phrasedml.ypp" /* yacc.c:1661  */
+#line 99 "phrasedml.ypp" /* yacc.c:1646  */
     {YYABORT;}
-#line 1403 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1403 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 102 "phrasedml.ypp" /* yacc.c:1661  */
+#line 102 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.words) = new vector<const string*>; (yyval.words)->push_back((yyvsp[0].word));}
-#line 1409 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1409 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 103 "phrasedml.ypp" /* yacc.c:1661  */
+#line 103 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.words) = (yyvsp[-2].words); (yyval.words)->push_back((yyvsp[0].word));}
-#line 1415 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1415 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 106 "phrasedml.ypp" /* yacc.c:1661  */
+#line 106 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addModelDef((yyvsp[-3].words), (yyvsp[-1].words), (yyvsp[0].word))) YYABORT;}
-#line 1421 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1421 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 107 "phrasedml.ypp" /* yacc.c:1661  */
+#line 107 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addModelDef((yyvsp[-5].words), (yyvsp[-3].words), (yyvsp[-2].word), (yyvsp[-1].words), (yyvsp[0].changelist))) YYABORT;}
-#line 1427 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1427 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 108 "phrasedml.ypp" /* yacc.c:1661  */
+#line 108 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addModelDef((yyvsp[-6].words), (yyvsp[-4].words), (yyvsp[-3].word), (yyvsp[-2].words), (yyvsp[-1].words), (yyvsp[0].words))) YYABORT;}
-#line 1433 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1433 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 109 "phrasedml.ypp" /* yacc.c:1661  */
+#line 109 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addModelDef((yyvsp[-8].words), (yyvsp[-6].words), (yyvsp[-5].word), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[0].changelist))) YYABORT;}
-#line 1439 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1439 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 110 "phrasedml.ypp" /* yacc.c:1661  */
+#line 110 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addEquals((yyvsp[-3].words), (yyvsp[-1].words), (yyvsp[0].words))) YYABORT;}
-#line 1445 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1445 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 111 "phrasedml.ypp" /* yacc.c:1661  */
+#line 111 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addEquals((yyvsp[-5].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[-1].words), (yyvsp[0].changelist))) YYABORT;}
-#line 1451 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1451 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 112 "phrasedml.ypp" /* yacc.c:1661  */
+#line 112 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addEquals((yyvsp[-5].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[-1].words), (yyvsp[0].words))) YYABORT;}
-#line 1457 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1457 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 113 "phrasedml.ypp" /* yacc.c:1661  */
+#line 113 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addEquals((yyvsp[-6].words), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[-1].words), (yyvsp[0].words))) YYABORT;}
-#line 1463 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1463 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 114 "phrasedml.ypp" /* yacc.c:1661  */
+#line 114 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addEquals((yyvsp[-8].words), (yyvsp[-6].words), (yyvsp[-5].words), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-2].words))) YYABORT;}
-#line 1469 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1469 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 115 "phrasedml.ypp" /* yacc.c:1661  */
+#line 115 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addRepeatedTask((yyvsp[-7].words), (yyvsp[-5].words), (yyvsp[-3].nameslist), (yyvsp[-1].words), (yyvsp[0].changelist))) YYABORT;}
-#line 1475 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1475 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 116 "phrasedml.ypp" /* yacc.c:1661  */
+#line 116 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addEquals((yyvsp[-6].words), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-1].nums))) YYABORT;}
-#line 1481 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1481 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 119 "phrasedml.ypp" /* yacc.c:1661  */
+#line 119 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-2].words), (yyvsp[0].wordstr))) YYABORT;}
-#line 1487 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1487 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 120 "phrasedml.ypp" /* yacc.c:1661  */
+#line 120 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[0].wordstr), true)) YYABORT;}
-#line 1493 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1493 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 121 "phrasedml.ypp" /* yacc.c:1661  */
+#line 121 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[0].number))) YYABORT;}
-#line 1499 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1499 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 122 "phrasedml.ypp" /* yacc.c:1661  */
+#line 122 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-5].words), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[0].number))) YYABORT;}
-#line 1505 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1505 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 123 "phrasedml.ypp" /* yacc.c:1661  */
+#line 123 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-5].words), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-1].nums))) YYABORT;}
-#line 1511 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1511 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 124 "phrasedml.ypp" /* yacc.c:1661  */
+#line 124 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-1].nums))) YYABORT;}
-#line 1517 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1517 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 125 "phrasedml.ypp" /* yacc.c:1661  */
+#line 125 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = new vector<ModelChange>; if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-1].wordstr), false)) YYABORT;}
-#line 1523 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1523 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 126 "phrasedml.ypp" /* yacc.c:1661  */
+#line 126 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-3].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-1].words), (yyvsp[0].words))) YYABORT;}
-#line 1529 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1529 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 127 "phrasedml.ypp" /* yacc.c:1661  */
+#line 127 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-4].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-2].words), (yyvsp[0].wordstr))) YYABORT;}
-#line 1535 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1535 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 128 "phrasedml.ypp" /* yacc.c:1661  */
+#line 128 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-5].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[0].wordstr), true)) YYABORT;}
-#line 1541 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1541 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 129 "phrasedml.ypp" /* yacc.c:1661  */
+#line 129 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-6].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[0].number))) YYABORT;}
-#line 1547 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1547 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 130 "phrasedml.ypp" /* yacc.c:1661  */
+#line 130 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-7].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-5].words), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-2].words), (yyvsp[0].number))) YYABORT;}
-#line 1553 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1553 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 131 "phrasedml.ypp" /* yacc.c:1661  */
+#line 131 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-7].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-5].words), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-1].nums))) YYABORT;}
-#line 1559 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1559 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 132 "phrasedml.ypp" /* yacc.c:1661  */
+#line 132 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-6].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-1].nums))) YYABORT;}
-#line 1565 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1565 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 133 "phrasedml.ypp" /* yacc.c:1661  */
+#line 133 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.changelist) = (yyvsp[-6].changelist); if (g_registry.addToChangeList((yyval.changelist), (yyvsp[-4].words), (yyvsp[-3].words), (yyvsp[-1].wordstr), false)) YYABORT;}
-#line 1571 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1571 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 136 "phrasedml.ypp" /* yacc.c:1661  */
+#line 136 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.nums) = new vector<double>;}
-#line 1577 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1577 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 137 "phrasedml.ypp" /* yacc.c:1661  */
+#line 137 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.nums) = new vector<double>; (yyval.nums)->push_back((yyvsp[0].number));}
-#line 1583 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1583 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 138 "phrasedml.ypp" /* yacc.c:1661  */
+#line 138 "phrasedml.ypp" /* yacc.c:1646  */
     {(yyval.nums) = (yyvsp[-2].nums); (yyval.nums)->push_back((yyvsp[0].number));}
-#line 1589 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1589 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 141 "phrasedml.ypp" /* yacc.c:1661  */
+#line 141 "phrasedml.ypp" /* yacc.c:1646  */
     {if (g_registry.addOutput((yyvsp[-1].words), (yyvsp[0].wordstrvec))) YYABORT;}
-#line 1595 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1595 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 144 "phrasedml.ypp" /* yacc.c:1661  */
-    {if (g_registry.setName((yyvsp[-2].words), (yyvsp[-1].words), (yyvsp[0].word))) YYABORT;}
-#line 1601 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 142 "phrasedml.ypp" /* yacc.c:1646  */
+    {if (g_registry.addOutput((yyvsp[-2].words), (yyvsp[0].wordstrvec), (yyvsp[-1].word))) YYABORT;}
+#line 1601 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 147 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.number) = (yyvsp[0].number);}
-#line 1607 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 145 "phrasedml.ypp" /* yacc.c:1646  */
+    {if (g_registry.setName((yyvsp[-2].words), (yyvsp[-1].words), (yyvsp[0].word))) YYABORT;}
+#line 1607 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 148 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.number) = -(yyvsp[0].number);}
-#line 1613 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 148 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.number) = (yyvsp[0].number);}
+#line 1613 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 151 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.nameslist) = new vector<vector<const string*>*>; (yyval.nameslist)->push_back((yyvsp[0].words));}
-#line 1619 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 149 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.number) = -(yyvsp[0].number);}
+#line 1619 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 152 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.nameslist) = (yyvsp[-2].nameslist); (yyval.nameslist)->push_back((yyvsp[0].words));}
-#line 1625 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 152 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.nameslist) = new vector<vector<const string*>*>; (yyval.nameslist)->push_back((yyvsp[0].words));}
+#line 1625 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 155 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstrvec) = new vector<vector<string>* >; (yyval.wordstrvec)->push_back((yyvsp[0].wordstr));}
-#line 1631 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 153 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.nameslist) = (yyvsp[-2].nameslist); (yyval.nameslist)->push_back((yyvsp[0].words));}
+#line 1631 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 156 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstrvec) = (yyvsp[-2].wordstrvec); (yyval.wordstrvec)->push_back((yyvsp[0].wordstr));}
-#line 1637 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 156 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstrvec) = new vector<vector<string>* >; (yyval.wordstrvec)->push_back((yyvsp[0].wordstr));}
+#line 1637 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 159 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back(getStringFrom((yyvsp[0].words), g_registry.getSeparator())); }
-#line 1643 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 158 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstrvec) = (yyvsp[-2].wordstrvec); (yyval.wordstrvec)->push_back((yyvsp[0].wordstr));}
+#line 1643 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 160 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back(g_registry.ftoa((yyvsp[0].number))); }
-#line 1649 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 162 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back(getStringFrom((yyvsp[0].words), g_registry.getSeparator())); }
+#line 1649 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 161 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-1].wordstr); (yyval.wordstr)->insert((yyval.wordstr)->begin(), "("); (yyval.wordstr)->push_back(")"); }
-#line 1655 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 163 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back(g_registry.ftoa((yyvsp[0].number))); }
+#line 1655 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 162 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back("-"); }
-#line 1661 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 164 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-1].wordstr); (yyval.wordstr)->insert((yyval.wordstr)->begin(), "("); (yyval.wordstr)->push_back(")"); }
+#line 1661 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 163 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back("!"); }
-#line 1667 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 165 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back("-"); }
+#line 1667 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 164 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-1].wordstr); (yyval.wordstr)->push_back(getStringFrom((yyvsp[0].words), g_registry.getSeparator())); }
-#line 1673 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 166 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = new vector<string>(); (yyval.wordstr)->push_back("!"); }
+#line 1673 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 165 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-1].wordstr); (yyvsp[-1].wordstr)->push_back(g_registry.ftoa((yyvsp[0].number))); }
-#line 1679 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 167 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-1].wordstr); (yyval.wordstr)->push_back(getStringFrom((yyvsp[0].words), g_registry.getSeparator())); }
+#line 1679 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 166 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyval.wordstr)->push_back("()");}
-#line 1685 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 168 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-1].wordstr); (yyvsp[-1].wordstr)->push_back(g_registry.ftoa((yyvsp[0].number))); }
+#line 1685 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 168 "phrasedml.ypp" /* yacc.c:1661  */
+#line 169 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyval.wordstr)->push_back("()");}
+#line 1691 "phrasedml.tab.cpp" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 171 "phrasedml.ypp" /* yacc.c:1646  */
     {
                   (yyval.wordstr) = (yyvsp[-3].wordstr);
                   (yyval.wordstr)->push_back("(");
@@ -1693,29 +1699,29 @@ yyreduce:
                   (yyval.wordstr)->push_back(")");
                   delete (yyvsp[-1].wordstr);
                 }
-#line 1697 "phrasedml.tab.cpp" /* yacc.c:1661  */
-    break;
-
-  case 57:
-#line 175 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-1].wordstr); string mt; mt.push_back((yyvsp[0].character)); (yyvsp[-1].wordstr)->push_back(mt); }
-#line 1703 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1703 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 176 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyvsp[-2].wordstr)->push_back("&&"); }
-#line 1709 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 178 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-1].wordstr); string mt; mt.push_back((yyvsp[0].character)); (yyvsp[-1].wordstr)->push_back(mt); }
+#line 1709 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 177 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyvsp[-2].wordstr)->push_back("||"); }
-#line 1715 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 179 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyvsp[-2].wordstr)->push_back("&&"); }
+#line 1715 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 179 "phrasedml.ypp" /* yacc.c:1661  */
+#line 180 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyvsp[-2].wordstr)->push_back("||"); }
+#line 1721 "phrasedml.tab.cpp" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 182 "phrasedml.ypp" /* yacc.c:1646  */
     {
                   (yyval.wordstr) = (yyvsp[-3].wordstr);
                   (yyval.wordstr)->push_back("[");
@@ -1725,95 +1731,95 @@ yyreduce:
                   (yyval.wordstr)->push_back("]");
                   delete (yyvsp[-1].nums);
                 }
-#line 1729 "phrasedml.tab.cpp" /* yacc.c:1661  */
-    break;
-
-  case 61:
-#line 190 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[0].wordstr);}
-#line 1735 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1735 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 191 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyval.wordstr)->push_back(","); (yyval.wordstr)->insert((yyval.wordstr)->end(), (yyvsp[0].wordstr)->begin(), (yyvsp[0].wordstr)->end()); }
-#line 1741 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 193 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[0].wordstr);}
+#line 1741 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 194 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '+';}
-#line 1747 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 194 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.wordstr) = (yyvsp[-2].wordstr); (yyval.wordstr)->push_back(","); (yyval.wordstr)->insert((yyval.wordstr)->end(), (yyvsp[0].wordstr)->begin(), (yyvsp[0].wordstr)->end()); }
+#line 1747 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 195 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '-';}
-#line 1753 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 197 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '+';}
+#line 1753 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 196 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '*';}
-#line 1759 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 198 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '-';}
+#line 1759 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 197 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '/';}
-#line 1765 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 199 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '*';}
+#line 1765 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 198 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '^';}
-#line 1771 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 200 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '/';}
+#line 1771 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 199 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '>';}
-#line 1777 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 201 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '^';}
+#line 1777 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 200 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '<';}
-#line 1783 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 202 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '>';}
+#line 1783 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 201 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '!';}
-#line 1789 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 203 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '<';}
+#line 1789 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 202 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '%';}
-#line 1795 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 204 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '!';}
+#line 1795 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 203 "phrasedml.ypp" /* yacc.c:1661  */
-    {(yyval.character) = '=';}
-#line 1801 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 205 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '%';}
+#line 1801 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 206 "phrasedml.ypp" /* yacc.c:1661  */
-    {}
-#line 1807 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 206 "phrasedml.ypp" /* yacc.c:1646  */
+    {(yyval.character) = '=';}
+#line 1807 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 207 "phrasedml.ypp" /* yacc.c:1661  */
+#line 209 "phrasedml.ypp" /* yacc.c:1646  */
     {}
-#line 1813 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1813 "phrasedml.tab.cpp" /* yacc.c:1646  */
+    break;
+
+  case 75:
+#line 210 "phrasedml.ypp" /* yacc.c:1646  */
+    {}
+#line 1819 "phrasedml.tab.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 1817 "phrasedml.tab.cpp" /* yacc.c:1661  */
+#line 1823 "phrasedml.tab.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2041,7 +2047,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 210 "phrasedml.ypp" /* yacc.c:1906  */
+#line 213 "phrasedml.ypp" /* yacc.c:1906  */
 
 
 

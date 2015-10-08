@@ -12,7 +12,7 @@ task_0_0 = run Simulation0 on Application0
 repeatedTask_0_0 = repeat task_0_0 for Application0.s1 in uniform(10, 30, 3), reset=true
 
 // Outputs
-plot repeatedTask_0_0.time vs repeatedTask_0_0.Application0.s0, repeatedTask_0_0.Application0.s1
+plot "Application0plots" repeatedTask_0_0.time vs repeatedTask_0_0.Application0.s0, repeatedTask_0_0.Application0.s1
 
 // Names
 Application0 is "Application0"

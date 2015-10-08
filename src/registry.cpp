@@ -421,7 +421,7 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
 }
 
 //phraSED-ML lines that are clearly plots:
-bool Registry::addOutput(vector<const string*>* plot,  vector<vector<string>*>* plotlist)
+bool Registry::addOutput(vector<const string*>* plot,  vector<vector<string>*>* plotlist, const std::string* name)
 {
   if (plotlist==NULL || plotlist->size()==0) {
     setError("Error in addOutput:  no plotlist given.", phrased_yylloc_last_line-1);
@@ -439,12 +439,12 @@ bool Registry::addOutput(vector<const string*>* plot,  vector<vector<string>*>* 
   err << "'): ";
 
   if (CaselessStrCmp(plotstr,"plot")) {
-    if (addPlot(plotlist, err)) {
+    if (addPlot(plotlist, err, name)) {
       return true;
     }
   }
   else if (CaselessStrCmp(plotstr,"report")) {
-    if (addReport(plotlist, err)) {
+    if (addReport(plotlist, err, name)) {
       return true;
     }
   }
@@ -652,7 +652,7 @@ string Registry::getWorkingFilename(const string& filename)
   
 char* Registry::getPhraSEDML() const
 {
-  string retval  = "//Created by libphrasedml ";
+  string retval  = "// Created by libphrasedml ";
   retval += LIBPHRASEDML_VERSION_STRING;
   string names = "";
   for (size_t m=0; m<m_models.size(); m++) {
@@ -702,9 +702,7 @@ char* Registry::getPhraSEDML() const
       retval += "\n// Outputs\n";
     }
     retval += m_outputs[t].getPhraSEDML();
-    if (m_outputs[t].getName() != "") {
-      names += m_outputs[t].getId() + " is \"" + m_outputs[t].getName() + "\"\n";
-    }
+    //Outputs handle their own names.
   }
 
   if (names != "") {
@@ -1115,7 +1113,7 @@ ASTNode* Registry::fixTime(ASTNode* astn)
   return astn;
 }
 
-bool Registry::addPlot( vector<vector<string>*>* plotlist, stringstream& err)
+bool Registry::addPlot( vector<vector<string>*>* plotlist, stringstream& err, const string* name)
 {
   //Break up the plotlist vector if it has 'vs' in it
   vector<string> x;
@@ -1187,11 +1185,14 @@ bool Registry::addPlot( vector<vector<string>*>* plotlist, stringstream& err)
     }
   }
   PhrasedOutput pout(curves);
+  if (name) {
+    pout.setName(*name);
+  }
   m_outputs.push_back(pout);
   return false;
 }
 
-bool Registry::addReport( vector<vector<string>*>* plotlist, stringstream& err)
+bool Registry::addReport( vector<vector<string>*>* plotlist, stringstream& err, const string* name)
 {
   //For reports, we treat 'vs' and commas as exactly the same thing:  everything simply gets listed.
   vector<vector<string> > outputs;
@@ -1223,6 +1224,9 @@ bool Registry::addReport( vector<vector<string>*>* plotlist, stringstream& err)
     outputASTs.push_back(astn);
   }
   PhrasedOutput pout(outputASTs);
+  if (name) {
+    pout.setName(*name);
+  }
   m_outputs.push_back(pout);
   return false;
 }

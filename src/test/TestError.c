@@ -521,8 +521,8 @@ END_TEST
 Suite *
 create_suite_Errors (void)
 {
-  Suite *suite = suite_create("PhraSED-ML Errors");
-  TCase *tcase = tcase_create("PhraSED-ML Errors");
+  Suite *suite = suite_create("phraSED-ML Errors");
+  TCase *tcase = tcase_create("phraSED-ML Errors");
 
   tcase_add_test( tcase, test_plot_ambiguous_task);
   tcase_add_test( tcase, test_plot_ambiguous_model);

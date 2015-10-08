@@ -40,7 +40,7 @@ ASTNode* getASTNodeFrom(SedDataGenerator* datagen, SedDocument* seddoc, bool isL
     ASTNode* newroot = new ASTNode(AST_FUNCTION_LOG);
     ASTNode ten(AST_INTEGER);
     ten.setValue(10);
-    newroot->addChild(&ten);
+    newroot->addChild(ten.deepCopy());
     newroot->addChild(astn);
     return newroot;
   }
@@ -91,6 +91,12 @@ PhrasedOutput::PhrasedOutput(SedOutput* sedout, SedDocument* seddoc)
   , m_isPlot(true)
   , m_outputVariables()
 {
+  if (sedout->isSetName()) {
+    setName(sedout->getName());
+  }
+  if (sedout->isSetId()) {
+    setId(sedout->getId());
+  }
   switch(sedout->getTypeCode()) {
   case SEDML_OUTPUT_PLOT2D:
     {
@@ -155,6 +161,9 @@ string PhrasedOutput::getPhraSEDML() const
   }
   else {
     ret += "report ";
+  }
+  if (!m_name.empty()) {
+    ret += "\"" + m_name + "\" ";
   }
   std::vector<std::vector<ASTNode*> > truncatedvars = m_outputVariables;
   if (m_isPlot) {

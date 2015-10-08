@@ -9,5 +9,5 @@ simulation_1 = simulate uniform(0, 5, 51)
 task_1 = run simulation_1 on model_1
 
 // Outputs
-plot time vs S1 / compartment, S2 / compartment
-report time, S1 / compartment, S2 / compartment
+plot "Timecourse for test 00001" time vs S1 / compartment, S2 / compartment
+report "Report for test 00001" time, S1 / compartment, S2 / compartment

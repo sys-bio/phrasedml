@@ -36,21 +36,16 @@
     <dataGenerator id="plot_0_0_2">
       <listOfVariables>
         <variable id="S2" target="/sbml:sbml/sbml:model/descendant::*[@id='S2']" taskReference="task1" modelReference="mod1"/>
-        <variable id="C1" target="/sbml:sbml/sbml:model/descendant::*[@id='C1']" taskReference="task1" modelReference="mod1"/>
       </listOfVariables>
       <math xmlns="http://www.w3.org/1998/Math/MathML">
-        <apply>
-          <divide/>
-          <ci> S2 </ci>
-          <ci> C1 </ci>
-        </apply>
+        <ci> S2 </ci>
       </math>
     </dataGenerator>
   </listOfDataGenerators>
   <listOfOutputs>
     <plot3D id="plot_0">
       <listOfSurfaces>
-        <surface logX="false" logY="false" xDataReference="plot_0_0_0" yDataReference="plot_0_0_1" logZ="false" zDataReference="plot_0_0_2"/>
+        <surface logX="false" logY="true" xDataReference="plot_0_0_0" yDataReference="plot_0_0_1" logZ="true" zDataReference="plot_0_0_2"/>
       </listOfSurfaces>
     </plot3D>
   </listOfOutputs>

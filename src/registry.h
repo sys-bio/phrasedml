@@ -95,7 +95,7 @@ public:
 
 
   //phraSED-ML lines that are clearly plots:
-  bool addOutput(std::vector<const std::string*>* plot, std::vector<std::vector<std::string>*>* plotlist);
+  bool addOutput(std::vector<const std::string*>* plot, std::vector<std::vector<std::string>*>* plotlist, const std::string* name = NULL);
 
   
   //ChangeList addition
@@ -148,8 +148,8 @@ private:
   void createSEDML();
   bool file_exists (const std::string& filename);
   bool addASTToCurve(const std::vector<std::string>* x, std::vector<ASTNode*>& curve, std::stringstream& err);
-  bool addPlot(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err);
-  bool addReport(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err);
+  bool addPlot(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err, const std::string* name);
+  bool addReport(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err, const std::string* name);
 
   ASTNode* fixTime(ASTNode* astn);
 };
