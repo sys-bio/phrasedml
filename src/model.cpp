@@ -343,7 +343,8 @@ bool PhrasedModel::finalize()
 
   if (m_isFile) {
     if (m_sbml.getModel() == NULL) {
-      g_registry.addWarning("Unable to find model '" + m_source + "'.  Some constructs may be incorrectly formed as a result.");
+      g_registry.setError("Unable to find model '" + m_source + "', preventing phraSED-ML from creating accurate SED-ML constructs.  Try changing the working directory with 'setWorkingDirectory', or set the model directly with 'setReferencedSBML'.", 0);
+      return true;
     }
   }
   else {

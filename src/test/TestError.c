@@ -518,14 +518,18 @@ START_TEST (test_plot_ambiguous_model)
 END_TEST
 
 
+START_TEST (test_unknown_model)
+{
+  testError("sbml_model = model \"unknown_model.xml\"", "Unable to find model 'unknown_model.xml', preventing phraSED-ML from creating accurate SED-ML constructs.  Try changing the working directory with 'setWorkingDirectory', or set the model directly with 'setReferencedSBML'.");
+}
+END_TEST
+
+
 Suite *
 create_suite_Errors (void)
 {
   Suite *suite = suite_create("phraSED-ML Errors");
   TCase *tcase = tcase_create("phraSED-ML Errors");
-
-  tcase_add_test( tcase, test_plot_ambiguous_task);
-  tcase_add_test( tcase, test_plot_ambiguous_model);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);
@@ -599,6 +603,9 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_plot_novar_3d);
   tcase_add_test( tcase, test_plot_nomod_2d);
   tcase_add_test( tcase, test_plot_nomod_3d);
+  tcase_add_test( tcase, test_plot_ambiguous_task);
+  tcase_add_test( tcase, test_plot_ambiguous_model);
+  tcase_add_test( tcase, test_unknown_model);
 
 
   suite_add_tcase(suite, tcase);

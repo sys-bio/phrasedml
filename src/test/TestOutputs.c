@@ -111,8 +111,6 @@ create_suite_Outputs (void)
   Suite *suite = suite_create("phraSED-ML Outputs");
   TCase *tcase = tcase_create("phraSED-ML Outputs");
 
-  tcase_add_test( tcase, plot3d_log_formula);
-  tcase_add_test( tcase, report_log_formula);
 
   tcase_add_test( tcase, plot_basic);
   tcase_add_test( tcase, plot_formula);
@@ -123,8 +121,10 @@ create_suite_Outputs (void)
   tcase_add_test( tcase, plot_basic_with_period);
   tcase_add_test( tcase, plot_and_report);
   tcase_add_test( tcase, plot_two_plots);
-  tcase_add_test( tcase, test_00001_sbml_l3v1_sedml);
   tcase_add_test( tcase, plot_log_formula);
+  tcase_add_test( tcase, plot3d_log_formula);
+  tcase_add_test( tcase, report_log_formula);
+  tcase_add_test( tcase, test_00001_sbml_l3v1_sedml);
   tcase_add_test( tcase, plot_named);
 
   suite_add_tcase(suite, tcase);

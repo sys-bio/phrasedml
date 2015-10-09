@@ -52,6 +52,7 @@ Registry::Registry()
 Registry::~Registry()
 {
   clearAll();
+  clearReferencedSBML();
   delete m_sedml;
 }
 
@@ -896,6 +897,9 @@ void Registry::setReferencedSBML(const char* filename, SBMLDocument* doc)
 
 void Registry::clearReferencedSBML()
 {
+  for (map<string, SBMLDocument*>::iterator el = m_referencedSBML.begin(); el!= m_referencedSBML.end(); el++) {
+    delete el->second;
+  }
   m_referencedSBML.clear();
 }
 

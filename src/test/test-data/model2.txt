@@ -1,1 +1,0 @@
-sbml_model = model "unknown_model.xml"

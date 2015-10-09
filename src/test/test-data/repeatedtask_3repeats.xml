@@ -10,20 +10,20 @@
     </uniformTimeCourse>
   </listOfSimulations>
   <listOfModels>
-    <model id="Application0" name="Application0" language="urn:sedml:language:sbml" source="./asedml3repeat_Application0.xml" />
+    <model id="Application0" name="Application0" language="urn:sedml:language:sbml" source="sbml_model.xml" />
   </listOfModels>
   <listOfTasks>
     <task id="task_0_0" name="task_0_0" modelReference="Application0" simulationReference="Simulation0" />
-    <repeatedTask id="repeatedTask_0_0" name="repeatedTask_0_0" resetModel="true" range="range_0_0_s1_init_uM">
+    <repeatedTask id="repeatedTask_0_0" name="repeatedTask_0_0" resetModel="true" range="range_0_0_S2_init_uM">
       <listOfRanges>
-        <uniformRange id="range_0_0_s1_init_uM" start="10.0" end="30.0" numberOfPoints="3" type="Linear" />
+        <uniformRange id="range_0_0_S2_init_uM" start="10.0" end="30.0" numberOfPoints="3" type="Linear" />
       </listOfRanges>
       <listOfChanges>
-        <setValue range="range_0_0_s1_init_uM" modelReference="Application0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='s1']">
+        <setValue range="range_0_0_S2_init_uM" modelReference="Application0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']">
           <listOfVariables />
           <listOfParameters />
           <math:math>
-            <math:ci>range_0_0_s1_init_uM</math:ci>
+            <math:ci>range_0_0_S2_init_uM</math:ci>
           </math:math>
         </setValue>
       </listOfChanges>
@@ -41,20 +41,20 @@
         <math:ci>t</math:ci>
       </math:math>
     </dataGenerator>
-    <dataGenerator id="dataGen_repeatedTask_0_0_s0" name="dataGen_repeatedTask_0_0_s0">
+    <dataGenerator id="dataGen_repeatedTask_0_0_S1" name="dataGen_repeatedTask_0_0_S1">
       <listOfVariables>
-        <variable id="s0" name="s0" taskReference="repeatedTask_0_0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='s0']" />
+        <variable id="S1" name="S1" taskReference="repeatedTask_0_0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']" />
       </listOfVariables>
       <math:math>
-        <math:ci>s0</math:ci>
+        <math:ci>S1</math:ci>
       </math:math>
     </dataGenerator>
-    <dataGenerator id="dataGen_repeatedTask_0_0_s1" name="dataGen_repeatedTask_0_0_s1">
+    <dataGenerator id="dataGen_repeatedTask_0_0_S2" name="dataGen_repeatedTask_0_0_S2">
       <listOfVariables>
-        <variable id="s1" name="s1" taskReference="repeatedTask_0_0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='s1']" />
+        <variable id="S2" name="S2" taskReference="repeatedTask_0_0" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']" />
       </listOfVariables>
       <math:math>
-        <math:ci>s1</math:ci>
+        <math:ci>S2</math:ci>
       </math:math>
     </dataGenerator>
   </listOfDataGenerators>
@@ -64,8 +64,8 @@
         <p xmlns="http://www.w3.org/1999/xhtml">Plot of all variables and output functions from application 'Application0' ; simulation 'Simulation0' in VCell model</p>
       </notes>
       <listOfCurves>
-        <curve id="curve_0" name="curve_0" logX="false" logY="false" xDataReference="time_repeatedTask_0_0" yDataReference="dataGen_repeatedTask_0_0_s0" />
-        <curve id="curve_1" name="curve_1" logX="false" logY="false" xDataReference="time_repeatedTask_0_0" yDataReference="dataGen_repeatedTask_0_0_s1" />
+        <curve id="curve_0" name="curve_0" logX="false" logY="false" xDataReference="time_repeatedTask_0_0" yDataReference="dataGen_repeatedTask_0_0_S1" />
+        <curve id="curve_1" name="curve_1" logX="false" logY="false" xDataReference="time_repeatedTask_0_0" yDataReference="dataGen_repeatedTask_0_0_S2" />
       </listOfCurves>
     </plot2D>
   </listOfOutputs>

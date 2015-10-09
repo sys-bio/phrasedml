@@ -32,13 +32,6 @@ START_TEST (test_model_name)
 }
 END_TEST
 
-START_TEST (test_model2)
-{
-  compareStringAndFileTranslation("sbml_model = model \"unknown_model.xml\"", "model2");
-}
-END_TEST
-
-
 START_TEST (test_model_attchange_spec_conc)
 {
   compareStringAndFileTranslation("sbml_model = model \"sbml_model.xml\" with S1=4", "model_attchange_spec_conc");
@@ -148,7 +141,6 @@ create_suite_Models (void)
 
   tcase_add_test( tcase, test_model);
   tcase_add_test( tcase, test_model_name);
-  tcase_add_test( tcase, test_model2);
   tcase_add_test( tcase, test_model_attchange_spec_conc);
   tcase_add_test( tcase, test_model_attchange_spec_amt);
   tcase_add_test( tcase, test_model_attchange_comp);
