@@ -34,7 +34,7 @@ PhrasedUniform::PhrasedUniform(SedUniformTimeCourse* seduniform)
   m_stochastic = false;
   if (seduniform->isSetAlgorithm()) {
     const SedAlgorithm* alg = seduniform->getAlgorithm();
-    if (alg->isSetKisaoID() && alg->getKisaoID() == "KISAO:0000241") {
+    if (alg->isSetKisaoID() && (alg->getKisaoID() == "KISAO:0000241" || alg->getKisaoID() == "KISAO:0000029")) {
       m_stochastic = true;
     }
   }

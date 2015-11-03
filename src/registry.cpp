@@ -721,6 +721,8 @@ char* Registry::getSEDML() const
   }
   ostringstream stream;
   SedWriter sw;
+  sw.setProgramName("phraSED-ML");
+  sw.setProgramVersion(LIBPHRASEDML_VERSION_STRING);
   sw.writeSedML(m_sedml, stream);
   string ret = stream.str();
   size_t replace = ret.find("&apos;");

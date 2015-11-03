@@ -125,7 +125,7 @@ END_TEST
 
 START_TEST (test_model_formchange_var_assignment)
 {
-  compareStringAndFileTranslation("sbml_model = model \"sbml_model.xml\" with C1=4^x, x=2", "model_formchange_var_assignment");
+  compareStringAndFileTranslation("sbml_model = model \"sbml_model.xml\" with C1=4^x, local.x=2", "model_formchange_var_assignment");
 }
 END_TEST
 

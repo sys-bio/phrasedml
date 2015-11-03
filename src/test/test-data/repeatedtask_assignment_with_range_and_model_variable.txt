@@ -1,4 +1,4 @@
 mod1 = model "sbml_model.xml"
 sim1 = simulate uniform(0,10,100)
 task1 = run sim1 on mod1
-task2 = repeat task1 for loop in [0,1,5], S1 = loop+p1+2
+task2 = repeat task1 for local.loop in [0,1,5], S1 = loop+p1+2

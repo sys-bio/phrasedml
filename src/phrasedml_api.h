@@ -84,12 +84,14 @@ LIB_EXTERN char*  getLastPhraSEDML();
 LIB_EXTERN void setWorkingDirectory(const char* directory);
 
 /**
- * Allows phrasedml to use the given SBML document as the filename, instead of looking for the file on disk.
+ * Allows phrasedml to use the given SBML document as the filename, instead of looking for the file on disk.  If the document is invalid SBML, 'false' is returned, but the document is still saved.
  *
  * @param filename The string that, when used in phrasedml, should reference the @p doc.
  * @param doc The SBML Document to use when the @p filename is encountered.
+ *
+ * @return a boolean indicating whether the document is valid SBML or not.  Either way, the document is saved as the reference document for the given filename string.
  */
-LIB_EXTERN void setReferencedSBML(const char* filename, const char* doc);
+LIB_EXTERN bool setReferencedSBML(const char* filename, const char* doc);
 
 /**
  * Clears and removes all referenced SBML documents.

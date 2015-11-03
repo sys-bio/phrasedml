@@ -63,6 +63,13 @@ START_TEST (test_model_changeerr2)
 END_TEST
 
 
+START_TEST (test_model_changeerr3)
+{
+  testError("sbml_model = model \"sbml_model.xml\" with local.S1.S1=3", "Error creating model:  unable to define local variable 'local.S1.S1' because it has too many subvariables.");
+}
+END_TEST
+
+
 START_TEST (test_model_noimp1)
 {
   testError("sbml_model = model \"sbml_model.xml\" with remove S1", "Unable to parse line 1 at 'remove S1': changes to models of the form '[keyword] [id]' (such as 'remove S1') are not currently supported.  Future plans include incorporation of this functionality.");
@@ -407,14 +414,35 @@ END_TEST
 
 START_TEST (test_repeated_task_duplicate_assignments)
 {
-  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for p1 in uniform(0,1,10), p1 = 12", "Error in repeatedTask 'task2':  the variable 'mod1.p1' is defined multiple times.");
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for p1 in uniform(0,1,10), p1 = 12", "Error in repeatedTask 'task2':  multiple changes to the variable 'mod1.p1' are defined.");
 }
 END_TEST
 
 
 START_TEST (test_repeated_task_duplicate_assignments2)
 {
-  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for p1 in uniform(0,1,10), mod1.p1 = 12", "Error in repeatedTask 'task2':  the variable 'mod1.p1' is defined multiple times.");
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for p1 in uniform(0,1,10), mod1.p1 = 12", "Error in repeatedTask 'task2':  multiple changes to the variable 'mod1.p1' are defined.");
+}
+END_TEST
+
+
+START_TEST (test_repeated_task_unknown_variable)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for XX in uniform(0,1,10)", "Error in repeated task:  unable to find the variable 'XX' in any of the models associated with this task.");
+}
+END_TEST
+
+
+START_TEST (test_repeated_task_wrong_model_var)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for mod2.S1 in uniform(0,1,10)", "Error in repeated task:  the model 'mod2' referenced from variable 'mod2.S1' is not one of the models referenced in that task.");
+}
+END_TEST
+
+
+START_TEST (test_repeated_task_local_var_too_deep)
+{
+  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = repeat task1 for local.S1.sub2 in uniform(0,1,10)", "Error in repeated task:  unable to define local variable 'local.S1.sub2' because it has too many subvariables.");
 }
 END_TEST
 
@@ -506,14 +534,14 @@ END_TEST
 
 START_TEST (test_plot_ambiguous_task)
 {
-  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1 with S1=3\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = run sim1 on mod2\ntask3 = repeat [task1, task2] for S3 in [0,3]\nplot p1 vs S1", "Error:  an output plot or report references variable 'S1' without referencing a valid task it came from (i.e. 'task1.S1').  This is only legal if there is exactly one defined task, but here, there are 3.");
+  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1 with S1=3\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = run sim1 on mod2\ntask3 = repeat [task1, task2] for S2 in [0,3]\nplot p1 vs S1", "Error:  an output plot or report references variable 'S1' without referencing a valid task it came from (i.e. 'task1.S1').  This is only legal if there is exactly one defined task, but here, there are 3.");
 }
 END_TEST
 
 
 START_TEST (test_plot_ambiguous_model)
 {
-  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1 with S1=3\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = run sim1 on mod2\ntask3 = repeat [task1, task2] for S3 in [0,3]\nplot task3.p1 vs task3.S1", "Error:  an output plot or report references variable 'task3.S1' but there is no task subvariable named 'S1', either as a local variable for that task, or as a model variable that can be clearly mapped to a single model.  Variables in plot and report mathematics must be unambiguous, or defined clearly as 'task.model.varname'.");
+  testError("mod1 = model \"sbml_model.xml\"\nmod2 = model mod1 with S1=3\nsim1 = simulate uniform(0,10,100)\ntask1 = run sim1 on mod1\ntask2 = run sim1 on mod2\ntask3 = repeat [task1, task2] for S2 in [0,3]\nplot task3.p1 vs task3.S1", "Error:  an output plot or report references variable 'task3.S1' but there is no task subvariable named 'S1', either as a local variable for that task, or as a model variable that can be clearly mapped to a single model.  Variables in plot and report mathematics must be unambiguous, or defined clearly as 'task.model.varname'.");
 }
 END_TEST
 
@@ -536,6 +564,7 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_model_err3);
   tcase_add_test( tcase, test_model_changeerr1);
   tcase_add_test( tcase, test_model_changeerr2);
+  tcase_add_test( tcase, test_model_changeerr3);
   tcase_add_test( tcase, test_model_noimp1);
   tcase_add_test( tcase, test_model_noimp2);
   tcase_add_test( tcase, test_model_noimp3);
@@ -591,6 +620,9 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_repeated_task_recursive3);
   tcase_add_test( tcase, test_repeated_task_duplicate_assignments);
   tcase_add_test( tcase, test_repeated_task_duplicate_assignments2);
+  tcase_add_test( tcase, test_repeated_task_unknown_variable);
+  tcase_add_test( tcase, test_repeated_task_wrong_model_var);
+  tcase_add_test( tcase, test_repeated_task_local_var_too_deep);
   tcase_add_test( tcase, test_plot_wrongkey);
   tcase_add_test( tcase, test_plot_plot4d);
   tcase_add_test( tcase, test_plot_plot1d);

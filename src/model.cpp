@@ -165,7 +165,8 @@ void PhrasedModel::addLocalVariablesToComputeChange(SedComputeChange* scc, SedMo
       sp->setId(*v);
       for (size_t c=0; c<m_changes.size(); c++) {
         const ModelChange* mc = &m_changes[c];
-        if (mc->getType() == ctype_val_assignment && mc->getVariable()[0] == *v) {
+        vector<string> varname = mc->getVariable();
+        if (mc->getType() == ctype_val_assignment && varname.size() && varname[0] == "local" && varname[1] == *v) {
           //It actually exists!
           sp->setValue(mc->getValues()[0]);
           continue;

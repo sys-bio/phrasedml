@@ -93,10 +93,11 @@ LIB_EXTERN void setWorkingDirectory(const char* directory)
   g_registry.setWorkingDirectory(directory);
 }
 
-LIB_EXTERN void setReferencedSBML(const char* filename, const char* docstr)
+LIB_EXTERN bool setReferencedSBML(const char* filename, const char* docstr)
 {
   SBMLDocument* doc = readSBMLFromString(docstr);
   g_registry.setReferencedSBML(filename, doc);
+  return (doc->getErrorLog()->getNumFailsWithSeverity(LIBSBML_SEV_ERROR) == 0);
 }
 
 LIB_EXTERN void clearReferencedSBML()

@@ -121,7 +121,8 @@ void PhrasedRepeatedTask::addLocalVariablesToSetValue(SedSetValue* ssv, SedRepea
         bool found = false;
         for (size_t c=0; c<m_changes.size(); c++) {
           const ModelChange* mc = &m_changes[c];
-          if (mc->getType() == ctype_val_assignment && mc->getVariable()[0] == *v) {
+          vector<string> varname = mc->getVariable();
+          if (mc->getType() == ctype_val_assignment && varname.size()>1 && varname[0] == "local" && varname[1] == *v) {
             SedParameter* sp = ssv->createParameter();
             sp->setId(*v);
             sp->setValue(mc->getValues()[0]);
@@ -287,7 +288,7 @@ bool PhrasedRepeatedTask::finalize()
   for (size_t c=0; c<m_changes.size(); c++) {
     if (changetargets.insert(m_changes[c].getVariable()).second == false) {
       std::vector<std::string> v = m_changes[c].getVariable();
-      err += "the variable '" + getStringFrom(&v, ".") + "' is defined multiple times.";
+      err += "multiple changes to the variable '" + getStringFrom(&v, ".") + "' are defined.";
       g_registry.setError(err, 0);
       return true;
     }

@@ -141,6 +141,7 @@ ModelChange::ModelChange(SedRange* sr)
       m_values.push_back(uniform->getStart());
       m_values.push_back(uniform->getEnd());
       m_values.push_back(uniform->getNumberOfPoints());
+      m_variable.push_back("local");
       m_variable.push_back(uniform->getId());
     }
     break;
@@ -149,6 +150,7 @@ ModelChange::ModelChange(SedRange* sr)
       SedVectorRange* vector = static_cast<SedVectorRange*>(sr);
       m_type = ctype_loop_vector;
       m_values = vector->getValues();
+      m_variable.push_back("local");
       m_variable.push_back(vector->getId());
     }
     break;
@@ -171,6 +173,7 @@ ModelChange::ModelChange(SedParameter* param)
   , m_astnode(NULL)
   , m_model()
 {
+  m_variable.push_back("local");
   m_variable.push_back(param->getId());
   m_values.push_back(param->getValue());
 }
@@ -185,6 +188,7 @@ ModelChange::ModelChange(SedSetValue* ssv)
 {
   m_variable = getIdFromXPath(ssv->getTarget());
   m_variable.insert(m_variable.begin(), ssv->getModelReference());
+  m_model = ssv->getModelReference();
   setASTNode(ssv->getMath());
   if (m_astnode != NULL && m_astnode->isNumber()) {
     m_values.push_back(m_astnode->getValue());
@@ -279,6 +283,10 @@ string ModelChange::getPhraSEDML() const
 
 bool ModelChange::addModelChangeToSEDMLModel(SedModel* sedmodel) const
 {
+  if (m_variable.size() && m_variable[0]=="local") {
+    //Nothing to be done--it's a local variable used elsewhere.
+    return false;
+  }
   SedChangeAttribute* sca = NULL;
   PhrasedModel* mod = g_registry.getModel(m_model);
   SBMLDocument* doc = mod->getSBMLDocument();
@@ -287,11 +295,7 @@ bool ModelChange::addModelChangeToSEDMLModel(SedModel* sedmodel) const
   switch (m_type) {
   case ctype_val_assignment:
     if (attxpath.empty()) {
-      if (m_variable.size()==1) {
-        //Nothing to be done--it's a local variable used elsewhere.
-        return false;
-      }
-      //If m_variable is larger than one, the referenced variable *has* to be in the model.  If not, there's an error.
+      //If m_variable doesn't start with "local", the referenced variable *has* to be in the model.  If not, there's an error.
       return true;
     }
     sca = sedmodel->createChangeAttribute();
@@ -306,8 +310,7 @@ bool ModelChange::addModelChangeToSEDMLModel(SedModel* sedmodel) const
     return true;
   case ctype_formula_assignment:
     if (elxpath.empty()) {
-      //Nothing to be done--it's a local variable used elsewhere.
-      return false;
+      return true;
     }
     {
       SedComputeChange* scc = sedmodel->createComputeChange();
@@ -340,7 +343,7 @@ bool ModelChange::addModelChangeToSEDMLRepeatedTask(SedRepeatedTask* sedrt, vect
   string modref = "";
   string xpath = "";
   string type = "log";
-  if (m_variable.size() > 1) {
+  if (m_variable.size() > 1 && m_variable[0] != "local") {
     PhrasedModel* model = g_registry.getModel(m_variable[0]);
     if (model != NULL) {
       refdoc = model->getSBMLDocument();
@@ -384,8 +387,9 @@ bool ModelChange::addModelChangeToSEDMLRepeatedTask(SedRepeatedTask* sedrt, vect
       sur->setNumberOfPoints((int)m_values[2]);
       if (xpath.empty()) {
         //Create a range with a local name and that's it.
-        sur->setId(m_variable[0]);
-        sedrt->setRangeId(m_variable[0]);
+        assert(m_variable.size()==2);
+        sur->setId(m_variable[1]);
+        sedrt->setRangeId(m_variable[1]);
       }
       else {
         //Need to create a temporary variable name, and then point the variable at it
@@ -408,8 +412,9 @@ bool ModelChange::addModelChangeToSEDMLRepeatedTask(SedRepeatedTask* sedrt, vect
       svr->setValues(m_values);
       if (xpath.empty()) {
         //Create a range with a local name and that's it.
-        svr->setId(m_variable[0]);
-        sedrt->setRangeId(m_variable[0]);
+        assert(m_variable[0] == "local");
+        svr->setId(m_variable[1]);
+        sedrt->setRangeId(m_variable[1]);
       }
       else {
         //Need to create a temporary variable name, and then point the variable at it
@@ -504,11 +509,21 @@ bool ModelChange::finalize() const
     //Error already set.
     return true;
   }
-  if (m_variable.size() > 1) {
+  if (m_variable.size()==0) {
+    g_registry.setError("A model change was created for the model '" + m_model + "' without a variable to assign the change to.  This is likely a programming error.", 0);
+    return true;
+  }
+  if (m_variable[0] != "local") {
     //Make sure m_variable points to existing/creatable elements.
     string xpath = getElementXPathFromId(&m_variable, doc);
     if (xpath.empty()) {
       //Error already set.
+      return true;
+    }
+  }
+  else {
+    if (m_variable.size() > 2) {
+      g_registry.setError("Error creating model:  unable to define local variable '" + getStringFrom(&m_variable) + "' because it has too many subvariables.", 0);
       return true;
     }
   }
@@ -519,15 +534,55 @@ bool ModelChange::finalize() const
 //This version of finalize is called when the ModelChange is part of a repeated task
 bool ModelChange::finalize(set<PhrasedModel*> models)
 {
-  //Add the model name to m_variable
-  string xpath = "";
-  for (set<PhrasedModel*>::iterator model = models.begin(); model != models.end(); model++) {
-    const SBMLDocument* doc = (*model)->getSBMLDocument();
-    xpath = getElementXPathFromId(&m_variable, doc);
-    if (!xpath.empty() && doc->getModel() != NULL) {
-      m_variable.insert(m_variable.begin(), (*model)->getId());
-      break;
+  if (m_variable.size() && m_variable[0] == "local") {
+    if (m_variable.size() > 2) {
+      g_registry.setError("Error in repeated task:  unable to define local variable '" + getStringFrom(&m_variable) + "' because it has too many subvariables.", 0);
+      return true;
     }
+    else {
+      return false;
+    }
+  }
+  if (m_variable.size()==1 && m_variable[0] == "reset") {
+    return false;
+  }
+  //Check if m_model is set, and if not, find it.
+  //First, look in the variable name itself:
+  if (m_model.empty() && m_variable.size()>1) {
+    PhrasedModel* refmod = g_registry.getModel(m_variable[0]);
+    if (refmod != NULL) {
+      m_model = refmod->getId();
+    }
+  }
+  //If we didn't find it, look for it in the passed-in models
+  if (m_model.empty()) {
+    //Add the model name to m_variable
+    for (set<PhrasedModel*>::iterator model = models.begin(); model != models.end(); model++) {
+      const SBMLDocument* doc = (*model)->getSBMLDocument();
+      string xpath = getElementXPathFromId(&m_variable, doc);
+      if (!xpath.empty() && doc->getModel() != NULL) {
+        m_variable.insert(m_variable.begin(), (*model)->getId());
+        m_model = (*model)->getId();
+        break;
+      }
+    }
+  }
+  else {
+    //We need to make sure that the passed-in models contains the referenced model:
+    bool found_model = false;
+    for (set<PhrasedModel*>::iterator model = models.begin(); model != models.end(); model++) {
+      if ((*model)->getId() == m_model) {
+        found_model = true;
+      }
+    }
+    if (!found_model) {
+      g_registry.setError("Error in repeated task:  the model '" + m_model + "' referenced from variable '" + getStringFrom(&m_variable) + "' is not one of the models referenced in that task.", 0);
+      return true;
+    }
+  }
+  if (m_model.empty()) {
+    g_registry.setError("Error in repeated task:  unable to find the variable '" + getStringFrom(&m_variable) + "' in any of the models associated with this task.", 0);
+    return true;
   }
   return false;
 }
