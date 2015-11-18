@@ -7,8 +7,13 @@
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-include(FindPythonLibs)
-include(FindPythonInterp)
+#include(FindPythonLibs)
+#include(FindPythonInterp)
+find_package(PythonInterp)
+# specify that the same python library should be found 
+# as the one the selected interpreter uses
+set (Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_STRING})
+find_package(PythonLibs)
 
 
 ####################################################################
@@ -44,11 +49,11 @@ ADD_CUSTOM_COMMAND(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp
     COMMAND "${PYTHON_EXECUTABLE}"
     ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/../swig/swigdoc.py"
-            python
-            -I"${CMAKE_CURRENT_SOURCE_DIR}/../.."
-            -D"${CMAKE_CURRENT_SOURCE_DIR}/../../../doc"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../swig/phrasedml.i"
-            "${CMAKE_CURRENT_BINARY_DIR}/pydoc-doxygen.i"
+             --language python
+             --top "${CMAKE_CURRENT_SOURCE_DIR}/../../../"
+             --master "${CMAKE_CURRENT_SOURCE_DIR}/../swig/phrasedml.i"
+             --output "${CMAKE_CURRENT_BINARY_DIR}/pydoc-doxygen.i"
+             ${SWIG_SWIGDOCDEFINES}
     COMMAND "${PYTHON_EXECUTABLE}"
     ARGS    "${CMAKE_CURRENT_SOURCE_DIR}/doc-converter/rewrite_pydoc.py"
             -f "${CMAKE_CURRENT_BINARY_DIR}/pydoc-doxygen.i"
@@ -70,7 +75,7 @@ ADD_CUSTOM_COMMAND(
     COMMAND "${CMAKE_COMMAND}"
     ARGS    -E rename pydoc.i pydoc-doxygen.i
     COMMAND "${CMAKE_COMMAND}"
-    ARGS    -E rename libphrasedml.py phrasedml-doxygen.py
+    ARGS    -E rename phrasedml.py phrasedml-doxygen.py
     COMMAND "${CMAKE_COMMAND}"
     ARGS    -E rename pydoc-normal.i pydoc.i
     COMMAND "${SWIG_EXECUTABLE}"
@@ -120,7 +125,7 @@ endif(MSVC)
 add_library(binding_python_lib SHARED phrasedml_wrap.cpp)
 add_dependencies( binding_python_lib binding_python_swig) 
 
-set_target_properties (binding_python_lib PROPERTIES OUTPUT_NAME "_libphrasedml")
+set_target_properties (binding_python_lib PROPERTIES OUTPUT_NAME "_phrasedml")
 if (UNIX)
         set_target_properties (binding_python_lib PROPERTIES PREFIX "")
         set_target_properties (binding_python_lib PROPERTIES SUFFIX ".so")
@@ -137,36 +142,42 @@ endif()
 
 if(APPLE)
   set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBS} ${LIBPHRASEDML_LIBRARY}-static)
+  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})
 else()
-  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBS} ${LIBPHRASEDML_LIBRARY}-static ${PYTHON_LIBRARIES})
+  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS} ${PYTHON_LIBRARIES})
 endif()
 
-# 
-# Determine the python installation directory
 #
-set(PYTHON_PACKAGE_INSTALL_DIR)
-if (UNIX OR CYGWIN) 
-  execute_process(COMMAND "${PYTHON_EXECUTABLE}" -c "import sys;import platform; sys.stdout.write(platform.python_version()[:3])"
-    OUTPUT_VARIABLE PYTHON_VERSION)
-  set(PYTHON_PACKAGE_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/python${PYTHON_VERSION}/site-packages)
-else()
-  set(PYTHON_PACKAGE_INSTALL_DIR ${MISC_PREFIX}bindings/python)
-endif()
+# Use distutil's setup.py to install the bindings
+#
 
-INSTALL(TARGETS binding_python_lib DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml )
+set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
+set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
+set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py")
+set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/timestamp")
 
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth" "phrasedml\n")
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.py  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml )
+configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
+add_custom_command(OUTPUT ${OUTPUT}
+                   COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/phrasedml/
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/phrasedml.py ${CMAKE_CURRENT_BINARY_DIR}/phrasedml/
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/phrasedml/
+#                   COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} build
+                   COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
+                   DEPENDS ${DEPS})
+add_custom_target(target ALL DEPENDS ${OUTPUT})
+
+
+#After the above are copied, run 'setup.py' to install them in the proper place.
+INSTALL(TARGETS binding_python_lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/phrasedml)
 if (NOT UNIX)
-  file(GLOB new_win_dependencies "${CMAKE_SOURCE_DIR}/win32/*.dll")
-  install(FILES ${new_win_dependencies} DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml )
+  file(GLOB win_dependencies "${CMAKE_SOURCE_DIR}/win32/*.dll" "${CMAKE_CURRENT_SOURCE_DIR}/win32/README.txt")
+  install(FILES ${win_dependencies} DESTINATION ${CMAKE_BINARY_DIR}/src/bindings/python/phrasedml)
 endif()
+INSTALL(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" -E chdir ${CMAKE_CURRENT_BINARY_DIR} ${PYTHON_EXECUTABLE} ${SETUP_PY} install)")
 
-#Install the __init.py__ file
-install(FILES ${CMAKE_SOURCE_DIR}/src/bindings/python/__init__.py DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml )
+#file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth" "phrasedml\n")
+#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
 
 ####################################################################
 #

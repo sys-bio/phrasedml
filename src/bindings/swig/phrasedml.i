@@ -5,7 +5,7 @@
  * 
  */
 
-%module(directors="1") libphrasedml
+%module(directors="1") phrasedml
 
 #pragma SWIG nowarn=473,401,844
 
@@ -49,20 +49,6 @@ public class"
  */
 
 %typemap(newfree) char * "free($1);";
-
-#ifndef NSBML
-%newobject getSBMLString;
-%newobject getSBMLInfoMessages;
-%newobject getSBMLWarnings;
-#endif
-
-#ifndef USE_COMP
-%newobject getCompSBMLString;
-#endif
-
-#ifndef NCELLML
-%newobject getCellMLString;
-#endif
 
 %newobject convertFile;
 %newobject convertString;

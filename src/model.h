@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <strstream>
 
 #include "variable.h"
 #include "sbml/SBMLDocument.h"
