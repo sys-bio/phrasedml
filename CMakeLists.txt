@@ -52,6 +52,7 @@ set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, op
 #
 
 # which language bindings should be build
+    option(WITH_STATIC_NUML     "Use the static version of the libnuml library"      ON )
     option(WITH_STATIC_SEDML    "Use the static version of the libsedml library"     ON )
     option(WITH_STATIC_SBML     "Use the static version of the libsbml library"      ON )
     OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat library."  OFF)
@@ -135,7 +136,58 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
 
 ####################################################################
 #
-# Locate libsbml if needed
+# Locate libnuml
+#
+    find_path(LIBNUML_INSTALL_DIR
+    NAMES include/numl/NMBase.h
+    PATHS /usr /usr/local /usr/lib /usr/local/lib 
+              ${CMAKE_SOURCE_DIR}
+              ${CMAKE_SOURCE_DIR}/dependencies/
+              ${CMAKE_SOURCE_DIR}/../
+              )
+
+    if(WITH_STATIC_NUML)
+        find_library(LIBNUML_LIBRARY
+             NAMES libnuml-static.lib libnuml-static.so libnuml-static numl-static.lib numl-static.so numl-static
+             PATHS /usr/lib /usr/local/lib
+               ${LIBNUML_INSTALL_DIR}/lib
+               ${CMAKE_SOURCE_DIR}
+               ${CMAKE_SOURCE_DIR}/dependencies/lib
+             )
+    else()
+        find_library(LIBNUML_LIBRARY 
+            NAMES libnuml.lib libnuml.so libnuml numl.lib numl.so numl
+            PATHS /usr/lib /usr/local/lib 
+              ${LIBNUML_INSTALL_DIR}/lib
+              ${CMAKE_SOURCE_DIR} 
+              ${CMAKE_SOURCE_DIR}/dependencies/lib
+            )
+    endif()
+    find_path(LIBNUML_INCLUDE_DIR
+        NAMES numl/NMBase.h
+        PATHS /usr/include /usr/local/include 
+              ${LIBNUML_INSTALL_DIR}/include
+              ${CMAKE_SOURCE_DIR}/include 
+              ${CMAKE_SOURCE_DIR}/dependencies/include
+        )
+    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBNUML_LIBRARY} )
+    if(WIN32 AND NOT(WITH_STATIC_NUML))
+        find_path(LIBNUML_BIN_DIR
+            NAMES libnuml.dll
+            PATHS /usr/bin /usr/local/bin
+                  ${LIBNUML_INSTALL_DIR}/bin
+                  ${LIBNUML_INCLUDE_DIR}/../bin
+                  ${CMAKE_SOURCE_DIR}/ 
+                  ${CMAKE_SOURCE_DIR}/dependencies/libnuml/bin
+            )
+        set(LIBNUML_DLL ${LIBNUML_BIN_DIR}/libnuml.dll)
+        install(FILES   ${LIBNUML_DLL} DESTINATION ${CMAKE_SOURCE_DIR}/win32)
+    endif()
+    INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBNUML_INCLUDE_DIR})
+
+####################################################################
+#
+# Locate libsbml
 #
 
     find_path(LIBSBML_INSTALL_DIR
