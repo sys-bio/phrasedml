@@ -2,8 +2,8 @@
 
 from distutils.core import setup
 
-setup(name='phraSEDML',
-      version='${LIBPHRASEDML_VERSION_STRING}',
+setup(name='phrasedml',
+      version='${LIBPHRASEDML_VERSION_STRING_NO_V}',
       description='Python bindings for phraSED-ML',
       author='Lucian Smith',
       author_email='lpsmith@uw.edu',
