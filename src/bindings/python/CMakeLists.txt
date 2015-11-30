@@ -30,8 +30,6 @@ file(GLOB SWIG_DEPENDENCIES
         ${CMAKE_CURRENT_SOURCE_DIR}/../swig/*.h
         )
 
-
-SET(LIBPHRASEDML_VERSION_STRING_NO_V "${LIBPHRASEDML_VERSION_MAJOR}.${LIBPHRASEDML_VERSION_MINOR}${LIBPHRASEDML_VERSION_PATCH}${LIBPHRASEDML_VERSION_RELEASE}")
 #
 # Remove SWIG wrappers if requested
 #
@@ -142,7 +140,7 @@ endif()
 
 #message(STATUS "libraries: ${LIBPHRASEDML_LIBS}\nphrasedml:${LIBPHRASEDML_LIBRARY}")
 
-target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})
+target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS} ${PYTHON_LIBRARIES})
 
 if(APPLE)
   set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")

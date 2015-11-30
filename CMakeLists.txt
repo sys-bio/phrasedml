@@ -40,6 +40,10 @@ SET(CPACK_PACKAGE_VERSION_PATCH "${LIBPHRASEDML_VERSION_PATCH}")
 SET(CPACK_PACKAGE_VERSION_RELEASE "${LIBPHRASEDML_VERSION_RELEASE}")
 INCLUDE(CPack)
 
+####################################################################
+#
+# Here we have the main configuration options for libphrasedml
+#
 option(BUILD_SHARED_LIBS  "Build shared library (Set to OFF to build static libraries)" ON)
 option(WITH_SWIG   "Regenerate SWIG-based language bindings." ON )
 option(WITH_PYTHON       "Generate Python language bindings." OFF)
@@ -49,29 +53,16 @@ if (WITH_PYTHON)
   option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    OFF )
 endif()
 
-
-####################################################################
-#
-# Here we have the main configuration options for libphrasedml
-#
-
 # which language bindings should be build
-    option(WITH_STATIC_NUML     "Use the static version of the libnuml library"      ON )
-    option(WITH_STATIC_SEDML    "Use the static version of the libsedml library"     ON )
-    option(WITH_STATIC_SBML     "Use the static version of the libsbml library"      ON )
-    OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat library."  OFF)
-    OPTION(WITH_LIBSBML_LIBXML "Set if libsbml was compiled with a separate libxml library." ON)
-    OPTION(WITH_LIBSBML_XERCES "Set if libsbml was compiled with a separate xerces library." OFF)
-    OPTION(WITH_LIBSBML_COMPRESSION "Set if libsbml was compiled with separate zdll and bzip libraries." OFF)
-#option(WITH_CELLML          "Generate CellML translations"    ON )
-#option(WITH_QTPHRASEDML      "Generate QTPhrasedml"             ON )
-#option(WITH_SBW             "QTPhrasedml integration with SBW" OFF )
-#option(WITH_SBW_TRANSLATOR  "Generate SBWTranslator"          OFF )
-#option(WITH_SWIG   "Regenerate SWIG-based language bindings." ON )
-#option(WITH_PYTHON       "Generate Python language bindings." OFF)
+option(WITH_STATIC_NUML     "Use the static version of the libnuml library"      ON )
+option(WITH_STATIC_SEDML    "Use the static version of the libsedml library"     ON )
+option(WITH_STATIC_SBML     "Use the static version of the libsbml library"      ON )
+OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat library."  OFF)
+OPTION(WITH_LIBSBML_LIBXML "Set if libsbml was compiled with a separate libxml library." ON)
+OPTION(WITH_LIBSBML_XERCES "Set if libsbml was compiled with a separate xerces library." OFF)
+OPTION(WITH_LIBSBML_COMPRESSION "Set if libsbml was compiled with separate zdll and bzip libraries." OFF)
 
 set(EXTRA_LIBS "" CACHE STRING "Libraries the other libraries depend on that are in non-standard locations" )
-#set(EXTRA_LIBS "" CACHE_STRING "")
 
 # Enable the generation of unit tests. If enabled, all test runners
 # will be created and can be run with "make test" or ctest.
@@ -80,7 +71,6 @@ set(EXTRA_LIBS "" CACHE STRING "Libraries the other libraries depend on that are
 if(NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio 6" AND NOT ${CMAKE_GENERATOR} MATCHES "Visual Studio 7")
     option(WITH_CHECK    "Compile unit tests. Run with 'make test' or 'ctest'." OFF)
 endif()
-
 
 
 SET(LIBPHRASEDML_VERSION_STRING "v${LIBPHRASEDML_VERSION_MAJOR}.${LIBPHRASEDML_VERSION_MINOR}${LIBPHRASEDML_VERSION_PATCH}${LIBPHRASEDML_VERSION_RELEASE}")
@@ -134,7 +124,6 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
                   ${CMAKE_SOURCE_DIR}/dependencies/libsedml/bin
             )
         set(LIBSEDML_DLL ${LIBSEDML_BIN_DIR}/libsedml.dll)
-        install(FILES   ${LIBSEDML_DLL} DESTINATION ${CMAKE_SOURCE_DIR}/win32)
     endif()
     INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBSEDML_INCLUDE_DIR})
 
@@ -185,7 +174,6 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
                   ${CMAKE_SOURCE_DIR}/dependencies/libnuml/bin
             )
         set(LIBNUML_DLL ${LIBNUML_BIN_DIR}/libnuml.dll)
-        install(FILES   ${LIBNUML_DLL} DESTINATION ${CMAKE_SOURCE_DIR}/win32)
     endif()
     INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBNUML_INCLUDE_DIR})
 
@@ -231,7 +219,7 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
               ${CMAKE_SOURCE_DIR}/../libsbml-5/release/include/
         )
     set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBSBML_LIBRARY} )
-    if(WIN32 AND NOT(WITH_STATIC_SBML))
+    if(WIN32 AND NOT WITH_STATIC_SBML)
         find_path(LIBSBML_BIN_DIR
             NAMES libsbml.dll
             PATHS /usr/bin /usr/local/bin
@@ -474,7 +462,7 @@ file(GLOB LIBPHRASEDML_HEADERS
 ##### Build the main library #####
 add_library(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_HEADERS} ${LIBPHRASEDML_SOURCES})
 target_link_libraries(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_LIBS})
-    message(STATUS "  Target link libraries = ${LIBPHRASEDML_LIBS}")
+#    message(STATUS "  Target link libraries = ${LIBPHRASEDML_LIBS}")
 add_definitions(-DLIB_EXPORTS)
 install(TARGETS ${LIBPHRASEDML_LIBRARY} DESTINATION lib)
 install(FILES   ${LIBPHRASEDML_HEADERS} DESTINATION include)
@@ -661,6 +649,15 @@ endif(UNIX)
 # Install win32 dependencies
 # 
 if (NOT UNIX)
-  file(GLOB win_dependencies "${CMAKE_SOURCE_DIR}/win32/*.dll" "${CMAKE_CURRENT_SOURCE_DIR}/win32/README.txt")
-  install(FILES ${win_dependencies} DESTINATION bin/)
+   file(GLOB win_dependencies "${CMAKE_SOURCE_DIR}/win32/*.dll" "${CMAKE_CURRENT_SOURCE_DIR}/win32/README.txt")
+   if (NOT WITH_STATIC_SBML)
+      list(APPEND win_dependencies ${LIBSBML_DLL})
+   endif()
+   if (NOT WITH_STATIC_SEDML)
+      list(APPEND win_dependencies ${LIBSEDML_DLL})
+   endif()
+   if (NOT WITH_STATIC_NUML)
+      list(APPEND win_dependencies ${LIBNUML_DLL})
+   endif()
+   install(FILES ${win_dependencies} DESTINATION bin/)
 endif()
