@@ -44,6 +44,10 @@ option(BUILD_SHARED_LIBS  "Build shared library (Set to OFF to build static libr
 option(WITH_SWIG   "Regenerate SWIG-based language bindings." ON )
 option(WITH_PYTHON       "Generate Python language bindings." OFF)
 set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS are used), Debug, Release, RelWithDebInfo, MinSizeRel" )
+if (WITH_PYTHON)
+  option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    ON )
+  option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    OFF )
+endif()
 
 
 ####################################################################
@@ -238,7 +242,6 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
                   ${CMAKE_SOURCE_DIR}/../libsbml-5/release/bin/
             )
         set(LIBSBML_DLL ${LIBSBML_BIN_DIR}/libsbml.dll)
-        install(FILES   ${LIBSBML_DLL} DESTINATION ${CMAKE_SOURCE_DIR}/win32)
     endif()
     INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBSBML_INCLUDE_DIR})
     if (WITH_COMP_SBML)
@@ -483,9 +486,6 @@ endif(WIN32 AND NOT CYGWIN)
 
 if (NOT UNIX)
   add_definitions(-DWIN32 -DLIBSBML_EXPORTS -DLIBLAX_EXPORTS)
-  if (WITH_PYTHON)
-     INSTALL(TARGETS ${LIBPHRASEDML_LIBRARY} DESTINATION bindings/python/phrasedml )
-  endif()
 endif(NOT UNIX)
 
 

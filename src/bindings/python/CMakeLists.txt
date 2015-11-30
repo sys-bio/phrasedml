@@ -15,6 +15,7 @@ find_package(PythonInterp)
 set (Python_ADDITIONAL_VERSIONS ${PYTHON_VERSION_STRING})
 find_package(PythonLibs)
 
+SET(LIBPHRASEDML_VERSION_STRING_NO_V "${LIBPHRASEDML_VERSION_MAJOR}.${LIBPHRASEDML_VERSION_MINOR}${LIBPHRASEDML_VERSION_PATCH}${LIBPHRASEDML_VERSION_RELEASE}")
 
 ####################################################################
 #
@@ -141,12 +142,12 @@ endif()
 
 #message(STATUS "libraries: ${LIBPHRASEDML_LIBS}\nphrasedml:${LIBPHRASEDML_LIBRARY}")
 
+target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})
+
 if(APPLE)
   set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})
-else()
-  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS} ${PYTHON_LIBRARIES})
 endif()
+
 
 #
 # Use distutil's setup.py to install the bindings
@@ -169,16 +170,40 @@ add_custom_command(OUTPUT ${OUTPUT}
 add_custom_target(target ALL DEPENDS ${OUTPUT})
 
 
-#After the above are copied, run 'setup.py' to install them in the proper place.
-INSTALL(TARGETS binding_python_lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/phrasedml)
-if (NOT UNIX)
-  file(GLOB win_dependencies "${CMAKE_SOURCE_DIR}/win32/*.dll" "${CMAKE_CURRENT_SOURCE_DIR}/win32/README.txt")
-  install(FILES ${win_dependencies} DESTINATION ${CMAKE_BINARY_DIR}/src/bindings/python/phrasedml)
-endif()
-INSTALL(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" -E chdir ${CMAKE_CURRENT_BINARY_DIR} ${PYTHON_EXECUTABLE} ${SETUP_PY} install)")
+#For installation, we can run setup.py for people automatically (on by default):
 
-#file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth" "phrasedml\n")
-#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
+if (PYTHON_SYSTEM_INSTALL)
+   INSTALL(TARGETS binding_python_lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/phrasedml)
+   if (NOT UNIX)
+      file(GLOB win_dependencies "${CMAKE_SOURCE_DIR}/win32/*.dll")
+      list(REMOVE_ITEM win_dependencies ${CMAKE_SOURCE_DIR}/win32/QtCore4.dll)
+      list(REMOVE_ITEM win_dependencies ${CMAKE_SOURCE_DIR}/win32/QtGui4.dll)
+      if (NOT WITH_STATIC_SBML)
+         list(APPEND win_dependencies ${LIBSBML_DLL})
+      endif()
+      install(FILES ${win_dependencies} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/phrasedml)
+   endif()
+   INSTALL(CODE "execute_process(COMMAND \"${CMAKE_COMMAND}\" -E chdir ${CMAKE_CURRENT_BINARY_DIR} ${PYTHON_EXECUTABLE} ${SETUP_PY} install)")
+endif()
+
+#...and/or we can let them install python bindings in a local directory (off by default).
+
+if (PYTHON_LOCAL_INSTALL)
+   set(PYTHON_PACKAGE_INSTALL_DIR "bindings/python")
+
+   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth" "phrasedml\n")
+   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
+   INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/setup.py  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
+   file(GLOB phrasedml_python_files "${CMAKE_CURRENT_BINARY_DIR}/phrasedml/*.*")
+   install(FILES ${phrasedml_python_files} DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml )
+
+endif()
+
+if (NOT PYTHON_SYSTEM_INSTALL)
+   if (NOT PYTHON_LOCAL_INSTALL)
+        message(WARNING "   Python bindings will be created, but not installed.  Install them by hand from ${CMAKE_CURRENT_BINARY_DIR},\n   or turn on PYTHON_SYSTEM_INSTALL and/or PYTHON_LOCAL_INSTALL.")
+   endif()
+endif()
 
 ####################################################################
 #
