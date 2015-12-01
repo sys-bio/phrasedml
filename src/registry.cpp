@@ -1028,7 +1028,6 @@ bool Registry::checkId(vector<const string*>* name)
 bool Registry::isValidSId(vector<const string*>* name)
 {
   if (name->size() != 1) return false;
-  string corename = *(*name)[0];
 
   //Taken from libsbml's "SyntaxChecker::isValidInternalSId(string sid)"
   size_t size = (*name)[0]->size();

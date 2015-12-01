@@ -1,0 +1,12 @@
+// Created by libphrasedml v0.5beta
+// Models
+model1 = model "sbml_model2.xml"
+
+// Simulations
+sim1 = simulate uniform_stochastic(0, 10, 10)
+
+// Tasks
+task1 = run sim1 on model1
+
+// Outputs
+plot time vs ATP, CTP, GTP, UTP

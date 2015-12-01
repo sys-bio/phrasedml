@@ -63,6 +63,13 @@ START_TEST (test_uniform_stochastic_4args)
 END_TEST 
 
 
+START_TEST (test_sedml_webtools_gillespie_transcription)
+{
+  compareOriginalXMLTranslations("sedml_webtools_gillespie_transcription");
+}
+END_TEST 
+
+
 
 
 Suite *
@@ -71,13 +78,14 @@ create_suite_Simulations (void)
   Suite *suite = suite_create("phraSED-ML Simulations");
   TCase *tcase = tcase_create("phraSED-ML Simulations");
 
-  tcase_add_test( tcase, test_uniform_stochastic_3args);
-  tcase_add_test( tcase, test_uniform_stochastic_4args);
+  tcase_add_test( tcase, test_sedml_webtools_gillespie_transcription);
 
   tcase_add_test( tcase, test_steadystate);
   tcase_add_test( tcase, test_onestep);
   tcase_add_test( tcase, test_uniform_3args);
   tcase_add_test( tcase, test_uniform_4args);
+  tcase_add_test( tcase, test_uniform_stochastic_3args);
+  tcase_add_test( tcase, test_uniform_stochastic_4args);
 
   suite_add_tcase(suite, tcase);
 

@@ -71,7 +71,7 @@ void PhrasedUniform::addSimulationToSEDML(SedDocument* sedml) const
   uniform->setNumberOfPoints(m_numpts);
   SedAlgorithm* alg = uniform->createAlgorithm();
   if (m_stochastic) {
-    alg->setKisaoID("KISAO:0000241"); //stochastic simulation
+    alg->setKisaoID("KISAO:0000029"); //stochastic simulation
   }
   else {
     alg->setKisaoID("KISAO:0000019"); //non-stochastic simulation
