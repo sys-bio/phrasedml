@@ -42,6 +42,7 @@ private:
   bool addVariableToMap(const std::string& var);
   std::string getMatchingDataGenerator(SedDocument* sedml, ASTNode* astnode) const;
   void replaceASTNamesAndAdd(ASTNode* astnode, SedDataGenerator* sdg) const;
+  std::string getSimpleString(std::string formula) const;
 
 };
 

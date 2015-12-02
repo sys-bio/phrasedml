@@ -260,6 +260,9 @@ string PhrasedOutput::addDataGeneratorToSEDML(SedDocument* sedml, ASTNode* astno
   sdg->setId(id.str());
   replaceASTNamesAndAdd(astnode, sdg);
   sdg->setMath(astnode);
+  char* formula = SBML_formulaToL3String(astnode);
+  sdg->setName(getSimpleString(formula));
+  free(formula);
   return id.str();
 }
 
@@ -294,18 +297,7 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
     for (size_t an=0; an<vec->size(); an++) {
       datagennames.push_back(addDataGeneratorToSEDML(sedml, (*vec)[an], ov, an));
       char* cformula = SBML_formulaToL3String((*vec)[an]);
-      string formula = cformula;
-      size_t space = formula.find(" ");
-      while (space != string::npos) {
-        formula.replace(space, 1, "");
-        space = formula.find(" ");
-      }
-      size_t separators = formula.find(g_registry.getSeparator());
-      while (space != string::npos) {
-        formula.replace(separators, g_registry.getSeparator().size(), ".");
-        separators = formula.find(g_registry.getSeparator());
-      }
-      datagenlabels.push_back(formula);
+      datagenlabels.push_back(getSimpleString(cformula));
       free(cformula);
     }
     //Map those data generators to the plot/reports
@@ -338,6 +330,21 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
   }
 }
   
+
+string PhrasedOutput::getSimpleString(string formula) const
+{
+  size_t space = formula.find(" ");
+  while (space != string::npos) {
+    formula.replace(space, 1, "");
+    space = formula.find(" ");
+  }
+  size_t separators = formula.find(g_registry.getSeparator());
+  while (separators != string::npos) {
+    formula.replace(separators, g_registry.getSeparator().size(), ".");
+    separators = formula.find(g_registry.getSeparator());
+  }
+  return formula;
+}
 
 bool PhrasedOutput::finalize()
 {
