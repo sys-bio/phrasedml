@@ -47,6 +47,7 @@ INCLUDE(CPack)
 option(BUILD_SHARED_LIBS  "Build shared library (Set to OFF to build static libraries)" ON)
 option(WITH_SWIG   "Regenerate SWIG-based language bindings." ON )
 option(WITH_PYTHON       "Generate Python language bindings." OFF)
+option(WITH_EXAMPLES     "Generate example programs, including translator." ON)
 set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS are used), Debug, Release, RelWithDebInfo, MinSizeRel" )
 if (WITH_PYTHON)
   option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    ON )
@@ -393,7 +394,6 @@ if(WITH_CHECK)
 
 endif(WITH_CHECK)
 
-
 ####################################################################
 #
 # Need some variables set up, such as the name for the libPhrasedml 
@@ -499,6 +499,16 @@ INSTALL(TARGETS ${LIBPHRASEDML_LIBRARY}-static
 #
 
 add_subdirectory(src/bindings)
+
+
+####################################################################
+#
+# Build the executables.
+#
+
+if(WITH_EXAMPLES)
+  add_subdirectory(examples)
+endif(WITH_EXAMPLES)
 
 
 
@@ -661,3 +671,5 @@ if (NOT UNIX)
    endif()
    install(FILES ${win_dependencies} DESTINATION bin/)
 endif()
+
+    message(STATUS "  main program include directories = ${INCLUDE_DIRECTORIES}")
