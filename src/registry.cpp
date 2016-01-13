@@ -17,7 +17,7 @@
 #include "sbmlx.h"
 
 #include "sedml/SedDocument.h"
-extern char* getCharStar(const char* orig);
+
 extern int phrased_yyparse();
 extern int phrased_yylloc_last_line;
 
@@ -27,6 +27,7 @@ extern int phrased_yylloc_last_line;
 
 
 using namespace std;
+PHRASEDML_CPP_NAMESPACE_BEGIN
 
 Registry::Registry()
   : m_variablenames()
@@ -735,7 +736,7 @@ char* Registry::getSEDML() const
     ret.replace(replace, 6, "\"");
     replace = ret.find("&quot;");
   }
-  return getCharStar(ret.c_str());
+  return g_registry.getCharStar(ret.c_str());
 }
 
 size_t Registry::getNumModels() const
@@ -915,7 +916,7 @@ SBMLDocument* Registry::getSavedSBML(std::string filename)
 }
 
 
-void Registry::freeAll()
+void Registry::freeAllPhrased()
 {
   for (size_t i=0; i<m_charstars.size(); i++) {
     free(m_charstars[i]);
@@ -930,7 +931,7 @@ bool Registry::parseInput()
   clearSEDML();
   int success = phrased_yyparse();
   if (success != 0) {
-    if (getError().size() == 0) {
+    if (getError().empty()) {
       assert(false); //Need to fill in the reason why we failed explicitly, if possible.
       if (success == 1) {
         setError("Parsing failed because of invalid input.", phrased_yylloc_last_line);
@@ -1235,3 +1236,17 @@ bool Registry::addReport( vector<vector<string>*>* plotlist, stringstream& err, 
   m_outputs.push_back(pout);
   return false;
 }
+
+//Useful functions for later routines:
+char* Registry::getCharStar(const char* orig)
+{
+  char* ret = strdup(orig);
+  if (ret == NULL) {
+    setError("Out of memory error.", phrased_yylloc_last_line-1);
+    return NULL;
+  }
+  m_charstars.push_back(ret);
+  return ret;
+}
+
+PHRASEDML_CPP_NAMESPACE_END

@@ -16,6 +16,7 @@ using namespace std;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedOutput::PhrasedOutput(const vector<ASTNode*>& inputs)
   : Variable("_none")
   , m_isPlot(false)
@@ -525,3 +526,4 @@ void PhrasedOutput::replaceASTNamesAndAdd(ASTNode* astnode, SedDataGenerator* sd
     }
   }
 }
+PHRASEDML_CPP_NAMESPACE_END

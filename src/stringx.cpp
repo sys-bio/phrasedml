@@ -9,6 +9,7 @@
 using namespace std;
 extern bool CaselessStrCmp(const string& lhs, const string& rhs);
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 string SizeTToString(size_t number)
 {
   ostringstream ostr;
@@ -266,3 +267,4 @@ bool CaselessStrCmp(const string& lhs, const string& rhs)
   return true;
 
 } /* CaselessStrCmp */
+PHRASEDML_CPP_NAMESPACE_END

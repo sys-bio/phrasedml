@@ -2,9 +2,11 @@
 #define VARIABLE_H
 
 #include <string>
+#include "phrasedml-namespace.h"
 
 class SedBase;
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 class Variable
 {
 private:
@@ -31,6 +33,7 @@ public:
 private:
 
 };
+PHRASEDML_CPP_NAMESPACE_END
 
 
 #endif //VARIABLE_H

@@ -12,8 +12,7 @@
 
 using namespace std;
 
-#define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
-
+PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedSimulation::PhrasedSimulation(simtype type, std::string id)
   : Variable(id)
   , m_type(type)
@@ -65,4 +64,4 @@ void PhrasedSimulation::setKisaoFromType()
     break;
   }
 }
-
+PHRASEDML_CPP_NAMESPACE_END

@@ -12,8 +12,7 @@
 
 using namespace std;
 
-#define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
-
+PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedUniform::PhrasedUniform(std::string id, double start, double outstart, double end, long numpts, bool stochastic)
   : PhrasedSimulation(simtype_uniform, id)
   , m_start(start)
@@ -34,7 +33,7 @@ PhrasedUniform::PhrasedUniform(SedUniformTimeCourse* seduniform)
   m_stochastic = false;
   if (seduniform->isSetAlgorithm()) {
     const SedAlgorithm* alg = seduniform->getAlgorithm();
-    if (alg->isSetKisaoID() && (alg->getKisaoID() == "KISAO:0000241" || alg->getKisaoID() == "KISAO:0000029")) {
+    if (alg->isSetKisaoID() && kisaoIdIsStochastic(alg->getKisaoID())) {
       m_stochastic = true;
     }
   }
@@ -106,3 +105,46 @@ bool PhrasedUniform::finalize()
   }
   return false;
 }
+
+bool PhrasedUniform::kisaoIdIsStochastic(const string& kisao)
+{
+  if (kisao=="KISAO:0000029") return true; //our default
+  if (kisao=="KISAO:0000319") return true;
+  if (kisao=="KISAO:0000274") return true;
+  if (kisao=="KISAO:0000241") return true;
+  if (kisao=="KISAO:0000333") return true;
+  if (kisao=="KISAO:0000329") return true;
+  if (kisao=="KISAO:0000323") return true;
+  if (kisao=="KISAO:0000331") return true;
+  if (kisao=="KISAO:0000027") return true;
+  if (kisao=="KISAO:0000082") return true;
+  if (kisao=="KISAO:0000324") return true;
+  if (kisao=="KISAO:0000350") return true;
+  if (kisao=="KISAO:0000330") return true;
+  if (kisao=="KISAO:0000028") return true;
+  if (kisao=="KISAO:0000038") return true;
+  if (kisao=="KISAO:0000039") return true;
+  if (kisao=="KISAO:0000048") return true;
+  if (kisao=="KISAO:0000074") return true;
+  if (kisao=="KISAO:0000081") return true;
+  if (kisao=="KISAO:0000045") return true;
+  if (kisao=="KISAO:0000351") return true;
+  if (kisao=="KISAO:0000084") return true;
+  if (kisao=="KISAO:0000040") return true;
+  if (kisao=="KISAO:0000046") return true;
+  if (kisao=="KISAO:0000003") return true;
+  if (kisao=="KISAO:0000051") return true;
+  if (kisao=="KISAO:0000335") return true;
+  if (kisao=="KISAO:0000336") return true;
+  if (kisao=="KISAO:0000095") return true;
+  if (kisao=="KISAO:0000022") return true;
+  if (kisao=="KISAO:0000076") return true;
+  //if (kisao=="KISAO:0000029") return true; //Where it appears in KiSAO, but we have it above.
+  if (kisao=="KISAO:0000015") return true;
+  if (kisao=="KISAO:0000075") return true;
+  if (kisao=="KISAO:0000278") return true;
+
+  return false;
+}
+
+PHRASEDML_CPP_NAMESPACE_END

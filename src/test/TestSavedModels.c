@@ -19,6 +19,7 @@ using namespace std;
 BEGIN_C_DECLS
 
 extern char *TestDataDirectory;
+PHRASEDML_CPP_NAMESPACE_USE
 
 START_TEST (test_saved_model_basic)
 {

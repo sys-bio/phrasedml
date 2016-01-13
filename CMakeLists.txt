@@ -447,6 +447,7 @@ file(GLOB LIBPHRASEDML_HEADERS
           ${PHRASEDML_SRC_DIR}modelChange.h
           ${PHRASEDML_SRC_DIR}oneStep.h
           ${PHRASEDML_SRC_DIR}phrasedml_api.h
+          ${PHRASEDML_SRC_DIR}phrasedml-namespace.h
           ${PHRASEDML_SRC_DIR}output.h
           ${PHRASEDML_SRC_DIR}registry.h
           ${PHRASEDML_SRC_DIR}repeatedTask.h

@@ -5,10 +5,12 @@
 #include <vector>
 
 #include "variable.h"
+#include "phrasedml-namespace.h"
 
 class SedSimulation;
 class SedDocument;
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 enum simtype {
   simtype_unknown,
   simtype_steadystate, 
@@ -43,6 +45,7 @@ private:
   void setKisaoFromType();
 
 };
+PHRASEDML_CPP_NAMESPACE_END
 
 
 #endif //PHRASEDSIMULATION_H

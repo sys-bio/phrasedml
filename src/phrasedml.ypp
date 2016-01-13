@@ -43,9 +43,8 @@
 #include "stringx.h"
 #include "modelChange.h"
 
-  class ModelChange;
-
   using namespace std;
+  using namespace phrasedml;
   int phrased_yylex(void);
   void phrased_yyerror(char const *);
   Registry g_registry;

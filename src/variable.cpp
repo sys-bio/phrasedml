@@ -13,8 +13,7 @@
 
 using namespace std;
 
-#define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
-
+PHRASEDML_CPP_NAMESPACE_BEGIN
 Variable::Variable(string id)
   : m_id(id)
   , m_name()
@@ -59,3 +58,4 @@ bool Variable::finalize() const
   }
   return false;
 }
+PHRASEDML_CPP_NAMESPACE_END

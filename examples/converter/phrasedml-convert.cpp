@@ -22,47 +22,17 @@ using namespace std;
 int
 main (int argc, char* argv[])
 {
-  if (argc < 2)
+  if (argc != 2)
   {
-    cerr << endl << "Usage: phrasedml-convert file1 [file2] [...]" << endl << endl;
+    cerr << endl << "Usage: phrasedml-convert [filename]" << endl << endl;
     return 1;
   }
 
-  for (int f=1; f<argc; f++) {
-    char* translated = convertFile(argv[f]);
-    if (translated==NULL) {
-      cerr << endl << "Unable to translate " << argv[f] << endl << endl;
-      return 1;
-    }
-    string filename = argv[f];
-    size_t xml = filename.find(".xml");
-    int len = 4;
-    if (xml == string::npos) {
-      xml = filename.find(".sedml");
-      len = 6;
-    }
-    size_t txt = filename.find(".txt");
-
-    if (xml != string::npos) {
-      filename.replace(xml, len, ".txt");
-    }
-    else if (txt != string::npos) {
-      filename.replace(txt, 4, ".xml");
-    }
-    else {
-      filename.append(".translated");
-    }
-
-    setlocale(LC_ALL, "C");
-    ofstream afile(filename);
-    if (!afile.good()) {
-      cerr << "Unable to open file " << filename << " for writing.";
-      return 1;
-    }
-    afile << translated;
-    afile.close();
-
-    free(translated);
+  char* translated = phrasedml::convertFile(argv[1]);
+  if (translated==NULL) {
+    cerr << endl << "Unable to translate " << argv[1] << ": " << phrasedml::getLastPhrasedError() << endl << endl;
+    return 1;
   }
+  cout << translated;
   return 0;
 }

@@ -17,6 +17,7 @@ using namespace std;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedModel::PhrasedModel(string id, string source, bool isFile)
   : Variable(id)
   , m_type(lang_XML)
@@ -362,3 +363,5 @@ bool PhrasedModel::finalize()
   }
   return false;
 }
+
+PHRASEDML_CPP_NAMESPACE_END

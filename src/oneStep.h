@@ -5,8 +5,11 @@
 #include <vector>
 
 #include "simulation.h"
+#include "phrasedml-namespace.h"
 
 class SedOneStep;
+
+PHRASEDML_CPP_NAMESPACE_BEGIN
 
 class PhrasedOneStep : public PhrasedSimulation
 {
@@ -30,5 +33,6 @@ private:
 
 };
 
+PHRASEDML_CPP_NAMESPACE_END
 
 #endif //PHRASEDONESTEP_H

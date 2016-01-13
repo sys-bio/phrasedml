@@ -12,8 +12,7 @@
 
 using namespace std;
 
-#define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
-
+PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedSteadyState::PhrasedSteadyState(std::string id)
   : PhrasedSimulation(simtype_steadystate, id)
 {
@@ -51,3 +50,4 @@ bool PhrasedSteadyState::finalize()
   }
   return false;
 }
+PHRASEDML_CPP_NAMESPACE_END

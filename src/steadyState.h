@@ -5,9 +5,11 @@
 #include <vector>
 
 #include "simulation.h"
+#include "phrasedml-namespace.h"
 
 class SedSteadyState;
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedSteadyState: public PhrasedSimulation
 {
 private:
@@ -28,6 +30,7 @@ public:
 private:
 
 };
+PHRASEDML_CPP_NAMESPACE_END
 
 
 #endif //PHRASEDSTEADYSTATE_H

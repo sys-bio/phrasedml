@@ -17,6 +17,7 @@ using namespace std;
 BEGIN_C_DECLS
 
 extern char *TestDataDirectory;
+PHRASEDML_CPP_NAMESPACE_USE
 
 void compareFileTranslation(const string& base)
 {
@@ -25,7 +26,7 @@ void compareFileTranslation(const string& base)
   string sedfile = dir + base + ".xml";
   char* sed_gen = convertFile(phrasedfile.c_str());
   if (sed_gen==NULL) {
-    cout << getLastError() << endl << endl;
+    cout << getLastPhrasedError() << endl << endl;
     fail_unless(false);
     return;
   }
@@ -34,7 +35,7 @@ void compareFileTranslation(const string& base)
 
   char* phrased_gen = convertFile(sedfile.c_str());
   if (phrased_gen==NULL) {
-    cout << getLastError() << endl << endl;
+    cout << getLastPhrasedError() << endl << endl;
     fail_unless(false);
     return;
   }
@@ -55,7 +56,7 @@ void compareStringTranslation(const string& phrasedml, const string& sedml)
   setWorkingDirectory(TestDataDirectory);
   char* sed_gen = convertString(phrasedml.c_str());
   if (sed_gen==NULL) {
-    cout << getLastError() << endl << endl;
+    cout << getLastPhrasedError() << endl << endl;
     fail_unless(false);
     return;
   }
@@ -65,7 +66,7 @@ void compareStringTranslation(const string& phrasedml, const string& sedml)
   string sedfile = dir + sedml;
   char* phrased_gen = convertFile(sedfile.c_str());
   if (phrased_gen==NULL) {
-    cout << getLastError() << endl << endl;
+    cout << getLastPhrasedError() << endl << endl;
     fail_unless(false);
     return;
   }
@@ -94,7 +95,7 @@ void compareOriginalXMLTranslations(const string& base)
   string sedrtfile = dir + base + "_rt.xml";
   char* sed_gen = convertFile(phrasedfile.c_str());
   if (sed_gen==NULL) {
-    cout << getLastError() << endl << endl;
+    cout << getLastPhrasedError() << endl << endl;
     fail_unless(false);
     return;
   }
@@ -103,7 +104,7 @@ void compareOriginalXMLTranslations(const string& base)
 
   char* phrased_gen = convertFile(sedfile.c_str());
   if (phrased_gen==NULL) {
-    cout << getLastError() << endl << endl;
+    cout << getLastPhrasedError() << endl << endl;
     fail_unless(false);
     return;
   }

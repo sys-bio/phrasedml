@@ -15,6 +15,7 @@
 using namespace std;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
+PHRASEDML_CPP_NAMESPACE_BEGIN
 
 PhrasedRepeatedTask::PhrasedRepeatedTask(std::string id, std::string task, vector<ModelChange>* changes)
   : PhrasedTask(id, "", "")
@@ -358,3 +359,4 @@ ModelChange* PhrasedRepeatedTask::getModelChange(std::string id)
   }
   return NULL;
 }
+PHRASEDML_CPP_NAMESPACE_END

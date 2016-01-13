@@ -6,10 +6,12 @@
 #include <set>
 
 #include "variable.h"
+#include "phrasedml-namespace.h"
 
 class SedTask;
 class SedDocument;
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedTask : public Variable
 {
 private:
@@ -38,6 +40,7 @@ public:
 private:
 
 };
+PHRASEDML_CPP_NAMESPACE_END
 
 
 #endif //PHRASEDTASK_H

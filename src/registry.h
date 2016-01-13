@@ -6,17 +6,20 @@
 #include <sstream>
 #include <set>
 #include <map>
+#include "phrasedml-namespace.h"
 
 #include "sedml/SedTypes.h"
 #include "sbml/math/L3ParserSettings.h"
 
+class SBMLDocument;
+
+PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;
 class PhrasedSimulation;
 class PhrasedTask;
 class PhrasedRepeatedTask;
-class ModelChange;
 class PhrasedOutput;
-class SBMLDocument;
+class ModelChange;
 
 class Registry
 {
@@ -74,7 +77,7 @@ public:
 
   std::string getError() {return m_error;};
   int getErrorLine() {return m_errorLine;};
-  std::vector<std::string> getWarnings() {return m_warnings;};
+  std::vector<std::string> getPhrasedWarnings() {return m_warnings;};
 
   //phraSED-ML lines that are clearly model definitions:
   bool addModelDef(std::vector<const std::string*>* name, std::vector<const std::string*>* model, const std::string* modelloc);
@@ -134,7 +137,9 @@ public:
   //std::vector<double**> m_doublestarstars;
   //std::vector<unsigned long*> m_ulongstars;
   //std::vector<rd_type*> m_rd_typestars;
-  void freeAll();
+  void freeAllPhrased();
+
+  char* getCharStar(const char* orig);
 
 private:
   bool parseInput();
@@ -154,7 +159,8 @@ private:
   ASTNode* fixTime(ASTNode* astn);
 };
 
-extern Registry g_registry;
+PHRASEDML_CPP_NAMESPACE_END
 
+extern PHRASEDML_CPP_NAMESPACE_QUALIFIER Registry g_registry;
 
 #endif //REGISTRY_H

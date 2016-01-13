@@ -11,6 +11,7 @@
 #include "registry.h"
 #include "stringx.h"
 #include "task.h"
+#include "phrasedml-namespace.h"
 
 #include "sedml/SedChange.h"
 #include "sedml/SedChangeAttribute.h"
@@ -21,6 +22,7 @@
 #include "sbml/math/L3FormulaFormatter.h"
 
 using namespace std;
+PHRASEDML_CPP_NAMESPACE_BEGIN
 
 bool isLoop(change_type type)
 {
@@ -587,3 +589,4 @@ bool ModelChange::finalize(set<PhrasedModel*> models)
   return false;
 }
 
+PHRASEDML_CPP_NAMESPACE_END

@@ -2,6 +2,7 @@
 #define MODELCHANGE_H
 
 #include <string>
+#include "phrasedml-namespace.h"
 
 class SedChange;
 class SedChange;
@@ -12,6 +13,8 @@ class SedRange;
 class SedRepeatedTask;
 class SedSetValue;
 class ASTNode;
+
+PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;
 
 enum change_type {
@@ -72,5 +75,6 @@ private:
 
 };
 
+PHRASEDML_CPP_NAMESPACE_END
 
 #endif //MODELCHANGE_H

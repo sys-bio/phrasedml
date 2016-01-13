@@ -5,9 +5,11 @@
 #include <vector>
 
 #include "simulation.h"
+#include "phrasedml-namespace.h"
 
 class SedUniformTimeCourse;
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedUniform : public PhrasedSimulation
 {
 private:
@@ -29,9 +31,11 @@ public:
 
   virtual bool finalize();
 
+  static bool kisaoIdIsStochastic(const std::string& kisao);
 private:
 
 };
+PHRASEDML_CPP_NAMESPACE_END
 
 
 #endif //PHRASEDUNIFORMSIMULATION_H

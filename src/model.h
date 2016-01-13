@@ -7,7 +7,12 @@
 #include "variable.h"
 #include "sbml/SBMLDocument.h"
 #include "modelChange.h"
+#include "phrasedml-namespace.h"
 
+class SedComputeChange;
+class SedModel;
+
+PHRASEDML_CPP_NAMESPACE_BEGIN
 enum language {
   lang_XML, 
   lang_SBML, 
@@ -25,9 +30,6 @@ enum language {
   lang_CellML1_1, 
   lang_CellML1_2
 };
-
-class SedComputeChange;
-class SedModel;
 
 class PhrasedModel : public Variable
 {
@@ -69,5 +71,6 @@ private:
 
 };
 
+PHRASEDML_CPP_NAMESPACE_END
 
 #endif //PHRASEDMODEL_H

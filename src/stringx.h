@@ -4,10 +4,12 @@
 #include <string>
 #include <vector>
 #include <set>
+#include "phrasedml-namespace.h"
 
 class SBMLDocument;
 class PhrasedModel;
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 //String functions
 std::string SizeTToString(size_t num);
 std::string DoubleToString(double num);
@@ -25,5 +27,6 @@ void getElementXPathFromId(const std::string& id, std::set<PhrasedModel*> docs, 
 bool IsReal(const std::string& src);
 
 bool CaselessStrCmp(const std::string& lhs, const std::string& rhs);
+PHRASEDML_CPP_NAMESPACE_END
 
 #endif //STRINGX_h

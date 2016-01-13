@@ -6,6 +6,7 @@
 
 using namespace std;
 
+PHRASEDML_CPP_NAMESPACE_BEGIN
 void getVariablesFromASTNode(ASTNode* astn, set<string>& variables)
 {
   if (astn->getType() == AST_NAME) {
@@ -34,3 +35,4 @@ void replaceVariablesInASTNodeWith(ASTNode* astn, const map<string, string>& rep
   }
 
 }
+PHRASEDML_CPP_NAMESPACE_END

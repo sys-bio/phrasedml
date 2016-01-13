@@ -7,11 +7,14 @@
 #include "variable.h"
 #include "modelChange.h"
 #include "task.h"
+#include "phrasedml-namespace.h"
 
 class SedRepeatedTask;
 class SedDocument;
 class SedSetValue;
 class SedRepeatedTask;
+
+PHRASEDML_CPP_NAMESPACE_BEGIN
 
 class PhrasedRepeatedTask : public PhrasedTask
 {
@@ -47,5 +50,6 @@ private:
 
 };
 
+PHRASEDML_CPP_NAMESPACE_END
 
 #endif //PHRASEDREPEATEDTASK_H

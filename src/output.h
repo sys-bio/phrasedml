@@ -8,12 +8,15 @@
 #include "variable.h"
 #include "sbml/SBMLDocument.h"
 #include "modelChange.h"
+#include "phrasedml-namespace.h"
 
 class SedPlot;
 class SedReport;
 class SedOutput;
 class SedDocument;
 class ASTNode;
+
+PHRASEDML_CPP_NAMESPACE_BEGIN
 
 class PhrasedOutput: public Variable
 {
@@ -45,6 +48,7 @@ private:
   std::string getSimpleString(std::string formula) const;
 
 };
+PHRASEDML_CPP_NAMESPACE_END
 
 
 #endif //PHRASEDOUTPUT_H

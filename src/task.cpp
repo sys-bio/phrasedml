@@ -12,8 +12,7 @@
 
 using namespace std;
 
-#define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
-
+PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedTask::PhrasedTask(std::string id, std::string simulation, std::string model)
   : Variable(id)
   , m_simulation(simulation)
@@ -84,3 +83,4 @@ bool PhrasedTask::finalize()
 
   return false;
 }
+PHRASEDML_CPP_NAMESPACE_END

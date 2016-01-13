@@ -16,13 +16,14 @@ using namespace std;
 BEGIN_C_DECLS
 
 extern char *TestDataDirectory;
+PHRASEDML_CPP_NAMESPACE_USE
 
 void testError(const string& base, const string& err)
 {
   setWorkingDirectory(TestDataDirectory);
   char* sedgen = convertString(base.c_str());
   fail_unless(sedgen == NULL);
-  char* errgen = getLastError();
+  char* errgen = getLastPhrasedError();
   fail_unless(err == errgen);
 
   free(errgen);
