@@ -19,6 +19,7 @@
 #include <sedml\SedDocument.h>
 #include <sedml\SedReader.h>
 #include <sedml\SedAlgorithm.h>
+#include <sedml\SedUniformTimeCourse.h>
 #include "antimony_api.h"
 #include "phrasedml_api.h"
 #include "uniform.h"
@@ -145,7 +146,9 @@ void getTagsAndType(string sed_sbml, set<string>& components, set<string>& tests
       if (sedsim->isSetAlgorithm()) {
         const SedAlgorithm* alg = sedsim->getAlgorithm();
         string kisao = alg->getKisaoID();
-        if (phrasedml::PhrasedUniform::kisaoIdIsStochastic(kisao)) {
+        SedUniformTimeCourse* sutc = static_cast<SedUniformTimeCourse*>(sedsim);
+        phrasedml::PhrasedUniform uniform(sutc);
+        if (uniform.getStochastic()) {
           types.insert("StochasticTimeCourse");
         }
         else {
