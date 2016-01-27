@@ -95,7 +95,7 @@ bool PhrasedSimulation::setAlgorithmKisao(const std::vector<const std::string*>&
       g_registry.setError(err.str(), phrased_yylloc_last_line);
       return true;
     }
-    if (setAlgorithmKisao(stoi(*kisao[1]))) return true;
+    if (setAlgorithmKisao(atoi((*kisao[1]).c_str()))) return true;
     return false;
   }
   err << "invalid algorithm type '" << getStringFrom(&kisao) << "'.  Types must be either a keyword ('CVODE') or of the form 'kisao.19'.";
