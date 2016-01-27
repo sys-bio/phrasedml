@@ -237,6 +237,20 @@ bool IsReal(const string& src)
   return true;
 } /* IsReal */
 
+bool IsInt(const string& src)
+{
+  if (src.empty()) return false;
+
+  long i;
+  long end = src.size();
+  for (i = 0; i < end; ++i) {
+    if (!isdigit(src[i])) {
+      return false;   // Ints only have digits
+    }
+  }
+  return true;
+} /* IsInt */
+
 string Trim(string in)
 {
   string out = in;

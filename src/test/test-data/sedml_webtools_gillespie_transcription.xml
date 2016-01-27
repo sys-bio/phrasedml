@@ -3,7 +3,7 @@
 <sedML level="1" version="1" xmlns="http://sed-ml.org/">
   <listOfSimulations>
     <uniformTimeCourse id="sim1" initialTime="0" outputStartTime="0" outputEndTime="10" numberOfPoints="10">
-      <algorithm kisaoID="KISAO:0000029" />
+      <algorithm kisaoID="KISAO:0000241" />
     </uniformTimeCourse>
   </listOfSimulations>
   <listOfModels>

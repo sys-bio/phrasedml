@@ -100,6 +100,7 @@ input:          /* empty */
 
 varOrKeyword:   PHRASEWORD {$$ = new vector<const string*>; $$->push_back($1);}
         |       varOrKeyword '.' PHRASEWORD {$$ = $1; $$->push_back($3);}
+        |       varOrKeyword '.' number {$$ = $1; $$->push_back(g_registry.addWord(DoubleToString($3)));}
         ;
 
 equals:         varOrKeyword '=' varOrKeyword TEXTSTRING {if (g_registry.addModelDef($1, $3, $4)) YYABORT;}
@@ -113,6 +114,8 @@ equals:         varOrKeyword '=' varOrKeyword TEXTSTRING {if (g_registry.addMode
         |       varOrKeyword '=' varOrKeyword varOrKeyword varOrKeyword varOrKeyword varOrKeyword ',' changelist {if (g_registry.addEquals($1, $3, $4, $5, $6, $7)) YYABORT;}
         |       varOrKeyword '=' varOrKeyword '[' taskslist ']' varOrKeyword changelist {if (g_registry.addRepeatedTask($1, $3, $5, $7, $8)) YYABORT;}
         |       varOrKeyword '=' varOrKeyword varOrKeyword '(' numlist ')' {if (g_registry.addEquals($1, $3, $4, $6)) YYABORT;}
+        |       varOrKeyword '=' varOrKeyword {if (g_registry.addEquals($1, $3)) YYABORT;}
+        |       varOrKeyword '=' number       {if (g_registry.addEquals($1, $3)) YYABORT;}
         ;
 
 changelist:     varOrKeyword '=' formula {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $3)) YYABORT;}
@@ -284,6 +287,20 @@ int phrased_yylex(void)
 
   // Parse numbers
   if (cc > 0 && cc < 256 && (isdigit(cc) || (cc=='.' && isdigit(g_registry.input->peek())))) {
+    if (cc=='.') {
+      //If the element *before* the '.' was a-z, we just return '.'.  This is for things like 'kisao.424':
+      streampos here = g_registry.input->tellg();
+      if (here>0) {
+        g_registry.input->unget();
+        g_registry.input->unget();
+        char prev;
+        g_registry.input->get(prev);
+        g_registry.input->get(cc);
+        if (('a' <= prev && prev <= 'z') || ('A' <= prev && prev <= 'Z')) {
+          return cc;
+        }
+      }
+    }
     double number;
     g_registry.input->unget();
     streampos numbegin = g_registry.input->tellg();
@@ -319,6 +336,13 @@ int phrased_yylex(void)
       g_registry.input->get(cc);
       if (cc == 'e' || cc == 'E') {
         g_registry.input->unget();
+      }
+      if (cc == '.') {
+        //We might be in a 'kisao.43.c' situation.  Which is wrong, but at least clear what was meant.
+        char next = g_registry.input->peek();
+        if (('a' <= next && next <= 'z') || ('A' <= next && next <= 'Z')) {
+          g_registry.input->unget();
+        }
       }
     }
     return NUM;

@@ -422,6 +422,72 @@ bool Registry::addEquals(vector<const string*>* name, vector<const string*>* key
   return false;
 }
 
+bool Registry::addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* value)
+{
+  string namestr = getStringFrom(name);
+  string valstr  = getStringFrom(value);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line-1 << " ('" << namestr << " = " << valstr << "'): ";
+  if (name->size() <= 1) {
+    err << "this formulation is only used to set the specifics of simulation algorithms.  Try lines like 'sim1.algorithm = CVODE' or 'sim1.algorithm.relative_tolerance = 2.2'.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  else if (name->size()==2 || name->size()==3) {
+    PhrasedSimulation* phrasedsim = g_registry.getSimulation(*(*name)[0]);
+    if (phrasedsim==NULL) {
+      err << "this formulation can only be used for simulation algorithms, and '" << *(*name)[0] << "' is not a simulation.";
+      setError(err.str(), phrased_yylloc_last_line);
+      return true;
+    }
+    if (!CaselessStrCmp(*(*name)[1], "algorithm")) {
+      err << "the specific type of an simulation's algorithm can only be set by using the keyword 'algorithm', i.e. '" << *(*name)[0] << ".algorithm'.";
+      setError(err.str(), phrased_yylloc_last_line);
+      return true;
+    }
+    if (name->size() == 2) {
+      if (phrasedsim->setAlgorithmKisao(*value, err)) return true;
+    }
+    else {
+      if (phrasedsim->addAlgorithmParameter((*name)[2], &valstr, err)) return true;
+    }
+  }
+  else {
+    err << "'" << namestr << "' has too many subvariables.  This formulation is only used to set the specifics of simulation algorithms.  Try lines like 'sim1.algorithm = CVODE' or 'sim1.algorithm.relative_tolerance = 2.2'.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  return false;
+}
+
+bool Registry::addEquals(std::vector<const std::string*>* name, double value)
+{
+  string namestr = getStringFrom(name);
+  stringstream err;
+  err << "Unable to parse line " << phrased_yylloc_last_line << " ('" << namestr << " = " << value << "'): ";
+  if (name->size() <= 2 || name->size() > 3) {
+    err << "this formulation is only used to set the specifics of simulation algorithms.  Try lines like 'sim1.algorithm = kisao.19' or 'sim1.algorithm.relative_tolerance = 2.2'.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  PhrasedSimulation* phrasedsim = g_registry.getSimulation(*(*name)[0]);
+  if (phrasedsim==NULL) {
+    err << "this formulation can only be used for simulation algorithms, and '" << *(*name)[0] << "' is not a simulation.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  if (!CaselessStrCmp(*(*name)[1], "algorithm")) {
+    err << "the specific type of an simulation's algorithm can only be set by using the keyword 'algorithm', i.e. '" << *(*name)[0] << ".algorithm'.";
+    setError(err.str(), phrased_yylloc_last_line);
+    return true;
+  }
+  if (phrasedsim->addAlgorithmParameter((*name)[2], value, err)) {
+    return true;
+  }
+  return false;
+}
+
+
 //phraSED-ML lines that are clearly plots:
 bool Registry::addOutput(vector<const string*>* plot,  vector<vector<string>*>* plotlist, const std::string* name)
 {

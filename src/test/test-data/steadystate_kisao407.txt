@@ -1,0 +1,2 @@
+sim1 = simulate steadystate
+sim1.algorithm = kisao.407

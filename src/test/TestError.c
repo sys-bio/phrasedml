@@ -553,12 +553,137 @@ START_TEST (test_unknown_model)
 }
 END_TEST
 
+START_TEST (test_kisao_no_sim)
+{
+  testError("sim1.algorithm = kisao.407", "Unable to parse line 1 ('sim1.algorithm = kisao.407'): this formulation can only be used for simulation algorithms, and 'sim1' is not a simulation.");
+}
+END_TEST
 
+START_TEST (test_kisao_completely_wrong)
+{
+  testError("sim1 = kisao", "Unable to parse line 1 ('sim1 = kisao'): this formulation is only used to set the specifics of simulation algorithms.  Try lines like 'sim1.algorithm = CVODE' or 'sim1.algorithm.relative_tolerance = 2.2'.");
+}
+END_TEST
+
+START_TEST (test_kisao_not_algorithm)
+{
+  testError("sim1 = simulate steadystate\nsim1.alg = kisao.407", "Unable to parse line 2 ('sim1.alg = kisao.407'): the specific type of an simulation's algorithm can only be set by using the keyword 'algorithm', i.e. 'sim1.algorithm'.");
+}
+END_TEST
+
+START_TEST (test_kisao_not_algorithm_othersim)
+{
+  testError("sim2 = simulate steadystate\nsim2.alg = kisao.407", "Unable to parse line 2 ('sim2.alg = kisao.407'): the specific type of an simulation's algorithm can only be set by using the keyword 'algorithm', i.e. 'sim2.algorithm'.");
+}
+END_TEST
+
+START_TEST (test_kisao_unknown_algtype)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = something", "Unable to parse line 2 ('sim1.algorithm = something'): unknown algorithm type 'something'.");
+}
+END_TEST
+
+START_TEST (test_kisao_algtype_not_kisao)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = something.550", "Unable to parse line 2 ('sim1.algorithm = something.550'): when setting the type of a simulation algorithm, you must either use a single keyword (i.e. 'CVODE') or a kisao ID, written in the form 'kisao.19'.");
+}
+END_TEST
+
+START_TEST (test_kisao_algtype_notint1)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = kisao.CVODE", "Unable to parse line 2 ('sim1.algorithm = kisao.CVODE'): when setting the kisao type of a simulation algorithm, kisao terms are written in the form 'kisao.19', where the value after 'kisao.' must be a positive integer.");
+}
+END_TEST
+
+START_TEST (test_kisao_algtype_notint2)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = kisao.-44", "Unable to parse line 2 ('sim1.algorithm = kisao.-44'): when setting the kisao type of a simulation algorithm, kisao terms are written in the form 'kisao.19', where the value after 'kisao.' must be a positive integer.");
+}
+END_TEST
+
+START_TEST (test_kisao_algtype_notint3)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = kisao.12.55", "Unable to parse line 2 ('sim1.algorithm = kisao.12.55'): when setting the kisao type of a simulation algorithm, kisao terms are written in the form 'kisao.19', where the value after 'kisao.' must be a positive integer.");
+}
+END_TEST
+
+START_TEST (test_kisao_algtype_toolong1)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = a.b.c", "Unable to parse line 2 ('sim1.algorithm = a.b.c'): invalid algorithm type 'a.b.c'.  Types must be either a keyword ('CVODE') or of the form 'kisao.19'.");
+}
+END_TEST
+
+START_TEST (test_kisao_algtype_toolong2)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = kisao.43.c", "Unable to parse line 2 ('sim1.algorithm = kisao.43.c'): invalid algorithm type 'kisao.43.c'.  Types must be either a keyword ('CVODE') or of the form 'kisao.19'.");
+}
+END_TEST
+
+START_TEST (test_kisao_numalg)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = 24", "Unable to parse line 2 ('sim1.algorithm = 24'): this formulation is only used to set the specifics of simulation algorithms.  Try lines like 'sim1.algorithm = kisao.19' or 'sim1.algorithm.relative_tolerance = 2.2'.");
+}
+END_TEST
+
+START_TEST (test_kisao_nosim1)
+{
+  testError("sim1.algorithm.relative_tolerance = 24", "Unable to parse line 1 ('sim1.algorithm.relative_tolerance = 24'): this formulation can only be used for simulation algorithms, and 'sim1' is not a simulation.");
+}
+END_TEST
+
+START_TEST (test_kisao_nosim2)
+{
+  testError("sim1.foo.bar = 24", "Unable to parse line 1 ('sim1.foo.bar = 24'): this formulation can only be used for simulation algorithms, and 'sim1' is not a simulation.");
+}
+END_TEST
+
+START_TEST (test_kisao_toolong)
+{
+  testError("sim1.foo.bar.baz = CVODE", "Unable to parse line 1 ('sim1.foo.bar.baz = CVODE'): 'sim1.foo.bar.baz' has too many subvariables.  This formulation is only used to set the specifics of simulation algorithms.  Try lines like 'sim1.algorithm = CVODE' or 'sim1.algorithm.relative_tolerance = 2.2'.");
+}
+END_TEST
+
+START_TEST (test_kisao_0_ss)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = kisao.0", "Error in line 2: unable to set the kisao ID of the simulation 'sim1' to 0, because that is not a steady state simulation KiSAO ID.");
+}
+END_TEST
+
+START_TEST (test_kisao_0_unif)
+{
+  testError("sim1 = simulate uniform(0,10,100)\nsim1.algorithm = kisao.0", "Error in line 3: unable to set the KiSAO ID of the simulation 'sim1' to 0: all KiSAO IDs are 1 or greater.");
+}
+END_TEST
+
+START_TEST (test_kisao_0_algparam)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm.0 = 24", "Unable to parse line 2 ('sim1.algorithm.0 = 24'): KiSAO algorithm parameter IDs must be 1 or greater.");
+}
+END_TEST
+
+/*
+START_TEST (test_kisao_numalg)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = 24", "");
+}
+END_TEST
+
+START_TEST (test_kisao_numalg)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm = 24", "");
+}
+END_TEST
+
+*/
 Suite *
 create_suite_Errors (void)
 {
   Suite *suite = suite_create("phraSED-ML Errors");
   TCase *tcase = tcase_create("phraSED-ML Errors");
+
+  tcase_add_test( tcase, test_kisao_0_ss);
+  tcase_add_test( tcase, test_kisao_0_unif);
+  tcase_add_test( tcase, test_kisao_0_algparam);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);
@@ -639,6 +764,21 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_plot_ambiguous_task);
   tcase_add_test( tcase, test_plot_ambiguous_model);
   tcase_add_test( tcase, test_unknown_model);
+  tcase_add_test( tcase, test_kisao_no_sim);
+  tcase_add_test( tcase, test_kisao_completely_wrong);
+  tcase_add_test( tcase, test_kisao_not_algorithm);
+  tcase_add_test( tcase, test_kisao_not_algorithm_othersim);
+  tcase_add_test( tcase, test_kisao_unknown_algtype);
+  tcase_add_test( tcase, test_kisao_algtype_not_kisao);
+  tcase_add_test( tcase, test_kisao_algtype_notint1);
+  tcase_add_test( tcase, test_kisao_algtype_notint2);
+  tcase_add_test( tcase, test_kisao_algtype_notint3);
+  tcase_add_test( tcase, test_kisao_algtype_toolong1);
+  tcase_add_test( tcase, test_kisao_algtype_toolong2);
+  tcase_add_test( tcase, test_kisao_numalg);
+  tcase_add_test( tcase, test_kisao_nosim1);
+  tcase_add_test( tcase, test_kisao_nosim2);
+  tcase_add_test( tcase, test_kisao_toolong);
 
 
   suite_add_tcase(suite, tcase);

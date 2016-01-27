@@ -36,6 +36,7 @@ string PhrasedOneStep::getPhraSEDML() const
 {
   stringstream ret;
   ret << m_id << " = simulate oneStep(" << m_step << ")" << endl;
+  writePhraSEDMLKisao(ret);
   return ret.str();
 }
 
@@ -45,6 +46,7 @@ void PhrasedOneStep::addSimulationToSEDML(SedDocument* sedml) const
   oneStep->setId(m_id);
   oneStep->setName(m_name);
   oneStep->setStep(m_step);
+  addKisaoAndAlgorithmParametersToSEDML(oneStep);
 }
 
 bool PhrasedOneStep::finalize()

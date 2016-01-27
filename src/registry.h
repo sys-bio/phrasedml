@@ -93,6 +93,10 @@ public:
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* key4, std::vector<const std::string*>* key5, std::vector<ModelChange>* changelist);
   bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<double>* numlist);
 
+  //phraSED-ML lines that define KiSAO terms:
+  bool addEquals(std::vector<const std::string*>* name, std::vector<const std::string*>* value);
+  bool addEquals(std::vector<const std::string*>* name, double value);
+
   //Repeated tasks, multiple tasks:
   bool addRepeatedTask(std::vector<const std::string*>* name, std::vector<const std::string*>* key1, std::vector<std::vector<const std::string*>*>*  key2, std::vector<const std::string*>* key3, std::vector<ModelChange>* changelist);
 

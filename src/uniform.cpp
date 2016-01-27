@@ -10,6 +10,7 @@
 #include "uniform.h"
 #include "sedml/SedUniformTimeCourse.h"
 
+extern int phrased_yylloc_last_line;
 using namespace std;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
@@ -37,6 +38,9 @@ PhrasedUniform::PhrasedUniform(SedUniformTimeCourse* seduniform)
       m_stochastic = true;
     }
   }
+  if (m_kisao==19 || m_kisao == 241) {
+    m_writeKisao = false;
+  }
 }
 
 PhrasedUniform::~PhrasedUniform()
@@ -56,6 +60,7 @@ string PhrasedUniform::getPhraSEDML() const
   }
   ret << m_end << ", ";
   ret << m_numpts << ")" << endl;
+  writePhraSEDMLKisao(ret);
   return ret.str();
 }
 
@@ -70,11 +75,46 @@ void PhrasedUniform::addSimulationToSEDML(SedDocument* sedml) const
   uniform->setNumberOfPoints(m_numpts);
   SedAlgorithm* alg = uniform->createAlgorithm();
   if (m_stochastic) {
-    alg->setKisaoID("KISAO:0000029"); //stochastic simulation
+    alg->setKisaoID("KISAO:0000241"); //stochastic simulation
   }
   else {
     alg->setKisaoID("KISAO:0000019"); //non-stochastic simulation
   }
+  addKisaoAndAlgorithmParametersToSEDML(uniform);
+}
+
+bool PhrasedUniform::setAlgorithmKisao(int kisao)
+{
+  m_kisao = kisao;
+  if (kisao == 19) {
+    m_stochastic = false;
+    m_writeKisao = false;
+  }
+  else if (kisao == 241) {
+    m_stochastic = true;
+    m_writeKisao = false;
+  }
+  else if (kisaoIdIsStochastic(kisao)) {
+    m_stochastic = true;
+    m_writeKisao = true;
+  }
+  else if (kisaoIdIsSteadyState(kisao)) {
+    stringstream err;
+    err << "Error in line " << phrased_yylloc_last_line << ": unable to set the KiSAO ID of the simulation '" << m_id << "' to " << kisao << ", because this is a uniform time course simulation, but KiSAO ID " << kisao << " is steady state.";
+    g_registry.setError(err.str(), 0);
+    return true;
+  }
+  else if (kisao<=0) {
+    stringstream err;
+    err << "Error in line " << phrased_yylloc_last_line << ": unable to set the KiSAO ID of the simulation '" << m_id << "' to " << kisao << ": all KiSAO IDs are 1 or greater.";
+    g_registry.setError(err.str(), 0);
+    return true;
+  }
+  else {
+    m_stochastic = false;
+    m_writeKisao = true;
+  }
+  return false;
 }
 
 bool PhrasedUniform::finalize()
@@ -103,47 +143,6 @@ bool PhrasedUniform::finalize()
     g_registry.setError(err.str(), 0);
     return true;
   }
-  return false;
-}
-
-bool PhrasedUniform::kisaoIdIsStochastic(const string& kisao)
-{
-  if (kisao=="KISAO:0000029") return true; //our default
-  if (kisao=="KISAO:0000319") return true;
-  if (kisao=="KISAO:0000274") return true;
-  if (kisao=="KISAO:0000241") return true;
-  if (kisao=="KISAO:0000333") return true;
-  if (kisao=="KISAO:0000329") return true;
-  if (kisao=="KISAO:0000323") return true;
-  if (kisao=="KISAO:0000331") return true;
-  if (kisao=="KISAO:0000027") return true;
-  if (kisao=="KISAO:0000082") return true;
-  if (kisao=="KISAO:0000324") return true;
-  if (kisao=="KISAO:0000350") return true;
-  if (kisao=="KISAO:0000330") return true;
-  if (kisao=="KISAO:0000028") return true;
-  if (kisao=="KISAO:0000038") return true;
-  if (kisao=="KISAO:0000039") return true;
-  if (kisao=="KISAO:0000048") return true;
-  if (kisao=="KISAO:0000074") return true;
-  if (kisao=="KISAO:0000081") return true;
-  if (kisao=="KISAO:0000045") return true;
-  if (kisao=="KISAO:0000351") return true;
-  if (kisao=="KISAO:0000084") return true;
-  if (kisao=="KISAO:0000040") return true;
-  if (kisao=="KISAO:0000046") return true;
-  if (kisao=="KISAO:0000003") return true;
-  if (kisao=="KISAO:0000051") return true;
-  if (kisao=="KISAO:0000335") return true;
-  if (kisao=="KISAO:0000336") return true;
-  if (kisao=="KISAO:0000095") return true;
-  if (kisao=="KISAO:0000022") return true;
-  if (kisao=="KISAO:0000076") return true;
-  //if (kisao=="KISAO:0000029") return true; //Where it appears in KiSAO, but we have it above.
-  if (kisao=="KISAO:0000015") return true;
-  if (kisao=="KISAO:0000075") return true;
-  if (kisao=="KISAO:0000278") return true;
-
   return false;
 }
 

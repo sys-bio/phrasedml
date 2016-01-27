@@ -1,0 +1,2 @@
+sim1 = simulate onestep(0.7)
+sim1.algorithm = kisao.241

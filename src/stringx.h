@@ -25,6 +25,7 @@ std::string getElementXPathFromId(const std::vector<std::string>* id, const SBML
 void getElementXPathFromId(const std::string& id, std::set<PhrasedModel*> docs, std::string& xpath, std::string& modelref);
 
 bool IsReal(const std::string& src);
+bool IsInt(const std::string& src);
 
 bool CaselessStrCmp(const std::string& lhs, const std::string& rhs);
 PHRASEDML_CPP_NAMESPACE_END
