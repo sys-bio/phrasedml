@@ -27,6 +27,7 @@ public class"
 
 %{
 #include "../../phrasedml_api.h"
+using namespace phrasedml;
 %}
 
 /**
@@ -50,19 +51,19 @@ public class"
 
 %typemap(newfree) char * "free($1);";
 
-%newobject convertFile;
-%newobject convertString;
-%newobject getLastError;
-%newobject getLastSEDML;
-%newobject getLastPhraSEDML;
-%newobject getWarnings;
-%newobject setWorkingDirectory;
+%newobject phrasedml::convertFile;
+%newobject phrasedml::convertString;
+%newobject phrasedml::getLastPhrasedError;
+%newobject phrasedml::getLastSEDML;
+%newobject phrasedml::getLastPhraSEDML;
+%newobject phrasedml::getPhrasedWarnings;
+%newobject phrasedml::setWorkingDirectory;
 
 /**
  * Ignore 'freeAll', and all functions that return vectors, as SWIG cannot convert them properly.
  */
 
-%ignore freeAll;
+%ignore freeAllPhrased;
 
 %include "std_vector.i"
 %include "std_string.i"
