@@ -175,7 +175,7 @@ bool PhrasedSimulation::addAlgorithmParameter(const std::string* kisao, const st
   else {
     k_int = keywordToKisaoParamId(*kisao);
     if (k_int == 0) {
-      err << "unknown algorithm parameter keyword '" << kisao << "'.";
+      err << "unknown algorithm parameter keyword '" << *kisao << "'.";
       g_registry.setError(err.str(), phrased_yylloc_last_line);
       return true;
     }
@@ -199,7 +199,7 @@ bool PhrasedSimulation::addAlgorithmParameter(const std::string* kisao, double v
   else {
     k_int = keywordToKisaoParamId(*kisao);
     if (k_int == 0) {
-      err << "unknown algorithm parameter keyword '" << kisao << "'.";
+      err << "unknown algorithm parameter keyword '" << *kisao << "'.";
       g_registry.setError(err.str(), phrased_yylloc_last_line);
       return true;
     }
@@ -246,17 +246,11 @@ int PhrasedSimulation::keywordToKisaoParamId(const string& keyword) const
   if (CaselessStrCmp(keyword, "ATOL")) {
     return 211;
   }
-  if (CaselessStrCmp(keyword, "stiff")) {
-    //return 0;
-  }
-  if (CaselessStrCmp(keyword, "maximum_order")) {
-    //return 0;
+  if (CaselessStrCmp(keyword, "maximum_adams_order")) {
+    return 219;
   }
   if (CaselessStrCmp(keyword, "maximum_bdf_order")) {
-    //return 0;
-  }
-  if (CaselessStrCmp(keyword, "maximum_adams_order")) {
-    //return 0;
+    return 220;
   }
   if (CaselessStrCmp(keyword, "maximum_num_steps")) {
     return 415;
@@ -267,31 +261,66 @@ int PhrasedSimulation::keywordToKisaoParamId(const string& keyword) const
   if (CaselessStrCmp(keyword, "maximum_timestep")) {
     return 467;
   }
+  if (CaselessStrCmp(keyword, "maximum_step_size")) {
+    return 467;
+  }
   if (CaselessStrCmp(keyword, "minimum_time_step")) {
-    //return 0;
+    return 485;
   }
   if (CaselessStrCmp(keyword, "minimum_timestep")) {
-    //return 0;
+    return 485;
+  }
+  if (CaselessStrCmp(keyword, "minimum_step_size")) {
+    return 485;
   }
   if (CaselessStrCmp(keyword, "initial_time_step")) {
     return 332;
-  }
-  if (CaselessStrCmp(keyword, "multiple_steps")) {
-    //return 0;
   }
   if (CaselessStrCmp(keyword, "variable_step_size")) {
     return 107;
   }
   //steady state params (rr)
   if (CaselessStrCmp(keyword, "maximum_iterations")) {
-    //return 0;
+    return 486;
   }
   if (CaselessStrCmp(keyword, "minimum_damping")) {
-    //return 0;
+    return 487;
   }
   //gillespie params (rr)
   if (CaselessStrCmp(keyword, "seed")) {
-    //return 0;
+    return 488;
+  }
+
+  //Alternate 'max' and 'min' versions.
+  if (CaselessStrCmp(keyword, "max_bdf_order")) {
+    return 220;
+  }
+  if (CaselessStrCmp(keyword, "max_adams_order")) {
+    return 219;
+  }
+  if (CaselessStrCmp(keyword, "max_num_steps")) {
+    return 415;
+  }
+  if (CaselessStrCmp(keyword, "max_time_step")) {
+    return 467;
+  }
+  if (CaselessStrCmp(keyword, "max_timestep")) {
+    return 467;
+  }
+  if (CaselessStrCmp(keyword, "max_iterations")) {
+    return 486;
+  }
+  if (CaselessStrCmp(keyword, "min_time_step")) {
+    return 485;
+  }
+  if (CaselessStrCmp(keyword, "min_step_size")) {
+    return 485;
+  }
+  if (CaselessStrCmp(keyword, "min_timestep")) {
+    return 485;
+  }
+  if (CaselessStrCmp(keyword, "min_damping")) {
+    return 487;
   }
 
 
@@ -439,25 +468,25 @@ string PhrasedSimulation::getPhrasedVersionOf(int kisao) const
     return "relative_tolerance";
   case 211:
     return "absolute_tolerance";
-  case 99991:
-    return "maximum_order";
+  case 219:
+    return "maximum_adams_order";
+  case 220:
+    return "maximum_bdf_order";
   case 415:
     return "maximum_num_steps";
   case 467:
     return "maximum_time_step";
-  case 99992:
+  case 485:
     return "minimum_time_step";
   case 332:
     return "initial_time_step";
-  case 99993:
-    return "multiple_steps";
   case 107:
     return "variable_step_size";
-  case 99994:
+  case 486:
     return "maximum_iterations";
-  case 99995:
+  case 487:
     return "minimum_damping";
-  case 99996:
+  case 488:
     return "seed";
   }
   stringstream ret;

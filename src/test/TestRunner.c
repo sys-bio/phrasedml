@@ -118,20 +118,20 @@ main (int argc, char* argv[])
 
   setTestDataDirectory();
 
-  //SRunner *runner = srunner_create( create_suite_Models() );
+  SRunner *runner = srunner_create( create_suite_Models() );
   //SRunner *runner = srunner_create( create_suite_Saved_Models() );
   //SRunner *runner = srunner_create( create_suite_Simulations() );
   //SRunner *runner = srunner_create( create_suite_Tasks() );
   //SRunner *runner = srunner_create( create_suite_Outputs() );
   //SRunner *runner = srunner_create( create_suite_Errors() );
-  SRunner *runner = srunner_create( create_suite_Kisao() );
+  //SRunner *runner = srunner_create( create_suite_Kisao() );
 
-  //srunner_add_suite( runner, create_suite_Saved_Models() );
-  //srunner_add_suite( runner, create_suite_Simulations() );
-  //srunner_add_suite( runner, create_suite_Tasks() );
-  //srunner_add_suite( runner, create_suite_Outputs() );
-  //srunner_add_suite( runner, create_suite_Errors() );
-  //srunner_add_suite( runner, create_suite_Kisao() );
+  srunner_add_suite( runner, create_suite_Saved_Models() );
+  srunner_add_suite( runner, create_suite_Simulations() );
+  srunner_add_suite( runner, create_suite_Tasks() );
+  srunner_add_suite( runner, create_suite_Outputs() );
+  srunner_add_suite( runner, create_suite_Errors() );
+  srunner_add_suite( runner, create_suite_Kisao() );
 
 
 #ifdef TRACE_MEMORY

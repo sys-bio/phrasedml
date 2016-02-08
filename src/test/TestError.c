@@ -661,10 +661,28 @@ START_TEST (test_kisao_0_algparam)
 }
 END_TEST
 
-/*
-START_TEST (test_kisao_numalg)
+START_TEST (test_kisao_0_algparam_str)
 {
-  testError("sim1 = simulate steadystate\nsim1.algorithm = 24", "");
+  testError("sim1 = simulate steadystate\nsim1.algorithm.0 = true", "Unable to parse line 2 ('sim1.algorithm.0 = true'): KiSAO algorithm parameter IDs must be 1 or greater.");
+}
+END_TEST
+
+START_TEST (test_kisao_unk_algparam)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm.unknown = 24", "Unable to parse line 2 ('sim1.algorithm.unknown = 24'): unknown algorithm parameter keyword 'unknown'.");
+}
+END_TEST
+
+START_TEST (test_kisao_unk_algparam_str)
+{
+  testError("sim1 = simulate steadystate\nsim1.algorithm.unknown = true", "Unable to parse line 2 ('sim1.algorithm.unknown = true'): unknown algorithm parameter keyword 'unknown'.");
+}
+END_TEST
+
+/*
+START_TEST (test_oscli)
+{
+  testError("model1 = model \"oscli.xml\"\n  stepper = simulate onestep(0.1)\n  task0 = run stepper on model1\n  task1 = repeat task0 for local.x in uniform(0, 10, 100), J0_v0 = piecewise(8, x<4, 0.1, 4<=x<6, 8)\n  plot task1.time vs task1.S1, task1.S2, task1.J0_v0", "");
 }
 END_TEST
 
@@ -681,9 +699,8 @@ create_suite_Errors (void)
   Suite *suite = suite_create("phraSED-ML Errors");
   TCase *tcase = tcase_create("phraSED-ML Errors");
 
-  tcase_add_test( tcase, test_kisao_0_ss);
-  tcase_add_test( tcase, test_kisao_0_unif);
-  tcase_add_test( tcase, test_kisao_0_algparam);
+  tcase_add_test( tcase, test_kisao_0_algparam_str);
+  tcase_add_test( tcase, test_kisao_unk_algparam_str);
 
   tcase_add_test( tcase, test_model_err1);
   tcase_add_test( tcase, test_model_err2);
@@ -779,6 +796,9 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_kisao_nosim1);
   tcase_add_test( tcase, test_kisao_nosim2);
   tcase_add_test( tcase, test_kisao_toolong);
+  tcase_add_test( tcase, test_kisao_0_ss);
+  tcase_add_test( tcase, test_kisao_0_unif);
+  tcase_add_test( tcase, test_kisao_0_algparam);
 
 
   suite_add_tcase(suite, tcase);
