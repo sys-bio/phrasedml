@@ -5,7 +5,7 @@
     <uniformTimeCourse id="sim1" initialTime="0" outputStartTime="0" outputEndTime="10" numberOfPoints="100">
       <algorithm kisaoID="KISAO:0000019">
         <listOfAlgorithmParameters>
-          <algorithmParameter kisaoID="KISAO:0000107" value="3.03"/>
+          <algorithmParameter kisaoID="KISAO:0000107" value="true"/>
         </listOfAlgorithmParameters>
       </algorithm>
     </uniformTimeCourse>

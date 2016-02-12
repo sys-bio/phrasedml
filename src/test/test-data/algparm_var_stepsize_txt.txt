@@ -1,2 +1,2 @@
 sim1 = simulate uniform(0,10,100)
-sim1.algorithm.variable_step_size = 3.03
+sim1.algorithm.variable_step_size = true

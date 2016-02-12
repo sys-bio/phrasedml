@@ -153,13 +153,13 @@ END_TEST
 
 START_TEST (test_algparm_var_stepsize_txt)
 {
-  compareStringAndFileTranslation("sim1 = simulate uniform(0,10,100)\nsim1.algorithm.variable_step_size = 3.03", "algparm_var_stepsize_txt");
+  compareStringAndFileTranslation("sim1 = simulate uniform(0,10,100)\nsim1.algorithm.variable_step_size = true", "algparm_var_stepsize_txt");
 }
 END_TEST
 
 START_TEST (test_algparm_var_stepsize_val)
 {
-  compareStringAndFileTranslation("sim1 = simulate uniform(0,10,100)\nsim1.algorithm.107 = 3.03", "algparm_var_stepsize_val");
+  compareStringAndFileTranslation("sim1 = simulate uniform(0,10,100)\nsim1.algorithm.107 = true", "algparm_var_stepsize_val");
 }
 END_TEST
 
