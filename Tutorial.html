@@ -3,12 +3,40 @@
 <center><img src="phrasedml_logo.png"/>
 <h1>PhraSED-ML:  The Paraphrased Human-Readable Adaptation of SED-ML</h1>
 	
-<h3>Revision 3</h3></center>
+<h3>Version 1.0</h3></center>
 </header>
 <body>
 
-<h2>Using PhraSED-ML</h2>
-<p>PhraSED-ML is a language and a library that provide a text-based way to read, summarize, and create SED-ML files.  Language bindings are provided that let you create SED-ML files from environments such as Python:
+<h3>Table of Contents</h3>
+<ul>
+<li><A href="#intro">Introduction</a>
+<li><A HREF="#models">Models</a>
+<li><A HREF="#simulations">Simulations</a>
+<ul>
+<li><A HREF="#kisao">Simulations settings</a>
+</ul>
+<li><A HREF="#tasks">Tasks</a>
+<li><A HREF="#repeatedtasks">Repeated Tasks</a>
+<li><A HREF="#output">Output</a>
+<li><A HREF="#api">The libphrasedml API</a>
+<li><A HREF="#examples">Examples</a>
+</ul>
+
+<A name="intro"/><h2>Introduction</h2>
+
+<p>PhraSED-ML is a language and a library that provide a text-based way to read, summarize, and create SED-ML files.  A basic phraSED-ML script will look like this:
+
+<code><pre>
+  mod1 = model "sbml_model.xml"
+  sim1 = simulate uniform(0,10,100)
+  task1 = run sim1 on mod1
+  plot time vs S1</pre></code>
+
+To convert this script to SED-ML, there are a few options.  First, you can use the 'phrasedml-convert' program:
+
+<code><pre>&gt;phrasedml-convert.exe phrased.txt</pre></code>
+
+where 'phrased.txt' is the above model.  You can also use an API, such as the python bindings:
 
 <code><pre>
 import phrasedml
@@ -22,35 +50,44 @@ phrasedmlStr = '''
 
 sedml = phrasedml.convertString(phrasedmlStr)</pre></code>
 
-<p>
-Here, 'sedml' will be a SED-ML string that can then be written to an xml file, or used in other contexts.
+These python bindings are used in the '<A HREF="http://tellurium.analogmachine.org/">Tellurium</a>' project (also distributed by our lab), which allow you to use phraSED-ML as part of a larger system that can create a model with  <A HREF="http://antimony.sourceforge.net/">antimony</a>, describe the experiment with phraSED-ML, and then perform the experiment:
 
-<p>For Python users, <A HREF="http://tellurium.analogmachine.org/">Tellurium</a> functions are being created that will take an <A HREF="http://antimony.sourceforge.net/">antimony</a> and a phrasedml string, and perform the entire simulation (as defined in phrasedml) on the given model (as defined in antimony).
-</p>
+<code><pre>
+import tellurium as te
 
-<p>On its own, PhraSED-ML allows manipulation of SBML files that it can find, or that you tell it about using the function 'setReferencedSBML'.  Future updates to PhraSED-ML may add support for unknown SBML files and/or CellML files.<br/><br/></p>
+antimonyStr = '''
+model test()
+  J0: -> S1; 0.3
+  S1 = 0
+end
+'''
 
-<h2>The PhraSED-ML language</h2>
+phrasedmlStr = '''
+  mod1 = model "test"
+  sim1 = simulate uniform(0,10,100)
+  task1 = run sim1 on mod1
+  plot time vs S1
+'''
 
-<p>The PhraSED-ML language follows the SED-ML format, and defines:
-<ul>
-<li><A HREF="#models">Models</a></li>
-<li><A HREF="#simulations">Simulations</a></li>
-<li><A HREF="#tasks">Tasks</a> (and <A HREF="#repeatedTasks">Repeated Tasks</a>)</li>
-<li><A HREF="#output">Output</a></li>
+exp = te.experiment(antimonyStr, phrasedmlStr)
+exp.execute()
+
+sedml = phrasedml.convertString(phrasedmlStr)</pre></code>
+
+In general, the phraSED-ML language follows the SED-ML format, and defines <A HREF="#models">models</a>, <A HREF="#simulations">simulations</a>, <A HREF="#tasks">tasks</a> (with <A HREF="#repeatedTasks">tepeated tasks</a>), and <A HREF="#output">output</a>.  
 </ul>
 
 Each has a corresponding SED-ML construct, but many of the internal complications are elided, allowing a much simpler view of a simulation experiment.
 
 <h3><A id="models">Models</a></h3>
 
-SED-ML models are always models that can be found with a URI (typically a relative path name for a file), or as modifications of previously-defined models.  In PhraSED-ML, they are defined with the syntax:<br/>
+SED-ML models are always models that can be found with a URI (typically a relative path name for a file), or as modifications of previously-defined models.  In phraSED-ML, they are defined with the syntax:<br/>
 <blockquote>
-<code>model_id = <i>model</i> <b>sources</b> <i>with</i> <b>changes</b></code></blockquote>
+<code>model_id = <i>model</i> <b>source</b> <i>with</i> <b>changes</b></code></blockquote>
 
 <ul>
 <li>
-<code><b>sources</b></code>: Sources can currently point to local models or to other models defined in the phraSED-ML.<br/>
+<code><b>source</b></code>: Sources can currently point to local models or to other models defined in the phraSED-ML.<br/>
 <blockquote>
 <code>model1 = model "C:/The/path/to/the/model.xml"</code><br/>
 <code>model2 = model model1</code>
@@ -60,7 +97,7 @@ SED-ML models are always models that can be found with a URI (typically a relati
 <li>
 <code><b>changes</b></code>: PhraSED-ML supports changing a model element to a single value or a formula.  Other possibilities exist in SED-ML, but are not supported at this time.<br/>
 
-<blockquote><code>model_id = <i>model</i> source <i>with</i> model_variable_id = formula, model_variable_id2 = formula2, ...</code></blockquote>
+<blockquote><code>model_id = <i>model</i> <b>source</b> <i>with</i> <b>model_variable_id</b> = <b>formula</b>, <b>model_variable_id2</b> = <b>formula2</b>, ...</code></blockquote>
 
 For example:
 
@@ -69,16 +106,17 @@ For example:
 <code>model2 = model model1 with S1=0.3, S2 = S1+4</code>
 </blockquote>
 
-You can even define local variables to use inside the formulas.  To do this, the local variable ID must not exist inside the model in question:
+You can even define local variables to use inside the formulas.
 
 <blockquote>
 <code>model1 = model "C:/The/path/to/the/model.xml"</code><br/>
-<code>model2 = model model1 with x = 4, S1 = x^2, S2 = x^4</code>
+<code>model2 = model model1 with local.x = 4, S1 = x^2, S2 = x^4</code>
 </blockquote>
 
-Here, S1 and S2 are model variables, and 'x', since it does not exist in the model, is a local variable.
+Here, S1 and S2 are model variables, and 'local.x' is a local variable (used simply as 'x' in the formulas).
 </li>
 </ul>
+
 
 <h3><A id="simulations">Simulations</a></h3>
 
@@ -143,6 +181,68 @@ examples:
 </li>
 
 </ul>
+
+<h4><A id="kisao">KiSAO terms for simulations</a></h3>
+<p>In SED-ML, specific simulation types and simulation parameters are set using KiSAO terms (<A HREF="http://co.mbine.org/standards/kisao">http://co.mbine.org/standards/kisao</a>).  In phraSED-ML, these terms can be set by keyword (if the term is known) or by number.
+
+<p>To set the KiSAO term of a simulation type, the <tt>algorithm</tt> keyword is used:
+
+<blockquote>
+<code>sim_id<b>.algorithm</b> = <i>keyword</i></code><br/>
+<code>sim_id<b>.algorithm</b> = <b>kisao.</b><i>kisao_value</i></code><br/>
+</blockquote>
+
+<p>For example, both of the following lines would set the algorithm type of simulation 'sim1' to the explicit 4th-order Runge-Kutta method, which has a KiSAO ID of <tt>kisao:KISAO_0000032</tt>:</p>
+
+<blockquote>
+<code>sim1.algorithm = rk4</code><br/>
+<code>sim1.algorithm = kisao.32</code><br/>
+</blockquote>
+
+<p>The keywords that phraSED-ML understands that can be used to set the algorithm type (and the equivalent KiSAO ID) are:
+
+<ul>
+<li><b>CVODE</b> (19; the default for uniform time course simulations)
+<li><b>gillespie</b> (241; the default for stochastic time course simulations)
+<li><b>rk4</b> (32; 4th-order Runge-Kutta)
+<li><b>rk45</b> (435; embedded Runge-Kutta)
+<li><b>steadystate</b> (407; the default for steady state simulations)
+</ul>
+
+<p>In addition, one can set various simulation parameters, again using the <tt>algorithm</tt> keyword:
+
+<blockquote>
+<code>sim_id<b>.algorithm.</b><i>keyword</i> = <i>value</i></code><br/>
+<code>sim_id<b>.algorithm.</b><i>kisao_value</i> = <i>value</i></code><br/>
+</blockquote>
+
+<p>For example, both of the following lines would set the absolute tolerance of simulation 'sim1' (which has a KiSAO id of <tt>kisao:KISAO_0000211</tt>) to 0.04:</p>
+
+<blockquote>
+<code>sim1.algorithm.absolute_tolerance = 0.04</code><br/>
+<code>sim1.algorithm.211 = 0.04</code><br/>
+</blockquote>
+
+<p>The keywords that phraSED-ML understands that can be used to set algorithm parameters (and the equivalent KiSAO IDs) are:
+
+<ul>
+<li><b>relative_tolerance</b> (209; the relative tolerance)
+<li><b>absolute_tolerance</b> (211; the absolute tolerance)
+<li><b>maximum_bdf_order</b> (220; the maximum BDF (stiff) order)
+<li><b>maximum_adams_order</b> (219; the maximum Adams (non-stiff) order)
+<li><b>maximum_num_steps</b> (415; the maximum number of steps that can be taken before exiting)
+<li><b>maximum_time_step</b> (467; the maximum time step that can be taken)
+<li><b>minimum_time_step</b> (485; the minimum time step that can be taken)
+<li><b>initial_time_step</b> (332; the initial value of the time step for algorithms that change this value)
+<li><b>variable_step_size</b> (107; whether or not the algorithm proceeds with an adaptive step size or not)
+<li><b>maximum_iterations</b> (486; the maximum number of iterations the algorithm should take before exiting)
+<li><b>minimum_damping</b> (487; minimum damping value)
+<li><b>seed</b> (488; the seed for stochastic runs of the algorithm)
+</ul>
+
+<p>Do note that little to no error-checking is performed by phraSED-ML for these terms:  impossible values or setting an algorithm parameter for an algorithm to which it does not apply will not be caught by phraSED-ML.
+
+
 
 <br/>
 <h3><A id="tasks">Tasks</a></h3>
@@ -249,7 +349,7 @@ If all you need is data output, use 'report' instead of plot.  Just use commas t
 </p>
 
 <br/>
-<h3>API and Python bindings</h3>
+<h3><A id="api">API and Python bindings</h3>
 
 <p>
 The API for libphrasedml is relatively simple, and consists of only eight functions (seven for the Python bindings):
@@ -265,8 +365,9 @@ These are the main functions in the API.  Each takes phraSED-ML or SED-ML input,
 
 <br/>
 <code>
-getLastError()<br/>
-getWarnings()
+getPhrasedWarnings()<br/>
+getLastPhrasedError()<br/>
+getLastPhrasedErrorLine()
 </code>
 <blockquote>
 When something goes wrong, these functions can be queried to help diagnose what happened.
@@ -275,9 +376,11 @@ When something goes wrong, these functions can be queried to help diagnose what 
 <br/>
 <code>
 setWorkingDirectory(string directory)<br/>
+setReferencedSBML(string filename, string document)<br/>
+clearReferencedSBML()
 </code>
 <blockquote>
-Both phraSED-ML and SED-ML accept relative file names for referenced models.  By default, models will be searched for in the working directory of the program.  By using this function, you can set a new working directory in which your models are stored.
+Both phraSED-ML and SED-ML accept relative file names for referenced models.  By default, models will be searched for in the working directory of the program.  By using this function, you can set a new working directory in which your models are stored.  In some cases, the SBML file may not be retrievable through normal means, but a copy of the file will exist in memory.  In those cases, 'setReferencedSBML' can be used to map a filename to a copy of the SBML document itself, and 'clearReferencedSBML' can be used to remove that information again.
 </blockquote>
 
 <br/>
@@ -291,38 +394,28 @@ These are mostly testing functions for round-tripping phraSED-ML or SED-ML.  If 
 
 <br/>
 <code>
-freeAll()<br/>
+freeAllPhrased()<br/>
 </code>
 <blockquote>
 This function will free all the strings (char*'s) that the API has handed out at once.  This can only safely be called if the user has not freed any of them by hand.  It is not available in the Python API, which handles all memory management separately.
 </blockquote>
 
 
-<h2>Examples</h2>
+<h2><A name="examples">Examples</h2>
 
-<h3>Le Loup Model</h3>
+<h3>Comparisons:  The Le Loup model, modified</h3>
 
 <code><pre>phrasedmlStr = '''
-  model1 = model "urn:miriam:biomodels.db:BIOMD0000000021"
+  model1 = model "BIOMD0000000021.xml"
   model2 = model model1 with V_mT = 0.28, V_dT = 4.8
   simulation1 = simulate uniform(0, 380, 1000)
   task1 = run simulation1 on model1
   task2 = run simulation1 on model2
-  plot task1.time vs task1.Mt
-  plot task2.time vs task2.Mt
-  plot task1.Cn vs task1.Mt
-  plot task2.Cn vs task2.Mt
-end
+  plot task1.time vs task1.Mt, task2.Mt
+  plot task1.Cn vs task1.Mt, task2.Cn vs task2.Mt
 '''</pre></code><br/>
 
-<h3>The IkappaB-NF-kappaB signaling module</h3>
-
-<code><pre>phrasedmlStr = '''
-  model1 = model "urn:miriam:biomodels.db:BIOMD0000000140"
-  simulation1 = simulate uniform(0, 2500, 1000)
-  task1 = run simulation1 on model1
-  plot task1.time vs task1.Total_NFkBn, task1.Total_IkBbeta, task1.Total_IkBeps, task1.Total_IkBalpha
-'''</pre></code><br/>
+<p>Here, the Le Loup model (Biomodels model 21) is read in as 'model1', and a copy is made with new initial values for the parameters V_mT and V_dT.  The same simulation is run on both, and results for each compared with the other in a series of plots.
 
 <h3>Perturbation</h3>
 
@@ -330,9 +423,11 @@ end
   model1 = model "oscli.xml"
   stepper = simulate onestep(0.1)
   task0 = run stepper on model1
-  task1 = repeat task0 for x in uniform(0, 10, 100), J0_v0 = piecewise(8, x<4, 0.1, 4<=x<6, 8))
+  task1 = repeat task0 for local.x in uniform(0, 10, 100), J0_v0 = piecewise(8, x<4, 0.1, 4<=x<6, 8)
   plot task1.time vs task1.S1, task1.S2, task1.J0_v0
 '''</pre></code><br/>
+
+<p>This experiment shows how one might vary a parameter during the course of a run.   
 
 <h3>Repeated stochastic simulation</h3>
 
