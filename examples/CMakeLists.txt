@@ -8,6 +8,5 @@ if(WITH_EXAMPLES)
    include_directories("${CMAKE_SOURCE_DIR}/${PHRASEDML_SRC_DIR}")
 
    add_subdirectory(converter)
-   add_subdirectory(sedml-test-suite)
 
 endif(WITH_EXAMPLES)

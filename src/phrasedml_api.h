@@ -27,7 +27,7 @@
 #define PHRASEDML_API_H
 
 #ifndef LIBPHRASEDML_VERSION_STRING //Should be defined in the makefile (from CMakeLists.txt)
-#define LIBPHRASEDML_VERSION_STRING "v0.5 beta"
+#define LIBPHRASEDML_VERSION_STRING "v1.0"
 #endif
 
 #include "libutil.h"

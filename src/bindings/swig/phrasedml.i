@@ -51,13 +51,20 @@ using namespace phrasedml;
 
 %typemap(newfree) char * "free($1);";
 
-%newobject phrasedml::convertFile;
-%newobject phrasedml::convertString;
-%newobject phrasedml::getLastPhrasedError;
-%newobject phrasedml::getLastSEDML;
-%newobject phrasedml::getLastPhraSEDML;
-%newobject phrasedml::getPhrasedWarnings;
-%newobject phrasedml::setWorkingDirectory;
+%newobject convertFile;
+%newobject convertString;
+%newobject getLastPhrasedError;
+%newobject getLastPhrasedErrorLine;
+%newobject getLastSEDML;
+%newobject getLastPhraSEDML;
+%newobject getPhrasedWarnings;
+%newobject setWorkingDirectory;
+
+%rename(getLastError) getLastPhrasedError;
+%rename(getWarnings) getPhrasedWarnings;
+%rename(getLastError) getLastPhrasedError;
+%rename(getLastErrorLine) getLastPhrasedErrorLine;
+
 
 /**
  * Ignore 'freeAll', and all functions that return vectors, as SWIG cannot convert them properly.
