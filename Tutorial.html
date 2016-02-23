@@ -16,7 +16,7 @@
 <li><A HREF="#kisao">Simulations settings</a>
 </ul>
 <li><A HREF="#tasks">Tasks</a>
-<li><A HREF="#repeatedtasks">Repeated Tasks</a>
+<li><A HREF="#repeatedTasks>Repeated Tasks</a>
 <li><A HREF="#output">Output</a>
 <li><A HREF="#api">The libphrasedml API</a>
 <li><A HREF="#examples">Examples</a>
@@ -301,7 +301,7 @@ or declaring that other elements change at the same time:
 or declaring that the model should be reset between repeats (particularly useful for stochastic tasks):
 
 <blockquote>
-<code>repeatedtask_id = <i>repeat</i> task_id <i>for</i> target_id <i>in</i> <b>repeat_type</b>, <i>repeat = true</i>, ...</code>
+<code>repeatedtask_id = <i>repeat</i> task_id <i>for</i> target_id <i>in</i> <b>repeat_type</b>, <i>reset = true</i>, ...</code>
 </blockquote><br/>
 
 These variations may all be used in concert with one another, and may be mixed and matched at will.  The main loop can either be a model or a local variable, and used in other assignment formulas.  If there are multiple models in the tasks being repeated, they can be distinguished by using the dot notation for ID's, '<code>model_id.variable_id</code>':
