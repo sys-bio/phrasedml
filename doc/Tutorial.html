@@ -66,22 +66,27 @@ phrasedmlStr = '''
   mod1 = model "test"
   sim1 = simulate uniform(0,10,100)
   task1 = run sim1 on mod1
-  plot time vs S1
+  plot "Example plot" time vs S1
 '''
 
 exp = te.experiment(antimonyStr, phrasedmlStr)
 exp.execute()
 
-sedml = phrasedml.convertString(phrasedmlStr)</pre></code>
+</pre></code>
 
-In general, the phraSED-ML language follows the SED-ML format, and defines <A HREF="#models">models</a>, <A HREF="#simulations">simulations</a>, <A HREF="#tasks">tasks</a> (with <A HREF="#repeatedTasks">repeated tasks</a>), and <A HREF="#output">output</a>.  
+The above Python program will produce the output:
+
+<P><img src="ex1_output.png"/>
+
+
+<p>In general, the phraSED-ML language follows the SED-ML format, and defines <A HREF="#models">models</a>, <A HREF="#simulations">simulations</a>, <A HREF="#tasks">tasks</a> (with <A HREF="#repeatedTasks">repeated tasks</a>), and <A HREF="#output">output</a>.  
 </ul>
 
-Each has a corresponding SED-ML construct, but many of the internal complications are elided, allowing a much simpler view of a simulation experiment.
+<p>Each has a corresponding SED-ML construct, but many of the internal complications are elided, allowing a much simpler view of a simulation experiment.
 
 <h3><A id="models">Models</a></h3>
 
-SED-ML models are always models that can be found with a URI (typically a relative path name for a file), or as modifications of previously-defined models.  In phraSED-ML, they are defined with the syntax:<br/>
+<p>SED-ML models are always models that can be found with a URI (typically a relative path name for a file), or as modifications of previously-defined models.  In phraSED-ML, they are defined with the syntax:<br/>
 <blockquote>
 <code>model_id = <i>model</i> <b>source</b> <i>with</i> <b>changes</b></code></blockquote>
 
@@ -425,19 +430,22 @@ This function will free all the strings (char*'s) that the API has handed out at
   task0 = run stepper on model1
   task1 = repeat task0 for local.x in uniform(0, 10, 100), J0_v0 = piecewise(8, x<4, 0.1, 4<=x<6, 8)
   plot task1.time vs task1.S1, task1.S2, task1.J0_v0
-'''</pre></code><br/>
+'''</pre></code>
 
-<p>This experiment shows how one might vary a parameter during the course of a run.   
+<p>This experiment shows how one might vary a parameter during the course of a run: each time the simulation takes a single time step, a local variable 'x' is incremented.  In the meantime, the model variable J0_v0 is set to 8 while x is less than 4, then is reset to 0.1 while x is between 4 and 6, and finally is reset to 8 again after that (until x reaches 10, and the repeated task ends).  There is no 'with reset' for this simulation, so this is effectively a single timecourse.
 
 <h3>Repeated stochastic simulation</h3>
 
 <code><pre>phrasedmlStr = '''
-  model1 = model "C:\borisejb.xml"
+  model1 = model "borisejb.xml"
   timecourse1 = simulate uniform_stochastic(0, 4000, 1000)
+  timecourse1.algorithm.seed = 1003
   task0 = run model1 with timecourse1
   task1 = repeat task0 for uniform(0, 10, 10) with reset
   plot task1.time vs task1.MAPK, task1.MAPK_P, task1.MAPK_PP, task1.MKK, task1.MKK_P, task1.MKKK, task1.MKKK_P
-'''</pre></code><br/>
+'''</pre></code>
+
+<p>This experiment repeats a stochastic simulation 10 times, and plots the results.  Because 'with reset' is used, these are repeated timecourse simulations with identical starting conditions, but stochastic runs.  The seed for the stochastic simulation is set for the first run, so that the exact same run could be produced again on the same computer in the same situation.  However, the seed would not be reset for each run of the algorithm; this would not produce useful results.
 
 <h3>1D time course parameter scan</h3>
 
@@ -447,93 +455,22 @@ This function will free all the strings (char*'s) that the API has handed out at
   task0 = run model1 with timecourse1
   task1 = repeat task0 for J0_v0 in [8, 4, 0.4] with reset
   plot task1.time vs task1.S1, task1.S2
-'''</pre></code><br/>
+'''</pre></code>
+
+<p>In the above experiment, the model variable 'J0_v0' is set to 8, then 4, and then 0.4, for the three times the timecourse is repeated.  All three sets of results are then plotted.
 
 <h3>2D steady state parameter scan</h3>
 
 <code><pre>phrasedmlStr = '''
-  model_3 = model Borisejb
+  model_3 = model "borisejb.xml"
   sim_repeat = simulate steadystate
   task_1 = run model_3 with sim_repeat
-  repeatedtask_1 = repeat task_1 for J1_KK2 in vector([1, 5, 10, 50, 60, 70, 80, 90, 100])
+  repeatedtask_1 = repeat task_1 for J1_KK2 in [1, 5, 10, 50, 60, 70, 80, 90, 100]
   repeatedtask_2 = repeat repeatedtask_1 for J4_KK5 in uniform(1, 40, 100)
   plot repeatedtask_2.J4_KK1 vs repeatedtask_2.MKK_1, repeatedtask_2.MKK_P_1
 '''</pre></code>
 
-
-<p>Possible future enhancements:
-
-
-<h3>Uniform time course simulation using Antimony</h3>
-
-<code><pre>Model_00001_sbml_l3v1 = '''
-//Created by libAntimony v2.6.0
-model *case00001()
-  // Compartments and Species:
-  compartment compartment_
-  species S1 in compartment_, S2 in compartment_
-
-  // Reactions:
-  reaction1: S1 => S2 compartment_*k1*S1
-
-  // Species initializations:
-  S1 = 0.00015/compartment_
-  S1 has substance_per_volume
-  S2 = 0
-  S2 has substance_per_volume
-
-  // Compartment initializations:
-  compartment_ = 1
-  compartment_ has volume
-
-  // Variable initializations:
-  k1 = 1
-
-  // Other declarations:
-  const compartment_, k1
-
-  // Unit definitions:
-  unit volume = litre
-  unit substance = mole
-  unit time_unit = time_unit
-  unit substance_per_volume = mole / litre
-end
-'''
-
-phrasedmlStr = '''
-  // list of models
-  model_1 = model Model_00001_sbml_l3v1
-  
-  // type of simulations
-  sim_1 = simulate uniform(0, 5, 51)
-  
-  // list of tasks
-  task_1 = run model_1 with sim_1
-  
-  // plotting
-  plot task_1.time vs task_1.S1/compartment_, task_1.S2/compartment_
-  
-  // A simplified method of plotting
-  plot time vs S1/compartment_, S2/compartment_
-'''
-
-import tellurium as te
-
-//The following code does not yet exist, but could.  It would need to write out the Antimony model as SBML internally.
-te.execute(Model_00001_sbml_l3v1, phrasedmlStr)</pre></code><br/></p>
-
-
-
-<h3>Potential model changes in the future</h3>
-<blockquote>Add XML: Add new XML elements<br/>
-
-<code>addXML = <i>model</i> source <i>with</i> <u>add</u> parameter V_mT = 0.7</code></blockquote>
-
-<blockquote>Remove XML: Remove model elements entirely<br/>
-
-<code>removexml = <i>model</i> source <i>with</i> <u>remove</u> J1, J2</code></blockquote>
-
-
+<p>In this experiment, model variable J1_KK2 is set to 9 different values for each of 100 values of J4_KK5, evenly spaced between 1 and 40.  
 
 
 </body>
