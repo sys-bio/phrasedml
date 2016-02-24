@@ -1,0 +1,42 @@
+/** @page phrasedml-installation Compiling and Installing phraSED-ML
+
+<h2>Windows Binaries</h2>
+
+<h3>The Windows Python installer</h3>
+The Windows python bindings come as a .zip file that can be used to install the bindings on your machine.  Either use setup.py to install them in the python system folder, or edit PYTHONPATH to point to the unzipped 'phrasedml' directory.  You can use setup.py to install the phrasedml bindings with the command:
+
+<blockquote><code>python.exe setup.py install</code></blockquote>
+
+
+<h2>Compiling From Source</h2>
+To compile libAntimony from source, use CMake (http://cmake.org/).  For most systems, 'cmake-gui' is your best bet, but if you are trying to compile remotely via a terminal program, 'ccmake' will also work, and has a similar interface.  phraSED-ML, libSBML, libSEDML, and libNUML all now use CMake as their core build system, so once you learn the basics for one, your knowledge should transfer to the others.
+
+To start, create a new subdirectory in the 'phrasedml/' directory, and cd into it:
+
+<code>mkdir build; cd build</code>
+
+Next, run 'cmake-gui' (or 'ccmake', if you are trying to build remotely and need a text-based interface) with '..' (the parent directory) as the argument:
+
+<code>cmake-gui ..</code>
+
+The first thing to set is what you want to compile to.  On Linux and MacOSX, 'Native Makefiles' is probably your best bet.  For Windows, you can set the compiler to whatever version of Visual Studio you have installed, or to Cygwin if you have that.
+
+You will need to tell CMake where certain other libraries are:
+- <A target="_top" HREF="http://sbml.org/Software/libSBML">libSBML</a>.  If LIBSBML_INSTALL_DIR is set, CMake will automatically find LIBSBML_LIBRARY and LIBSBML_INCLUDE_DIR.  If WITH_STATIC_SBML is set, it will automatically search for the static version of the library, and then ask you about the locations of libsbml's dependencies (the XML library you used, and any compression libraries included).  This information can be set with the WITH_LIBSBML_EXPAT, WITH_LIBSBML_LIBXML, or WITH_LIBSBML_XERXES options, and the WITH_LIBSBML_COMPRESSION option.  Set one of the first three to 'true', depending on how your libsbml has been compiled, and set the last to 'true' if the two compression libraries are included in your libsbml or not.
+- <A target="_top" HREF="http://sbml.org/Software/libSBML">libSBML</a>.  If LIBSBML_INSTALL_DIR is set, CMake will automatically find LIBSBML_LIBRARY and LIBSBML_INCLUDE_DIR.  If WITH_STATIC_SBML is set, it will automatically search for the static version of the library, and then ask you about the locations of libsbml's dependencies (the XML library you used, and any compression libraries included).
+- <A target="_top" HREF="https://github.com/NuML/NuML/tree/master/libnuml">libNUML</a>.  If LIBNUML_INSTALL_DIR is set, CMake will automatically find LIBNUML_LIBRARY and LIBNUML_INCLUDE_DIR.  If WITH_STATIC_NUML is set, it will automatically search for the static version of the library.
+
+
+The following options can also be set:
+- <code>WITH_CHECK</code> Use <A target="_top" HREF="http://libcheck.github.io/check/">libcheck</a> to perform unit testing on phrasedml.
+- <code>WITH_EXAMPLES</code>  Compiles programs contained in the 'examples/' directory.  At the moment, this is only a single program, 'phrasedml-convert', a command-line phrasedml/SED-ML converter.
+- <code>WITH_PYTHON</code>  Build the python bindings.  Requires SWIG, meaning the SWIG_EXECUTABLE will need to be set.  If this is turned on, the options PYTHON_LOCAL_INSTALL and PYTHON_SYSTEM_INSTALL will also be enabled: the first causes the bindings to be installed into [install_dir]/bindings/python/, while the second uses the Python set in PYTHON_EXECUTABLE along with 'setup.py' to install the bindings to the system directory.
+- <code>WITH_STATIC_RUNTIME</code>  Sets whether to compile using the static MSVC runtime.
+- <code>CMAKE_BUILD_TYPE</code>  Used to set whether to make a release or debug version by default, settable to 'Debug', 'Release', 'RelWithDebInfo', or 'MinSizeRel'.  (The last has not been tested extensively with this project, but is a standard CMake option.)
+- <code>CMAKE_INSTALL_PREFIX</code> Used to set where to install the phrasedml library and executables.  I often use '../install/' for a local install.
+
+If CMake does not work for you, you may be able to get things working on your own--phrasedml is not a complicated program, with only a handful of .cpp files in a single directory, which you may be able to get working yourself.  The core phraSED-ML parser (phrasedml.ypp) is compiled with bison to phrasedml_tab.cpp, which is already included.  The main complications are its various dependencies: you will need libsedml, libnuml, and libsbml, plus any of those libraries' dependencies.
+
+@htmlinclude google-analytics.html
+
+*/

@@ -1,0 +1,23 @@
+/** @mainpage phraSED-ML: the Paraphrased, Human-Readable Adataption of SED-ML
+
+The phraSED-ML language is a text-based simulation experiment description language designed to form a human-readable and human-writable interface to SED-ML.
+
+<h2>Getting phraSED-ML</h2>
+- <A class="el" target="_top" HREF="http://tellurium.analogmachine.org/stuff/">Tellurium</a> - The latest version of phraSED-ML is included with Tellurium, and is integrated in that system with other Python packages including <A class="el" target="_top" HREF="http://libroadrunner.org/">libroadrunner</a> to enable complete model creation and simlation capabilities in a Python environment.
+- <A class="el" target="_top" HREF="https://sourceforge.net/projects/phrasedml/files/1.0/phrasedml_python_setup.zip/download">Windows Python bindings</a> - These python bindings can be installed on Windows by unzipping the file, then using the command 'python.exe setup.py install'.
+- <A class="el" target="_top" HREF="https://sourceforge.net/p/phrasedml/code/HEAD/tree/">The source code</a> is freely available via SVN.
+
+<h2>Using phraSED-ML</h2>
+- <A class="el" HREF="Tutorial.html">A Tutorial</a> to walk you through the basics of phraSED-ML syntax.
+- @subpage phrasedml-installation for installation and compilation instructions.
+- The <A class="el" HREF="phrasedml__api_8h.html">API documentation</a> for incorporating libAntimony into your own projects.
+
+
+<h2>Contact</h2>
+- <A target="_top" HREF="https://sourceforge.net/p/phrasedml/tickets/">Report a bug</a> (or request a feature) if you have any issues with phraSED-ML, whether behaviors or inadequacies of the documentation.</P>
+- <A target="_top" HREF="https://sourceforge.net/p/phrasedml/discussion/">The forum</a> is available you if want to discuss phraSED-ML specifically.</p>
+- <A target="_top" HREF="https://lists.sourceforge.net/lists/listinfo/sed-ml-discuss/">sed-ml-discuss</a> is slightly higher-traffic mailing list (i.e. has more than zero messages) where discussions about phraSED-ML occasionally take place.</p>
+
+
+<p>phraSED-ML is distributed under the @subpage phrasedml-license.  It relies on <A target="_top" HREF="http://sbml.org/Software/libSBML">libSBML</a>, which is released under the <A target="_top" HREF="http://sbml.org/Software/libSBML/docs/cpp-api/">LGPL</a>.  libSBML, in turn, relies on <A target="_top" HREF="http://expat.sourceforge.net/">expat</a>, released under the <A target="_top" HREF="http://www.opensource.org/licenses/mit-license.php">MIT license</a>, <A target="_top" HREF="http://www.gzip.org/">gzip</a>, released under the <A target="_top" HREF="http://www.math.utah.edu/docs/info/gzip_1.html#SEC1">GPL</a>, and <A target="_top" HREF="http://www.bzip.org/">bzip</a>, released under the <A target="_top" HREF="http://www.bzip.org/1.0.5/bzip2-manual-1.0.5.html">BSD</a> license.  phraSED-ML also relies on <A target="_top" HREF="https://github.com/fbergmann/libSEDML/">libSEDML</a>, released under the <A target="_top" HREF="https://github.com/fbergmann/libSEDML/blob/master/LICENSE.txt">BSD license</a> and <A target="_top" HREF="https://github.com/NuML/NuML/tree/master/libnuml">libnuml</a>, released under the <A target="_top" HREF="https://github.com/NuML/NuML/blob/master/libnuml/LICENSE.txt">LGPL</a>.
+*/
