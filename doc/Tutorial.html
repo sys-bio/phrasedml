@@ -418,7 +418,7 @@ This function will free all the strings (char*'s) that the API has handed out at
   task2 = run simulation1 on model2
   plot task1.time vs task1.Mt, task2.Mt
   plot task1.Cn vs task1.Mt, task2.Cn vs task2.Mt
-'''</pre></code><br/>
+'''</pre></code>
 
 <p>Here, the Le Loup model (Biomodels model 21) is read in as 'model1', and a copy is made with new initial values for the parameters V_mT and V_dT.  The same simulation is run on both, and results for each compared with the other in a series of plots.
 
@@ -440,8 +440,8 @@ This function will free all the strings (char*'s) that the API has handed out at
   model1 = model "borisejb.xml"
   timecourse1 = simulate uniform_stochastic(0, 4000, 1000)
   timecourse1.algorithm.seed = 1003
-  task0 = run model1 with timecourse1
-  task1 = repeat task0 for uniform(0, 10, 10) with reset
+  task0 = run timecourse1 on model1
+  task1 = repeat task0 for local.x in uniform(0, 10, 10), reset=true
   plot task1.time vs task1.MAPK, task1.MAPK_P, task1.MAPK_PP, task1.MKK, task1.MKK_P, task1.MKKK, task1.MKKK_P
 '''</pre></code>
 
@@ -452,8 +452,8 @@ This function will free all the strings (char*'s) that the API has handed out at
 <code><pre>phrasedmlStr = '''
   model1 = model "http://sourceforge.net/p/libsedml/code/119/tree/trunk/Samples/models/oscli.xml?format=raw"
   timecourse1 = simulate uniform(0, 20, 1000)
-  task0 = run model1 with timecourse1
-  task1 = repeat task0 for J0_v0 in [8, 4, 0.4] with reset
+  task0 = run timecourse1 on model1
+  task1 = repeat task0 for J0_v0 in [8, 4, 0.4], reset=true
   plot task1.time vs task1.S1, task1.S2
 '''</pre></code>
 
@@ -464,10 +464,10 @@ This function will free all the strings (char*'s) that the API has handed out at
 <code><pre>phrasedmlStr = '''
   model_3 = model "borisejb.xml"
   sim_repeat = simulate steadystate
-  task_1 = run model_3 with sim_repeat
+  task_1 = run sim_repeat on model_3
   repeatedtask_1 = repeat task_1 for J1_KK2 in [1, 5, 10, 50, 60, 70, 80, 90, 100]
   repeatedtask_2 = repeat repeatedtask_1 for J4_KK5 in uniform(1, 40, 100)
-  plot repeatedtask_2.J4_KK1 vs repeatedtask_2.MKK_1, repeatedtask_2.MKK_P_1
+  plot repeatedtask_2.J4_KK5 vs repeatedtask_2.MKK, repeatedtask_2.MKK_P
 '''</pre></code>
 
 <p>In this experiment, model variable J1_KK2 is set to 9 different values for each of 100 values of J4_KK5, evenly spaced between 1 and 40.  
