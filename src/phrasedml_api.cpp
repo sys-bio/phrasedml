@@ -11,6 +11,7 @@
 #include "registry.h"
 #include "phrasedml-namespace.h"
 #include <sbml/SBMLReader.h>
+#include <sbml/SBMLTypes.h>
 
 
 #ifdef _MSC_VER
