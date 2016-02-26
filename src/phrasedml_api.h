@@ -18,7 +18,11 @@
   * <b>Returned Pointers</b><br/>
   * The majority of the functions described below return pointers to arrays and/or strings.  These pointers you then own, and are created with 'malloc':  you must 'free' them yourself to release the allocated memory.  Some programming environments will handle this automatically for you, and others will not.  If you want to not bother with it, the function 'freeAllPhrased' is provided, which will free every pointer created by this library.  In order for this to work, however, you must have not freed a single provided pointer yourself, and you must not subsequently try to reference any data provided by the library (your own copies of the data will be fine, of course).
   *
-  * If the library runs out of memory when trying to return a pointer, it will return NULL instead and attempt to set an error message, retrievable with 'getLastPhrasedError()'.
+  * If the library runs out of memory when trying to return a pointer, it will return NULL instead and attempt to set an error mes * @if python
+ * getLastError()'.
+ * @else
+ * getLastPhrasedError()'.
+ * @endif
   *
  */
 
@@ -38,24 +42,42 @@ BEGIN_C_DECLS
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
 /**
- * Convert a file from phraSEDML to SEDML, or visa versa.  If NULL is returned, an error occurred, which can be retrieved with 'getLastPhrasedError'.
+ * Convert a file from phraSEDML to SEDML, or visa versa.  If NULL is returned, an error occurred, which can be retrieved with
+ * @if python
+ * getLastError()'.
+ * @else
+ * getLastPhrasedError()'.
+ * @endif
  *
  * @return The converted file, as a string.
  *
- * @param filename The filename as a character string.  May be either absolute or relative to the directory the executable is being run from.
+ * @param filename the filename as a character string.  May be either absolute or relative to the directory the executable is being run from.
  *
+ * @if python
+ * @see getLastError()
+ * @else
  * @see getLastPhrasedError()
+ * @endif
  */
 LIB_EXTERN char* convertFile(const char* filename);
 
 /**
- * Convert a model string from phraSEDML to SEDML, or visa versa.  If NULL is returned, an error occurred, which can be retrieved with 'getLastPhrasedError'.
+ * Convert a model string from phraSEDML to SEDML, or visa versa.  If NULL is returned, an error occurred, which can be retrieved with
+ * @if python
+ * getLastError().
+ * @else
+ * getLastPhrasedError().
+ * @endif
  *
  * @return The converted model, as a string.
  *
- * @param model The model as a character string.  May be either SED-ML or phraSED-ML.
+ * @param model the model as a character string.  May be either SED-ML or phraSED-ML.
  *
+ * @if python
+ * @see getLastError()
+ * @else
  * @see getLastPhrasedError()
+ * @endif
  */
 LIB_EXTERN char* convertString(const char* model);
 
@@ -87,19 +109,19 @@ LIB_EXTERN char*  getLastPhraSEDML();
 /**
  * Sets the working directory for phraSED-ML to look for referenced files.
  *
- * @param directory The directory as a character string.  May be either absolute or relative to the directory the executable is being run from.
+ * @param directory the directory as a character string.  May be either absolute or relative to the directory the executable is being run from.
  */
 LIB_EXTERN void setWorkingDirectory(const char* directory);
 
 /**
  * Allows phrasedml to use the given SBML document as the filename, instead of looking for the file on disk.  If the document is invalid SBML, 'false' is returned, but the document is still saved.
  *
- * @param filename The string that, when used in phrasedml, should reference the @p doc.
- * @param doc The SBML Document to use when the @p filename is encountered.
+ * @param URI the string that, when used in phrasedml, should reference the @p sbmlstring.
+ * @param sbmlstring the SBML document string to use when the @p URI is encountered.
  *
  * @return a boolean indicating whether the document is valid SBML or not.  Either way, the document is saved as the reference document for the given filename string.
  */
-LIB_EXTERN bool setReferencedSBML(const char* filename, const char* doc);
+LIB_EXTERN bool setReferencedSBML(const char* URI, const char* sbmlstring);
 
 /**
  * Clears and removes all referenced SBML documents.
@@ -109,7 +131,7 @@ LIB_EXTERN void clearReferencedSBML();
 
 /**
  * Frees all pointers handed to you by libphraSEDML.
- * All libphraSEDML functions above that return pointers return malloc'ed pointers that you now own.  If you wish, you can ignore this and never free anything, as long as you call 'freeAllPhrased' at the very end of your program.  If you free *anything* yourself, however, calling this function will cause the program to crash!  It won't know that you already freed that pointer, and will attempt to free it again.  So either keep track of all memory management yourself, or use this function after you're completely done.
+ * All libphraSEDML functions above that return pointers return malloc'ed pointers that you now own.  If you wish, you can ignore this and never free anything, as long as you call 'freeAllPhrased' at the very end of your program.  If you free *anything* yourself, however, calling this function will cause the program to crash!  It won't know that you already freed that pointer, and will attempt to free it again.  So either keep track of all memory management yourself, or only use this function every time you want to clean up memory.
  *
  * Note that this function only frees pointers handed to you by other phrasedml_api functions.  The models themselves are still in memory and are available.  (To clear that memory, use clearPreviousLoads() )
  */
