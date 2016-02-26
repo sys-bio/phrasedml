@@ -140,10 +140,12 @@ endif()
 
 #message(STATUS "libraries: ${LIBPHRASEDML_LIBS}\nphrasedml:${LIBPHRASEDML_LIBRARY}")
 
-target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS} ${PYTHON_LIBRARIES})
 
 if(APPLE)
   set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})
+else()
+  target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS} ${PYTHON_LIBRARIES})
 endif()
 
 
@@ -190,6 +192,7 @@ endif()
 if (PYTHON_LOCAL_INSTALL)
    set(PYTHON_PACKAGE_INSTALL_DIR "bindings/python")
 
+   INSTALL(TARGETS binding_python_lib DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml)
    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth" "phrasedml\n")
    INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
    INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.txt  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
