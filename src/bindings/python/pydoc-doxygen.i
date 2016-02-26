@@ -1,31 +1,54 @@
 %feature("docstring") convertFile "
-Convert a file from phraSEDML to SEDML, or visa versa.  If None is returned, an error occurred, which can be retrieved with \'getLastError\'.
+Convert a file from phraSEDML to SEDML, or visa versa.  If None is returned, an error occurred, which can be retrieved with
+@if python
+getLastError()\'.
+@else
+getLastPhrasedError()\'.
+@endif
 
 @return The converted file, as a string.
 
-@param filename The filename as a character string.  May be either absolute or relative to the directory the executable is being run from.
+@param filename the filename as a character string.  May be either absolute or relative to the directory the executable is being run from.
 
+@if python
 @see getLastError()
+@else
+@see getLastPhrasedError()
+@endif
 ";
 
 
 %feature("docstring") convertString "
-Convert a model string from phraSEDML to SEDML, or visa versa.  If None is returned, an error occurred, which can be retrieved with \'getLastError\'.
+Convert a model string from phraSEDML to SEDML, or visa versa.  If None is returned, an error occurred, which can be retrieved with
+@if python
+getLastError().
+@else
+getLastPhrasedError().
+@endif
 
 @return The converted model, as a string.
 
-@param model The model as a character string.  May be either SED-ML or phraSED-ML.
+@param model the model as a character string.  May be either SED-ML or phraSED-ML.
 
+@if python
 @see getLastError()
+@else
+@see getLastPhrasedError()
+@endif
 ";
 
 
-%feature("docstring") getLastError "
+%feature("docstring") getLastPhrasedError "
 When any function returns an error condition, a longer description of the problem is stored in memory, and is obtainable with this function.  In most cases, this means that a call that returns a pointer returned \'None\' (or 0).
 ";
 
 
-%feature("docstring") getWarnings "
+%feature("docstring") getLastPhrasedErrorLine "
+Returns the line number of the file where the last error was obtained, if the last error was obtained when parsing a phraSED-ML file.  Otherwise, returns 0.
+";
+
+
+%feature("docstring") getPhrasedWarnings "
 When translating some other format to phraSEDML, elements that are unable to be translated are saved as warnings, retrievable with this function (returns None if no warnings present).
 ";
 
@@ -43,15 +66,15 @@ If a previous \'convert\' call was successful, the library retains an internal r
 %feature("docstring") setWorkingDirectory "
 Sets the working directory for phraSED-ML to look for referenced files.
 
-@param directory The directory as a character string.  May be either absolute or relative to the directory the executable is being run from.
+@param directory the directory as a character string.  May be either absolute or relative to the directory the executable is being run from.
 ";
 
 
 %feature("docstring") setReferencedSBML "
 Allows phrasedml to use the given SBML document as the filename, instead of looking for the file on disk.  If the document is invalid SBML, \'false\' is returned, but the document is still saved.
 
-@param filename The string that, when used in phrasedml, should reference the @p doc.
-@param doc The SBML Document to use when the @p filename is encountered.
+@param URI the string that, when used in phrasedml, should reference the @p sbmlstring.
+@param sbmlstring the SBML document string to use when the @p URI is encountered.
 
 @return a boolean indicating whether the document is valid SBML or not.  Either way, the document is saved as the reference document for the given filename string.
 ";
@@ -62,9 +85,9 @@ Clears and removes all referenced SBML documents.
 ";
 
 
-%feature("docstring") freeAll "
+%feature("docstring") freeAllPhrased "
 Frees all pointers handed to you by libphraSEDML.
-All libphraSEDML functions above that return pointers return malloc\'ed pointers that you now own.  If you wish, you can ignore this and never free anything, as long as you call \'freeAll\' at the very end of your program.  If you free *anything* yourself, however, calling this function will cause the program to crash!  It won\'t know that you already freed that pointer, and will attempt to free it again.  So either keep track of all memory management yourself, or use this function after you\'re completely done.
+All libphraSEDML functions above that return pointers return malloc\'ed pointers that you now own.  If you wish, you can ignore this and never free anything, as long as you call \'freeAllPhrased\' at the very end of your program.  If you free *anything* yourself, however, calling this function will cause the program to crash!  It won\'t know that you already freed that pointer, and will attempt to free it again.  So either keep track of all memory management yourself, or use this function after you\'re completely done.
 
 Note that this function only frees pointers handed to you by other phrasedml_api functions.  The models themselves are still in memory and are available.  (To clear that memory, use clearPreviousLoads() )
 ";
