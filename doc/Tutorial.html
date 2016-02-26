@@ -97,6 +97,7 @@ The above Python program will produce the output:
 <code>model1 = model "C:/The/path/to/the/model.xml"</code><br/>
 <code>model2 = model model1</code>
 </blockquote>
+<p>Note that in SED-ML, the model location can be relative ('<code>model.xml</code>', '<code>subdir/model.xml</code>', '<code>../model.xml</code>', etc.).  In fact, it can be any URI.  The phraSED-ML library will be able to discover any filename or relative filename that the system can find, but cannot on its own look up URLs to models on the web.  The API functions 'setWorkingDirectory' and 'setReferencedSBML' can help with this: see <A HREF="#api">this document's summary of the API</a> or the full <A HREF="http://phrasedml.sourceforge.net/phrasedml__api_8h.html">online documentation</a>.
 </li>
 
 <li>
@@ -119,6 +120,7 @@ You can even define local variables to use inside the formulas.
 </blockquote>
 
 Here, S1 and S2 are model variables, and 'local.x' is a local variable (used simply as 'x' in the formulas).
+
 </li>
 </ul>
 
@@ -357,7 +359,7 @@ If all you need is data output, use 'report' instead of plot.  Just use commas t
 <h3><A id="api">API and Python bindings</h3>
 
 <p>
-The API for libphrasedml is relatively simple, and consists of only eight functions (seven for the Python bindings):
+The API for libphrasedml is relatively simple, and consists of only eleven functions (ten for the Python bindings):
 </p>
 
 <code>
@@ -381,11 +383,11 @@ When something goes wrong, these functions can be queried to help diagnose what 
 <br/>
 <code>
 setWorkingDirectory(string directory)<br/>
-setReferencedSBML(string filename, string document)<br/>
+setReferencedSBML(string URI, string sbmlstring)<br/>
 clearReferencedSBML()
 </code>
 <blockquote>
-Both phraSED-ML and SED-ML accept relative file names for referenced models.  By default, models will be searched for in the working directory of the program.  By using this function, you can set a new working directory in which your models are stored.  In some cases, the SBML file may not be retrievable through normal means, but a copy of the file will exist in memory.  In those cases, 'setReferencedSBML' can be used to map a filename to a copy of the SBML document itself, and 'clearReferencedSBML' can be used to remove that information again.
+Both phraSED-ML and SED-ML accept relative file names for referenced models.  By default, models will be searched for in the working directory of the program.  By using this function, you can set a new working directory in which your models are stored.  In some cases, the SBML file may not be retrievable through normal means, but a copy of the file will exist in memory.  In those cases, 'setReferencedSBML' can be used to map a URI to a copy of the SBML document itself, and 'clearReferencedSBML' can be used to remove that information again.
 </blockquote>
 
 <br/>
