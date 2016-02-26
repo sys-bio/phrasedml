@@ -17,6 +17,7 @@ PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedSteadyState::PhrasedSteadyState(std::string id)
   : PhrasedSimulation(simtype_steadystate, id)
 {
+  m_kisao = 407;
 }
 
 PhrasedSteadyState::PhrasedSteadyState(SedSteadyState* sedsteadyState)
@@ -53,8 +54,12 @@ bool PhrasedSteadyState::setAlgorithmKisao(int kisao)
     return true;
   }
   m_kisao = kisao;
-  m_writeKisao = true;
   return false;
+}
+
+bool PhrasedSteadyState::kisaoIsDefault() const
+{
+  return m_kisao == 407;
 }
 
 bool PhrasedSteadyState::finalize()

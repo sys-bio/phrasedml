@@ -22,6 +22,12 @@ PhrasedUniform::PhrasedUniform(std::string id, double start, double outstart, do
   , m_numpts(numpts)
   , m_stochastic(stochastic)
 {
+  if (stochastic) {
+    m_kisao = 241;
+  }
+  else {
+    m_kisao = 19;
+  }
 }
 
 PhrasedUniform::PhrasedUniform(SedUniformTimeCourse* seduniform)
@@ -37,9 +43,6 @@ PhrasedUniform::PhrasedUniform(SedUniformTimeCourse* seduniform)
     if (alg->isSetKisaoID() && kisaoIdIsStochastic(alg->getKisaoID())) {
       m_stochastic = true;
     }
-  }
-  if (m_kisao==19 || m_kisao == 241) {
-    m_writeKisao = false;
   }
 }
 
@@ -86,17 +89,8 @@ void PhrasedUniform::addSimulationToSEDML(SedDocument* sedml) const
 bool PhrasedUniform::setAlgorithmKisao(int kisao)
 {
   m_kisao = kisao;
-  if (kisao == 19) {
-    m_stochastic = false;
-    m_writeKisao = false;
-  }
-  else if (kisao == 241) {
+  if (kisaoIdIsStochastic(kisao)) {
     m_stochastic = true;
-    m_writeKisao = false;
-  }
-  else if (kisaoIdIsStochastic(kisao)) {
-    m_stochastic = true;
-    m_writeKisao = true;
   }
   else if (kisaoIdIsSteadyState(kisao)) {
     stringstream err;
@@ -112,9 +106,18 @@ bool PhrasedUniform::setAlgorithmKisao(int kisao)
   }
   else {
     m_stochastic = false;
-    m_writeKisao = true;
   }
   return false;
+}
+
+bool PhrasedUniform::kisaoIsDefault() const
+{
+  if (m_stochastic) {
+    return m_kisao == 241;
+  }
+  else {
+    return m_kisao == 19;
+  }
 }
 
 bool PhrasedUniform::finalize()

@@ -29,7 +29,6 @@ protected:
   simtype m_type;
   int m_kisao;
   std::map<int, std::string> m_algparams;
-  bool m_writeKisao;
 
 public:
 
@@ -54,6 +53,7 @@ public:
   virtual int  keywordToKisaoParamId(const std::string& keyword) const;
 
   virtual void writePhraSEDMLKisao(std::stringstream& stream) const;
+  virtual bool kisaoIsDefault() const = 0;
 
   virtual bool finalize();
 

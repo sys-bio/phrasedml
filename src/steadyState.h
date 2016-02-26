@@ -25,6 +25,7 @@ public:
   virtual std::string getPhraSEDML() const;
   virtual void addSimulationToSEDML(SedDocument* sedml) const;
   virtual bool setAlgorithmKisao(int kisao);
+  bool kisaoIsDefault() const;
 
   virtual bool finalize();
 

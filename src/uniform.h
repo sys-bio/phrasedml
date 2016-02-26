@@ -30,6 +30,7 @@ public:
   virtual void addSimulationToSEDML(SedDocument* sedml) const;
   virtual bool setAlgorithmKisao(int kisao);
   virtual bool getStochastic() const {return m_stochastic;};
+  virtual bool kisaoIsDefault() const;
 
   virtual bool finalize();
 

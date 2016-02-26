@@ -21,7 +21,6 @@ PhrasedSimulation::PhrasedSimulation(simtype type, std::string id)
   , m_type(type)
   , m_kisao(0)
   , m_algparams()
-  , m_writeKisao(false)
 {
 }
 
@@ -30,7 +29,6 @@ PhrasedSimulation::PhrasedSimulation(simtype type, SedSimulation* sedsimulation)
   , m_type(type)
   , m_kisao(0)
   , m_algparams()
-  , m_writeKisao(false)
 {
   if (sedsimulation->isSetAlgorithm()) {
     const SedAlgorithm* sedalg = sedsimulation->getAlgorithm();
@@ -65,7 +63,6 @@ simtype PhrasedSimulation::getType() const
 
 bool PhrasedSimulation::setAlgorithmKisao(int kisao)
 {
-  m_writeKisao = true;
   m_kisao = kisao;
   return false;
 }
@@ -329,7 +326,7 @@ int PhrasedSimulation::keywordToKisaoParamId(const string& keyword) const
 
 void PhrasedSimulation::writePhraSEDMLKisao(std::stringstream& stream) const
 {
-  if (m_writeKisao) {
+  if (!kisaoIsDefault()) {
     stream << m_id << ".algorithm = " << getPhrasedVersionOf(m_kisao) << endl;
   }
   for (map<int, string>::const_iterator algparm = m_algparams.begin(); algparm != m_algparams.end(); algparm++) {

@@ -20,6 +20,7 @@ PhrasedOneStep::PhrasedOneStep(std::string id, double step)
   : PhrasedSimulation(simtype_onestep, id)
   , m_step(step)
 {
+  m_kisao = 19;
 }
 
 PhrasedOneStep::PhrasedOneStep(SedOneStep* sedOneStep)
@@ -47,6 +48,11 @@ void PhrasedOneStep::addSimulationToSEDML(SedDocument* sedml) const
   oneStep->setName(m_name);
   oneStep->setStep(m_step);
   addKisaoAndAlgorithmParametersToSEDML(oneStep);
+}
+
+bool PhrasedOneStep::kisaoIsDefault() const
+{
+  return m_kisao == 19;
 }
 
 bool PhrasedOneStep::finalize()
