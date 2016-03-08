@@ -79,6 +79,11 @@ START_TEST (repeatedtask_assignment_with_range)
 }
 END_TEST
 
+START_TEST (repeatedtask_not_elided)
+{
+  compareStringAndFileTranslation("mod1 = model \"sbml_model.xml\"\n  sim1 = simulate uniform(0, 10, 100)\n  task1 = run sim1 on mod1\n  repeat1 = repeat task1 for local.X in uniform(0, 10, 9), S1 = X, S2 = X+3", "repeatedtask_not_elided");
+}
+END_TEST
 
 START_TEST (repeatedtask_assignment_with_range_and_model_variable)
 {
@@ -129,6 +134,7 @@ create_suite_Tasks (void)
   tcase_add_test( tcase, repeatedtask_alltypes);
   tcase_add_test( tcase, repeatedtask_alltypes2);
   tcase_add_test( tcase, repeatedtask_assignment_with_range);
+  tcase_add_test( tcase, repeatedtask_not_elided);
   tcase_add_test( tcase, repeatedtask_assignment_with_range_and_model_variable);
   tcase_add_test( tcase, repeatedtask_assignment_with_range_and_local_variable);
   tcase_add_test( tcase, repeatedtask_assignment_with_all_variables);

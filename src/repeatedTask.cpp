@@ -230,6 +230,20 @@ bool PhrasedRepeatedTask::isRecursive(set<PhrasedTask*>& tasks)
   return false;
 }
 
+bool ASTNodeHasId(const ASTNode* astn, const string& id) 
+{
+  if (astn->getType() == AST_NAME) {
+    if (id == astn->getName()) {
+      return true;
+    }
+  }
+  for (unsigned int child=0; child<astn->getNumChildren(); child++) {
+    if (ASTNodeHasId(astn->getChild(child), id)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 bool PhrasedRepeatedTask::finalize()
 {
@@ -327,6 +341,23 @@ bool PhrasedRepeatedTask::finalize()
         if (reffed != NULL && isLoop(reffed->getType())) {
           //We can add it to the combine list
           combinelist.insert(make_pair(m_changes[c].getVariable(), astid));
+        }
+      }
+    }
+  }
+  //However, we need to take things back off the combine list if they're used in other formulas:
+  for (size_t c=0; c<m_changes.size(); c++) {
+    if (m_changes[c].getType() == ctype_formula_assignment) {
+      const ASTNode* astn = m_changes[c].getASTNode();
+      if (astn->getType() != AST_NAME) {
+        for (set<pair<vector<string>, string> >::iterator comb = combinelist.begin(); comb != combinelist.end();) {
+          string elided = comb->second;
+          if (ASTNodeHasId(astn, elided)) {
+            comb = combinelist.erase(comb);
+          }
+          else {
+            comb++;
+          }
         }
       }
     }
