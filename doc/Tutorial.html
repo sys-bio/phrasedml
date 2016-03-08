@@ -233,18 +233,18 @@ examples:
 <p>The keywords that phraSED-ML understands that can be used to set algorithm parameters (and the equivalent KiSAO IDs) are:
 
 <ul>
-<li><b>relative_tolerance</b> (209; the relative tolerance)
 <li><b>absolute_tolerance</b> (211; the absolute tolerance)
-<li><b>maximum_bdf_order</b> (220; the maximum BDF (stiff) order)
+<li><b>initial_time_step</b> (332; the initial value of the time step for algorithms that change this value)
 <li><b>maximum_adams_order</b> (219; the maximum Adams (non-stiff) order)
+<li><b>maximum_bdf_order</b> (220; the maximum BDF (stiff) order)
+<li><b>maximum_iterations</b> (486; the maximum number of iterations the algorithm should take before exiting)
 <li><b>maximum_num_steps</b> (415; the maximum number of steps that can be taken before exiting)
 <li><b>maximum_time_step</b> (467; the maximum time step that can be taken)
-<li><b>minimum_time_step</b> (485; the minimum time step that can be taken)
-<li><b>initial_time_step</b> (332; the initial value of the time step for algorithms that change this value)
-<li><b>variable_step_size</b> (107; whether or not the algorithm proceeds with an adaptive step size or not)
-<li><b>maximum_iterations</b> (486; the maximum number of iterations the algorithm should take before exiting)
 <li><b>minimum_damping</b> (487; minimum damping value)
+<li><b>minimum_time_step</b> (485; the minimum time step that can be taken)
+<li><b>relative_tolerance</b> (209; the relative tolerance)
 <li><b>seed</b> (488; the seed for stochastic runs of the algorithm)
+<li><b>variable_step_size</b> (107; whether or not the algorithm proceeds with an adaptive step size or not)
 </ul>
 
 <p>Do note that little to no error-checking is performed by phraSED-ML for these terms:  impossible values or setting an algorithm parameter for an algorithm to which it does not apply will not be caught by phraSED-ML.
