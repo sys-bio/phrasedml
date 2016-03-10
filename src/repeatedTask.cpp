@@ -353,7 +353,10 @@ bool PhrasedRepeatedTask::finalize()
         for (set<pair<vector<string>, string> >::iterator comb = combinelist.begin(); comb != combinelist.end();) {
           string elided = comb->second;
           if (ASTNodeHasId(astn, elided)) {
-            comb = combinelist.erase(comb);
+            set<pair<vector<string>, string> >::iterator newcomb = comb;
+            newcomb++;
+            combinelist.erase(comb);
+            comb = newcomb;
           }
           else {
             comb++;
