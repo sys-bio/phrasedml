@@ -972,6 +972,28 @@ void Registry::clearReferencedSBML()
   m_referencedSBML.clear();
 }
 
+void Registry::addDotXMLToModelSources()
+{
+  for (size_t m=0; m<m_models.size(); m++) {
+    if (m_models[m].getIsFile()) {
+      string modelname = m_models[m].getSource();
+      if (modelname.find(".xml") == string::npos && modelname.find(".sbml") == string::npos) {
+        m_models[m].setSource(modelname + ".xml");
+      }
+    }
+  }
+  if (m_sedml != NULL) {
+    for (unsigned long sm=0; sm<m_sedml->getNumModels(); sm++) {
+      SedModel* sedmodel = m_sedml->getModel(sm);
+      string modelstr = sedmodel->getSource();
+      if (m_sedml->getModel(modelstr) == NULL && modelstr.find(".xml") == string::npos && modelstr.find(".sbml") == string::npos) {
+        //It's a filename without ".xml"
+        sedmodel->setSource(modelstr + ".xml");
+      }
+    }
+  }
+}
+
 SBMLDocument* Registry::getSavedSBML(std::string filename)
 {
   map<string, SBMLDocument*>::iterator ret = m_referencedSBML.find(filename);

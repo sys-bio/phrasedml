@@ -61,6 +61,9 @@ public:
 
   void langTypeToURI(language type) const;
 
+  std::string getSource() const {return m_source;};
+  void setSource(std::string source) {m_source = source;};
+
   virtual bool changeListIsInappropriate(std::stringstream& err);
   virtual bool finalize();
 private:

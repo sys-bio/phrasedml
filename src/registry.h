@@ -132,6 +132,7 @@ public:
   void setReferencedSBML(const char* filename, SBMLDocument* doc);
   void clearReferencedSBML();
   SBMLDocument* getSavedSBML(std::string filename);
+  void addDotXMLToModelSources();
 
   //Keeping track of malloc'd stuff so we can free it ourselves if need be.
   std::vector<char*>    m_charstars;

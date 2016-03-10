@@ -35,7 +35,6 @@ START_TEST (test_saved_model_basic)
   setReferencedSBML("memory_model.xml", docstr);
   compareStringAndFileTranslation("sbml_model = model \"memory_model.xml\"", "saved_model_basic");
   free(docstr);
-  
 }
 END_TEST
 
@@ -57,6 +56,49 @@ START_TEST (test_saved_model_complete)
 END_TEST
 
 
+START_TEST (test_add_dot_xml)
+{
+  SBMLDocument doc(3,1);
+  Model* model = doc.createModel();
+  Parameter* param = model->createParameter();
+  param->setId("p1");
+  param->setConstant(true);
+  param->setValue(3);
+  model->setId("memory_model");
+
+  char* docstr = writeSBMLToString(&doc);
+  setReferencedSBML("memory_model", docstr);
+  string phrasedml = "sbml_model = model \"memory_model\"";
+  string sedml = "saved_model_basic.xml";
+  setWorkingDirectory(TestDataDirectory);
+  char* sed_gen = convertString(phrasedml.c_str());
+  addDotXMLToModelSources();
+  free(sed_gen);
+  sed_gen = getLastSEDML();
+  if (sed_gen==NULL) {
+    cout << getLastPhrasedError() << endl << endl;
+    fail_unless(false);
+    return;
+  }
+  char* phrased_rt = getLastPhraSEDML();
+
+  string dir(TestDataDirectory);
+  string sedfile = dir + sedml;
+  char* phrased_gen = convertFile(sedfile.c_str());
+  if (phrased_gen==NULL) {
+    cout << getLastPhrasedError() << endl << endl;
+    fail_unless(false);
+    return;
+  }
+  char* sed_rt = getLastSEDML();
+
+  fail_unless((string)phrased_rt == (string)phrased_gen);
+  fail_unless((string)sed_rt     == (string)sed_gen);
+  free(docstr);
+}
+END_TEST
+
+
 Suite *
 create_suite_Saved_Models (void)
 {
@@ -65,6 +107,7 @@ create_suite_Saved_Models (void)
 
   tcase_add_test( tcase, test_saved_model_basic);
   tcase_add_test( tcase, test_saved_model_complete);
+  tcase_add_test( tcase, test_add_dot_xml);
 
   suite_add_tcase(suite, tcase);
 

@@ -96,6 +96,11 @@ LIB_EXTERN void clearReferencedSBML()
   g_registry.clearReferencedSBML();
 }
 
+LIB_EXTERN void addDotXMLToModelSources()
+{
+  g_registry.addDotXMLToModelSources();
+}
+
 LIB_EXTERN void freeAllPhrased()
 {
   g_registry.freeAllPhrased();

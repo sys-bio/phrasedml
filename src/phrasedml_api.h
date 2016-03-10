@@ -128,6 +128,10 @@ LIB_EXTERN bool setReferencedSBML(const char* URI, const char* sbmlstring);
  */
 LIB_EXTERN void clearReferencedSBML();
 
+/**
+ * Sometimes, a user may wish to input phrasedml with the name of a model, instead of an actual filename.  This is particularly true in Tellurium, where one model is defined by Antimony, and has no immediate filename.  When creating SED-ML, however, an actual file needs to be referenced.  As such, [modelname].xml is a more realistic filename to use than simply [modelname]--this function converts all such filenames in the model, and assumes that you are making similar changes to the files themselves.  If any filename already ends in ".xml" or in ".sbml", that filename will not be changed.  To retrieve the modified version, use getLastPhraSEDML() or getLastSEDML().
+ */
+LIB_EXTERN void addDotXMLToModelSources();
 
 /**
  * Frees all pointers handed to you by libphraSEDML.
