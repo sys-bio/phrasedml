@@ -9,7 +9,7 @@ The Windows python bindings come as a .zip file that can be used to install the 
 
 
 <h2>Compiling From Source</h2>
-To compile libAntimony from source, use CMake (http://cmake.org/).  For most systems, 'cmake-gui' is your best bet, but if you are trying to compile remotely via a terminal program, 'ccmake' will also work, and has a similar interface.  phraSED-ML, libSBML, libSEDML, and libNUML all now use CMake as their core build system, so once you learn the basics for one, your knowledge should transfer to the others.
+To compile phrasedml from source, use CMake (http://cmake.org/).  For most systems, 'cmake-gui' is your best bet, but if you are trying to compile remotely via a terminal program, 'ccmake' will also work, and has a similar interface.  phraSED-ML, libSBML, libSEDML, and libNUML all now use CMake as their core build system, so once you learn the basics for one, your knowledge should transfer to the others.
 
 To start, create a new subdirectory in the 'phrasedml/' directory, and cd into it:
 
