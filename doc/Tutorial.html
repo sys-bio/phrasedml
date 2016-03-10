@@ -359,7 +359,7 @@ If all you need is data output, use 'report' instead of plot.  Just use commas t
 <h3><A id="api">API and Python bindings</h3>
 
 <p>
-The API for libphrasedml is relatively simple, and consists of only eleven functions (ten for the Python bindings):
+The API for libphrasedml is relatively simple, and consists of only a dozen functions (eleven for the Python bindings):
 </p>
 
 <code>
@@ -397,6 +397,14 @@ getLastSEDML()
 </code>
 <blockquote>
 These are mostly testing functions for round-tripping phraSED-ML or SED-ML.  If you use the 'convert' functions, above, these functions will give you the SED-ML or phraSED-ML versions of the input.
+</blockquote>
+
+<br/>
+<code>
+addDotXMLToModelSources()<br/>
+</code>
+<blockquote>
+In some contexts (like when using Antimony and phraSED-ML in concert in Tellurium) a user may wish to declare a model just by its name, not its filename.  When constructing the actual SED-ML, however, actual files must be constructed and pointed to.  Using this function adds ".xml" to any filename that does not already have ".xml" or ".sbml" in it.  The new name is not checked; it is assumed that the files will be created and pointed to appropriately.
 </blockquote>
 
 <br/>
