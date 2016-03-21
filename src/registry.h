@@ -134,6 +134,10 @@ public:
   SBMLDocument* getSavedSBML(std::string filename);
   void addDotXMLToModelSources();
 
+  //Some people might not want to write the Timestamp to SBML files.
+  void SetWriteSEDMLTimestamp(bool set);
+  bool GetWriteSEDMLTimestamp();
+
   //Keeping track of malloc'd stuff so we can free it ourselves if need be.
   std::vector<char*>    m_charstars;
   //std::vector<char**>   m_charstarstars;

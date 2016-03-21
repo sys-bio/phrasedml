@@ -48,6 +48,9 @@ Registry::Registry()
 {
   m_l3ps.setParseCollapseMinus(true);
   m_l3ps.setParseLog(L3P_PARSE_LOG_AS_LOG10);
+#if LIBSBML_VERSION >= 51201
+  XMLOutputStream::setWriteTimestamp(false);
+#endif
 }
 
 Registry::~Registry()
@@ -992,6 +995,21 @@ void Registry::addDotXMLToModelSources()
       }
     }
   }
+}
+
+void Registry::SetWriteSEDMLTimestamp(bool set)
+{
+#if LIBSBML_VERSION >= 51201
+  XMLOutputStream::setWriteTimestamp(set);
+#endif
+}
+
+bool Registry::GetWriteSEDMLTimestamp()
+{
+#if LIBSBML_VERSION >= 51201
+  return XMLOutputStream::getWriteTimestamp();
+#endif
+  return true;
 }
 
 SBMLDocument* Registry::getSavedSBML(std::string filename)

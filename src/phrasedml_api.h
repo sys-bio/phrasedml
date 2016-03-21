@@ -31,7 +31,7 @@
 #define PHRASEDML_API_H
 
 #ifndef LIBPHRASEDML_VERSION_STRING //Should be defined in the makefile (from CMakeLists.txt)
-#define LIBPHRASEDML_VERSION_STRING "v1.0.2"
+#define LIBPHRASEDML_VERSION_STRING "v1.0.3"
 #endif
 
 #include "libutil.h"
@@ -140,6 +140,11 @@ LIB_EXTERN void addDotXMLToModelSources();
  * Note that this function only frees pointers handed to you by other phrasedml_api functions.  The models themselves are still in memory and are available.  (To clear that memory, use clearPreviousLoads() )
  */
 LIB_EXTERN void freeAllPhrased();
+
+/**
+ * Sets whether, when writing a SED-ML file, the timestamp is included.
+ */
+LIB_EXTERN void setPhrasedWriteSBMLTimestamp(bool writeTimestamp);
 
 PHRASEDML_CPP_NAMESPACE_END
 END_C_DECLS

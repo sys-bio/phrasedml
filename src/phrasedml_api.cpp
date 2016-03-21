@@ -106,4 +106,9 @@ LIB_EXTERN void freeAllPhrased()
   g_registry.freeAllPhrased();
 }
 
+LIB_EXTERN void setWriteSEDMLTimestamp(bool writeTimestamp)
+{
+  g_registry.SetWriteSEDMLTimestamp(writeTimestamp);
+}
+
 PHRASEDML_CPP_NAMESPACE_END
