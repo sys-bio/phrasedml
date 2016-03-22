@@ -144,7 +144,7 @@ LIB_EXTERN void freeAllPhrased();
 /**
  * Sets whether, when writing a SED-ML file, the timestamp is included.
  */
-// LIB_EXTERN void setPhrasedWriteSBMLTimestamp(bool writeTimestamp);
+LIB_EXTERN void setWriteSEDMLTimestamp(bool writeTimestamp);
 
 PHRASEDML_CPP_NAMESPACE_END
 END_C_DECLS
