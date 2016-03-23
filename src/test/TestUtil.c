@@ -11,6 +11,7 @@
 
 #include <check.h>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -44,6 +45,11 @@ void compareFileTranslation(const string& base)
 
   fail_unless((string)phrased_rt == (string)phrased_gen);
   fail_unless((string)sed_rt     == (string)sed_gen);
+  //if (sed_rt != sed_gen) {
+  //  ofstream outfile((dir + base + ".xml").c_str());
+  //  outfile.write(sed_gen, ((string)sed_gen).size());
+  //  outfile.close();
+  //}
 
   free(sed_gen);
   free(sed_rt);
@@ -117,6 +123,11 @@ void compareOriginalXMLTranslations(const string& base)
   fail_unless((string)phrased_rt == (string)phrased_gen);
   fail_unless((string)phrased_rt == (string)phrased_rt_gen);
   fail_unless((string)sed_rt     == (string)sed_gen);
+  //if (sed_rt != sed_gen) {
+  //  ofstream outfile2((dir + base + "_rt.xml").c_str());
+  //  outfile2.write(sed_gen, ((string)sed_gen).size());
+  //  outfile2.close();
+  //}
 
   free(sed_gen);
   free(sed_rt);

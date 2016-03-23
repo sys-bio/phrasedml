@@ -19,7 +19,7 @@
         </vectorRange>
       </listOfRanges>
       <listOfChanges>
-        <setValue range="loop" modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='S1']">
+        <setValue range="loop" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']">
           <listOfParameters>
             <parameter id="x" value="5.5"/>
           </listOfParameters>

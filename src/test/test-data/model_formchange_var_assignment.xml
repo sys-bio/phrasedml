@@ -3,7 +3,7 @@
   <listOfModels>
     <model id="sbml_model" language="urn:sedml:language:sbml.level-3.version-1" source="sbml_model.xml">
       <listOfChanges>
-        <computeChange target="/sbml:sbml/sbml:model/descendant::*[@id='C1']">
+        <computeChange target="/sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='C1']">
           <listOfParameters>
             <parameter id="x" value="2"/>
           </listOfParameters>

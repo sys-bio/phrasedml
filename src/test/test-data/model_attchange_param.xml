@@ -3,7 +3,7 @@
   <listOfModels>
     <model id="sbml_model" language="urn:sedml:language:sbml.level-3.version-1" source="sbml_model.xml">
       <listOfChanges>
-        <changeAttribute target="/sbml:sbml/sbml:model/listOfParameters/parameter[@id='p1']/@value" newValue="4"/>
+        <changeAttribute target="/sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='p1']/@value" newValue="4"/>
       </listOfChanges>
     </model>
   </listOfModels>

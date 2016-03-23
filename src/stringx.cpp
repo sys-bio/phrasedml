@@ -128,7 +128,7 @@ string getValueXPathFromId(const vector<string>* id, const SBMLDocument* doc)
   string ret = "/sbml:sbml/sbml:model/";
   switch(ref->getTypeCode()) {
   case SBML_SPECIES:
-    ret += "listOfSpecies/species[@id='" + lastid + "']/@";
+    ret += "sbml:listOfSpecies/sbml:species[@id='" + lastid + "']/@";
     species = static_cast<const Species*>(ref);
     if (species->isSetInitialAmount()) {
       ret += "initialAmount";
@@ -142,15 +142,15 @@ string getValueXPathFromId(const vector<string>* id, const SBMLDocument* doc)
     }
     break;
   case SBML_COMPARTMENT:
-    ret += "listOfCompartments/compartment[@id='" + lastid + "']/@size";
+    ret += "sbml:listOfCompartments/sbml:compartment[@id='" + lastid + "']/@size";
     break;
   case SBML_PARAMETER:
-    ret += "listOfParameters/parameter[@id='" + lastid + "']/@value";
+    ret += "sbml:listOfParameters/sbml:parameter[@id='" + lastid + "']/@value";
     break;
   case SBML_LOCAL_PARAMETER:
-    ret += "listOfReactions/reaction[@id='";
+    ret += "sbml:listOfReactions/sbml:reaction[@id='";
     ret += ref->getAncestorOfType(SBML_REACTION)->getId();
-    ret += "']/kineticLaw/listOfLocalParameters/localParameter[@id='" + lastid + "']/@value";
+    ret += "']/sbml:kineticLaw/sbml:listOfLocalParameters/sbml:localParameter[@id='" + lastid + "']/@value";
   default:
     //Set a warning? LS DEBUG
     ret += "/descendant::*[@id='" + lastid + "']/@value";
@@ -194,7 +194,29 @@ string getElementXPathFromId(const vector<string>* id, const SBMLDocument* doc)
         return "";
       }
     }
+    string ret = "/sbml:sbml/sbml:model/";
+    switch(ref->getTypeCode()) {
+    case SBML_SPECIES:
+      ret += "sbml:listOfSpecies/sbml:species[@id='" + lastid + "']";
+      break;
+    case SBML_COMPARTMENT:
+      ret += "sbml:listOfCompartments/sbml:compartment[@id='" + lastid + "']";
+      break;
+    case SBML_PARAMETER:
+      ret += "sbml:listOfParameters/sbml:parameter[@id='" + lastid + "']";
+      break;
+    case SBML_LOCAL_PARAMETER:
+      ret += "sbml:listOfReactions/sbml:reaction[@id='";
+      ret += ref->getAncestorOfType(SBML_REACTION)->getId();
+      ret += "']/sbml:kineticLaw/sbml:listOfLocalParameters/sbml:localParameter[@id='" + lastid + "']";
+    default:
+      //Set a warning? LS DEBUG
+      ret += "/descendant::*[@id='" + lastid + "']";
+      break;
+    }
+    return ret;
   }
+  //Otherwise, make it generic:
   string ret = "/sbml:sbml/sbml:model/descendant::*[@id='" + (*id)[0] + "']";
   for (size_t n=1; n<id->size(); n++) {
     ret += "/descendant::*[@id='" + (*id)[n] + "']";

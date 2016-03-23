@@ -116,6 +116,7 @@ main (int argc, char* argv[])
 { 
   int num_failed;
 
+  XMLOutputStream::setWriteComment(false);
   setTestDataDirectory();
 
   SRunner *runner = srunner_create( create_suite_Models() );

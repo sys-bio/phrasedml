@@ -22,24 +22,24 @@
         <uniformRange id="uniform_log_for_S2" start="0" end="100" numberOfPoints="5" type="log"/>
       </listOfRanges>
       <listOfChanges>
-        <setValue range="vector_for_p1" modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='p1']">
+        <setValue range="vector_for_p1" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='p1']">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> vector_for_p1 </ci>
           </math>
         </setValue>
-        <setValue range="uniform_linear_for_S1" modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='S1']">
+        <setValue range="uniform_linear_for_S1" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> uniform_linear_for_S1 </ci>
           </math>
         </setValue>
-        <setValue range="uniform_log_for_S2" modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='S2']">
+        <setValue range="uniform_log_for_S2" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> uniform_log_for_S2 </ci>
           </math>
         </setValue>
-        <setValue modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='C1']">
+        <setValue modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='C1']">
           <listOfVariables>
-            <variable id="S1" target="/sbml:sbml/sbml:model/descendant::*[@id='S1']" modelReference="mod1"/>
+            <variable id="S1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']" modelReference="mod1"/>
           </listOfVariables>
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>

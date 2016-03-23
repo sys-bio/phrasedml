@@ -4,10 +4,10 @@
     <model id="sbml_model" language="urn:sedml:language:sbml.level-3.version-1" source="sbml_model.xml"/>
     <model id="sbml_mod2" language="urn:sedml:language:sbml.level-3.version-1" source="sbml_model">
       <listOfChanges>
-        <changeAttribute target="/sbml:sbml/sbml:model/listOfSpecies/species[@id='S1']/@initialConcentration" newValue="4"/>
-        <changeAttribute target="/sbml:sbml/sbml:model/listOfSpecies/species[@id='S2']/@initialAmount" newValue="5"/>
-        <changeAttribute target="/sbml:sbml/sbml:model/listOfCompartments/compartment[@id='C1']/@size" newValue="6"/>
-        <changeAttribute target="/sbml:sbml/sbml:model/listOfParameters/parameter[@id='p1']/@value" newValue="7"/>
+        <changeAttribute target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']/@initialConcentration" newValue="4"/>
+        <changeAttribute target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']/@initialAmount" newValue="5"/>
+        <changeAttribute target="/sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='C1']/@size" newValue="6"/>
+        <changeAttribute target="/sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='p1']/@value" newValue="7"/>
       </listOfChanges>
     </model>
   </listOfModels>

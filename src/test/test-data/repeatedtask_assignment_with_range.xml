@@ -19,7 +19,7 @@
         </vectorRange>
       </listOfRanges>
       <listOfChanges>
-        <setValue range="loop" modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='S1']">
+        <setValue range="loop" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <plus/>

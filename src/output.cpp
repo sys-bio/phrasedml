@@ -311,6 +311,7 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
         surface->setLogX((*vec)[0]->isLog10());
         surface->setLogY((*vec)[1]->isLog10());
         surface->setLogZ((*vec)[2]->isLog10());
+        surface->setId(m_id + "__" + datagennames[0] + "__" + datagennames[1] + "__" + datagennames[2]);
       }
       else {
         SedCurve* curve = plot2d->createCurve();
@@ -318,6 +319,7 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
         curve->setYDataReference(datagennames[1]);
         curve->setLogX((*vec)[0]->isLog10());
         curve->setLogY((*vec)[1]->isLog10());
+        curve->setId(m_id + "__" + datagennames[0] + "__" + datagennames[1]);
       }
     }
     else {

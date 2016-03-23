@@ -16,7 +16,7 @@
         <uniformRange id="uniform_linear_for_p1" start="3" end="18" numberOfPoints="10" type="linear"/>
       </listOfRanges>
       <listOfChanges>
-        <setValue range="uniform_linear_for_p1" modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='p1']">
+        <setValue range="uniform_linear_for_p1" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='p1']">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> uniform_linear_for_p1 </ci>
           </math>

@@ -20,7 +20,7 @@
         </vectorRange>
       </listOfRanges>
       <listOfChanges>
-        <setValue range="vector_for_p1" modelReference="mod1" target="/sbml:sbml/sbml:model/descendant::*[@id='p1']">
+        <setValue range="vector_for_p1" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='p1']">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> vector_for_p1 </ci>
           </math>
