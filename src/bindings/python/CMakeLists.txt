@@ -208,6 +208,12 @@ if (NOT PYTHON_SYSTEM_INSTALL)
    endif()
 endif()
 
+# copy files required to build Anaconda package
+if(WITH_CONDA_BUILDER)
+    configure_file(conda/meta.yaml.in conda/meta.yaml @ONLY)
+    install(FILES ${SETUP_PY} ${CMAKE_CURRENT_BINARY_DIR}/conda/meta.yaml conda/build.sh conda/bld.bat DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
+endif()
+
 ####################################################################
 #
 # testing

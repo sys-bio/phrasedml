@@ -1,0 +1,17 @@
+package:
+  name: phrasedml
+  version: @LIBPHRASEDML_VERSION_STRING_NO_V@
+
+requirements:
+  build:
+    - python
+    - setuptools
+
+about:
+  home: http://phrasedml.sf.net/
+  license: BSD 3-Clause
+
+extra:
+  maintainers:
+   - Lucian Smith
+   - Kyle Medley

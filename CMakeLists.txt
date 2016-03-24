@@ -23,7 +23,7 @@ endif()
 ####################################################################
 #
 # the next lines configure the parameters for packaging the binaries
-# they can be invoked with: make package / nmake package or by using 
+# they can be invoked with: make package / nmake package or by using
 # cpack -G zip|deb|rpm|dmg|nsis
 #
 
@@ -52,6 +52,7 @@ set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, op
 if (WITH_PYTHON)
   option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    ON )
   option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    OFF )
+  option(WITH_CONDA_BUILDER     "Install files required to build Anaconda packages"  OFF)
 endif()
 
 # which language bindings should be build
@@ -84,7 +85,7 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
 #
     find_path(LIBSEDML_INSTALL_DIR
     NAMES include/sedml/SedBase.h
-    PATHS /usr /usr/local /usr/lib /usr/local/lib 
+    PATHS /usr /usr/local /usr/lib /usr/local/lib
               ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/
               ${CMAKE_SOURCE_DIR}/../
@@ -99,19 +100,19 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
                ${CMAKE_SOURCE_DIR}/dependencies/lib
              )
     else()
-        find_library(LIBSEDML_LIBRARY 
+        find_library(LIBSEDML_LIBRARY
             NAMES libsedml.lib libsedml.so libsedml sedml.lib sedml.so sedml
-            PATHS /usr/lib /usr/local/lib 
+            PATHS /usr/lib /usr/local/lib
               ${LIBSEDML_INSTALL_DIR}/lib
-              ${CMAKE_SOURCE_DIR} 
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
             )
     endif()
     find_path(LIBSEDML_INCLUDE_DIR
         NAMES sedml/SedBase.h
-        PATHS /usr/include /usr/local/include 
+        PATHS /usr/include /usr/local/include
               ${LIBSEDML_INSTALL_DIR}/include
-              ${CMAKE_SOURCE_DIR}/include 
+              ${CMAKE_SOURCE_DIR}/include
               ${CMAKE_SOURCE_DIR}/dependencies/include
         )
     set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBSEDML_LIBRARY} )
@@ -121,7 +122,7 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
             PATHS /usr/bin /usr/local/bin
                   ${LIBSEDML_INSTALL_DIR}/bin
                   ${LIBSEDML_INCLUDE_DIR}/../bin
-                  ${CMAKE_SOURCE_DIR}/ 
+                  ${CMAKE_SOURCE_DIR}/
                   ${CMAKE_SOURCE_DIR}/dependencies/libsedml/bin
             )
         set(LIBSEDML_DLL ${LIBSEDML_BIN_DIR}/libsedml.dll)
@@ -134,7 +135,7 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
 #
     find_path(LIBNUML_INSTALL_DIR
     NAMES include/numl/NMBase.h
-    PATHS /usr /usr/local /usr/lib /usr/local/lib 
+    PATHS /usr /usr/local /usr/lib /usr/local/lib
               ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/
               ${CMAKE_SOURCE_DIR}/../
@@ -149,19 +150,19 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
                ${CMAKE_SOURCE_DIR}/dependencies/lib
              )
     else()
-        find_library(LIBNUML_LIBRARY 
+        find_library(LIBNUML_LIBRARY
             NAMES libnuml.lib libnuml.so libnuml numl.lib numl.so numl
-            PATHS /usr/lib /usr/local/lib 
+            PATHS /usr/lib /usr/local/lib
               ${LIBNUML_INSTALL_DIR}/lib
-              ${CMAKE_SOURCE_DIR} 
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
             )
     endif()
     find_path(LIBNUML_INCLUDE_DIR
         NAMES numl/NMBase.h
-        PATHS /usr/include /usr/local/include 
+        PATHS /usr/include /usr/local/include
               ${LIBNUML_INSTALL_DIR}/include
-              ${CMAKE_SOURCE_DIR}/include 
+              ${CMAKE_SOURCE_DIR}/include
               ${CMAKE_SOURCE_DIR}/dependencies/include
         )
     set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBNUML_LIBRARY} )
@@ -171,7 +172,7 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
             PATHS /usr/bin /usr/local/bin
                   ${LIBNUML_INSTALL_DIR}/bin
                   ${LIBNUML_INCLUDE_DIR}/../bin
-                  ${CMAKE_SOURCE_DIR}/ 
+                  ${CMAKE_SOURCE_DIR}/
                   ${CMAKE_SOURCE_DIR}/dependencies/libnuml/bin
             )
         set(LIBNUML_DLL ${LIBNUML_BIN_DIR}/libnuml.dll)
@@ -185,7 +186,7 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
 
     find_path(LIBSBML_INSTALL_DIR
     NAMES include/sbml/SBMLTypes.h
-    PATHS /usr /usr/local /usr/lib /usr/local/lib 
+    PATHS /usr /usr/local /usr/lib /usr/local/lib
               ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/
               ${CMAKE_SOURCE_DIR}/../libsbml-5/release/
@@ -202,20 +203,20 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
                ${CMAKE_SOURCE_DIR}/../libsbml-5/release/lib/
              )
     else()
-        find_library(LIBSBML_LIBRARY 
+        find_library(LIBSBML_LIBRARY
             NAMES libsbml.lib libsbml.so libsbml sbml.lib sbml.so sbml
-            PATHS /usr/lib /usr/local/lib 
+            PATHS /usr/lib /usr/local/lib
               ${LIBSBML_INSTALL_DIR}/lib
-              ${CMAKE_SOURCE_DIR} 
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
               ${CMAKE_SOURCE_DIR}/../libsbml-5/release/lib/
             )
     endif()
     find_path(LIBSBML_INCLUDE_DIR
         NAMES sbml/SBMLTypes.h
-        PATHS /usr/include /usr/local/include 
+        PATHS /usr/include /usr/local/include
               ${LIBSBML_INSTALL_DIR}/include
-              ${CMAKE_SOURCE_DIR}/include 
+              ${CMAKE_SOURCE_DIR}/include
               ${CMAKE_SOURCE_DIR}/dependencies/include
               ${CMAKE_SOURCE_DIR}/../libsbml-5/release/include/
         )
@@ -226,7 +227,7 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
             PATHS /usr/bin /usr/local/bin
                   ${LIBSBML_INSTALL_DIR}/bin
                   ${LIBSBML_INCLUDE_DIR}/../bin
-                  ${CMAKE_SOURCE_DIR}/ 
+                  ${CMAKE_SOURCE_DIR}/
                   ${CMAKE_SOURCE_DIR}/dependencies/libsbml/bin
                   ${CMAKE_SOURCE_DIR}/../libsbml-5/release/bin/
             )
@@ -250,10 +251,10 @@ add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" 
 #
 
 if(WITH_LIBSBML_EXPAT)
-    find_library(EXPAT_LIBRARY 
+    find_library(EXPAT_LIBRARY
         NAMES libexpat.lib libexpat.so libexpat.dylib libexpat expat.lib expat.so expat.dylib expat
-	PATHS /usr/lib /usr/local/lib 
-              ${CMAKE_SOURCE_DIR} 
+	PATHS /usr/lib /usr/local/lib
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
               ${LIBSBML_INCLUDE_DIR}/../lib
         )
@@ -261,20 +262,20 @@ if(WITH_LIBSBML_EXPAT)
 endif()
 
 if(WITH_LIBSBML_LIBXML)
-    find_library(LIBXML_LIBRARY 
+    find_library(LIBXML_LIBRARY
         NAMES libxml2.lib libxml2.so libxml2.dylib libxml2
-	PATHS /usr/lib /usr/local/lib 
-              ${CMAKE_SOURCE_DIR} 
+	PATHS /usr/lib /usr/local/lib
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
               ${LIBSBML_INCLUDE_DIR}/../lib
         )
     set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBXML_LIBRARY} )
 
     if(WIN32)
-      find_library(ICONV_LIBRARY 
+      find_library(ICONV_LIBRARY
           NAMES iconv.lib iconv.so iconv.dylib iconv libiconv.lib libiconv.so libiconv.dylib libiconv
-          PATHS /usr/lib /usr/local/lib 
-                ${CMAKE_SOURCE_DIR} 
+          PATHS /usr/lib /usr/local/lib
+                ${CMAKE_SOURCE_DIR}
                 ${CMAKE_SOURCE_DIR}/dependencies/lib
                 ${LIBSBML_INCLUDE_DIR}/../lib
           )
@@ -283,10 +284,10 @@ if(WITH_LIBSBML_LIBXML)
 endif()
 
 if(WITH_LIBSBML_XERCES)
-    find_library(XERCES_LIBRARY 
+    find_library(XERCES_LIBRARY
         NAMES xerces-c_static_3.lib xerces-c_static_3.so xerces-c_static_3.dylib xerces-c_static_3
-	PATHS /usr/lib /usr/local/lib 
-              ${CMAKE_SOURCE_DIR} 
+	PATHS /usr/lib /usr/local/lib
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
               ${LIBSBML_INCLUDE_DIR}/../lib
         )
@@ -294,19 +295,19 @@ if(WITH_LIBSBML_XERCES)
 endif()
 
 if(WITH_LIBSBML_COMPRESSION)
-    find_library(ZDLL_LIBRARY 
+    find_library(ZDLL_LIBRARY
         NAMES zdll.lib zdll.so zdll.dylib zdll z
-	PATHS /usr/lib /usr/local/lib 
-              ${CMAKE_SOURCE_DIR} 
+	PATHS /usr/lib /usr/local/lib
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
               ${LIBSBML_INCLUDE_DIR}/../lib
         )
     set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${ZDLL_LIBRARY} )
 
-    find_library(BZIP_LIBRARY 
+    find_library(BZIP_LIBRARY
         NAMES bzip2.lib bzip2.so bzip2.dylib bzip2 bz2
-	PATHS /usr/lib /usr/local/lib 
-              ${CMAKE_SOURCE_DIR} 
+	PATHS /usr/lib /usr/local/lib
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
               ${LIBSBML_INCLUDE_DIR}/../lib
         )
@@ -346,7 +347,7 @@ endif(WITH_SWIG)
 
 if(WITH_SWIG)
     message(STATUS "  Using SWIG                    = ${SWIG_EXECUTABLE}")
-    
+
     if (SWIG_FOUND AND SWIG_VERSION VERSION_LESS "2.0.4")
         message(WARNING "   You are using swig version ${SWIG_VERSION} while we recommend at least version 2.0.4.")
     endif()
@@ -396,7 +397,7 @@ endif(WITH_CHECK)
 
 ####################################################################
 #
-# Need some variables set up, such as the name for the libPhrasedml 
+# Need some variables set up, such as the name for the libPhrasedml
 # library and the Path and file separator characters
 #
 
@@ -423,7 +424,7 @@ mark_as_advanced(CMAKE_INSTALL_LIBDIR)
 
 set (PHRASEDML_SRC_DIR src/)
 
-file(GLOB LIBPHRASEDML_SOURCES 
+file(GLOB LIBPHRASEDML_SOURCES
           ${PHRASEDML_SRC_DIR}model.cpp
           ${PHRASEDML_SRC_DIR}modelChange.cpp
           ${PHRASEDML_SRC_DIR}oneStep.cpp
@@ -441,7 +442,7 @@ file(GLOB LIBPHRASEDML_SOURCES
           ${PHRASEDML_SRC_DIR}variable.cpp
           )
 
-file(GLOB LIBPHRASEDML_HEADERS 
+file(GLOB LIBPHRASEDML_HEADERS
           ${PHRASEDML_SRC_DIR}libutil.h
           ${PHRASEDML_SRC_DIR}model.h
           ${PHRASEDML_SRC_DIR}modelChange.h
@@ -469,7 +470,7 @@ install(TARGETS ${LIBPHRASEDML_LIBRARY} DESTINATION lib)
 install(FILES   ${LIBPHRASEDML_HEADERS} DESTINATION include)
 
 if (WIN32 AND NOT CYGWIN)
-    # don't decorate static library 
+    # don't decorate static library
     set_target_properties(${LIBPHRASEDML_LIBRARY} PROPERTIES COMPILE_DEFINITIONS "LIBLAX_STATIC=1;LIBSEDML_STATIC=1;LIBSBML_STATIC=1")
 endif(WIN32 AND NOT CYGWIN)
 
@@ -482,7 +483,7 @@ endif(NOT UNIX)
 add_library (${LIBPHRASEDML_LIBRARY}-static STATIC ${LIBPHRASEDML_HEADERS} ${LIBPHRASEDML_SOURCES})
 
 if (WIN32 AND NOT CYGWIN)
-    # don't decorate static library 
+    # don't decorate static library
     set_target_properties(${LIBPHRASEDML_LIBRARY}-static PROPERTIES COMPILE_DEFINITIONS "LIBLAX_STATIC=1;LIBSEDML_STATIC=1;LIBSBML_STATIC=1;LIBPHRASEDML_STATIC=1")
 endif(WIN32 AND NOT CYGWIN)
 
@@ -579,19 +580,19 @@ if (WITH_QTPHRASEDML)
         set (QTPHRASEDML_LIBRARIES ${QT_LIBRARIES} ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS} )
         if (WITH_SBW)
            set(SBW_DEFINITIONS "-DSBW_INTEGRATION" )
-           find_library(SBW_LIBRARY 
+           find_library(SBW_LIBRARY
         NAMES libsbw.lib sbw.lib libsbw.so libsbw sbw
-        PATHS /usr/lib /usr/local/lib 
-              ${CMAKE_SOURCE_DIR} 
+        PATHS /usr/lib /usr/local/lib
+              ${CMAKE_SOURCE_DIR}
               ${CMAKE_SOURCE_DIR}/dependencies/lib
                           ${CMAKE_SOURCE_DIR}/../SBW/install/lib
                           )
            set(QTPHRASEDML_LIBRARIES ${QTPHRASEDML_LIBRARIES} ${SBW_LIBRARY} )
-    
+
        find_path(SBW_INCLUDE_DIR
         NAMES SBW/config.h
-        PATHS /usr/include /usr/local/include 
-              ${CMAKE_SOURCE_DIR}/include 
+        PATHS /usr/include /usr/local/include
+              ${CMAKE_SOURCE_DIR}/include
               ${CMAKE_SOURCE_DIR}/dependencies/include
                           ${CMAKE_SOURCE_DIR}/../SBW/install/include/
               )
@@ -619,14 +620,14 @@ if(UNIX)
         add_definitions(-DMACOSX)
         #create universal binaries
                 option(ENABLE_UNIVERSAL "Create Universal Binaries" OFF)
-                
+
                 set(CMAKE_OSX_ARCHITECTURES "${CMAKE_OSX_ARCHITECTURES}" CACHE STRING "A semicolon separated list of build architectures to be used")
                 if(ENABLE_UNIVERSAL)
                   # if universal binaries are requested and none defined so far
-                  # overwrite them with all three common architectures. If the user 
+                  # overwrite them with all three common architectures. If the user
                   # specified their own list of architectures do not touch!
-                  if (CMAKE_OSX_ARCHITECTURES STREQUAL "")                        
-                    set(CMAKE_OSX_ARCHITECTURES "i386;ppc;x86_64" CACHE STRING "A semicolon separated list of build architectures to be used" FORCE)                
+                  if (CMAKE_OSX_ARCHITECTURES STREQUAL "")
+                    set(CMAKE_OSX_ARCHITECTURES "i386;ppc;x86_64" CACHE STRING "A semicolon separated list of build architectures to be used" FORCE)
                   endif()
                 endif(ENABLE_UNIVERSAL)
     else(APPLE)
@@ -643,7 +644,7 @@ else(UNIX)
         foreach(flag_var
             CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
             CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-        
+
             if(${flag_var} MATCHES "/MD")
                     string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
             endif(${flag_var} MATCHES "/MD")
@@ -651,14 +652,14 @@ else(UNIX)
         add_definitions( -D_MT)
       endif(WITH_STATIC_RUNTIME)
     endif(MSVC)
-    
-    
+
+
 endif(UNIX)
 
 ###############################################################################
 #
 # Install win32 dependencies
-# 
+#
 if (NOT UNIX)
    file(GLOB win_dependencies "${CMAKE_SOURCE_DIR}/win32/*.dll" "${CMAKE_CURRENT_SOURCE_DIR}/win32/README.txt")
    if (NOT WITH_STATIC_SBML)
