@@ -53,6 +53,7 @@ if (WITH_PYTHON)
   option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    ON )
   option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    OFF )
   option(WITH_CONDA_BUILDER     "Install files required to build Anaconda packages"  OFF)
+  option(WITH_PYTHON_EXAMPLES   "Install Python example files"  OFF)
 endif()
 
 # which language bindings should be build

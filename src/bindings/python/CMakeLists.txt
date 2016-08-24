@@ -214,6 +214,14 @@ if(WITH_CONDA_BUILDER)
     install(FILES ${SETUP_PY} ${CMAKE_CURRENT_BINARY_DIR}/conda/meta.yaml conda/build.sh conda/bld.bat DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR})
 endif()
 
+# copy examples to python bindings directory
+if(WITH_PYTHON_EXAMPLES)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/examples/lorenz.py  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml/examples)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/examples/lorenz.xml  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml/examples)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/examples/simpletimecourse.py  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml/examples)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/examples/BIOMD0000000010.xml  DESTINATION ${PYTHON_PACKAGE_INSTALL_DIR}/phrasedml/examples)
+endif()
+
 ####################################################################
 #
 # testing
