@@ -141,7 +141,7 @@ endif()
 #message(STATUS "libraries: ${LIBPHRASEDML_LIBS}\nphrasedml:${LIBPHRASEDML_LIBRARY}")
 
 
-if(APPLE)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
   target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})
 else()
