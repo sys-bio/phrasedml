@@ -142,7 +142,9 @@ endif()
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR ${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set_target_properties(binding_python_lib PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif()
   target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS})
 else()
   target_link_libraries(binding_python_lib ${LIBPHRASEDML_LIBRARY}-static ${LIBPHRASEDML_LIBS} ${PYTHON_LIBRARIES})
