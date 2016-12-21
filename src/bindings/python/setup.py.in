@@ -5,7 +5,7 @@ from distutils.core import setup
 setup(name='phrasedml',
       version='${LIBPHRASEDML_VERSION_STRING_NO_V}',
       description='Python bindings for phraSED-ML',
-      author='Lucian Smith',
+      author='Lucian Smith, J Kyle Medley',
       author_email='lpsmith@uw.edu',
       url='http://phrasedml.sf.net/',
       packages=['phrasedml'],
