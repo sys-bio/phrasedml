@@ -6,6 +6,6 @@ human-writeable simulation experiment definition language.
 For more information, see http://phrasedml.sf.net/
 """
 
-from phrasedml import *
+from .phrasedml import *
 
 __version__ = LIBPHRASEDML_VERSION_STRING
