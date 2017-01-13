@@ -9,6 +9,6 @@ setup(name='phrasedml',
       author_email='lpsmith@uw.edu',
       url='http://phrasedml.sf.net/',
       packages=['phrasedml'],
-      package_data={'phrasedml': ['_phrasedml*', '*.dll', 'examples/*.*']},
+      package_data={'phrasedml': ['_phrasedml*', '*.dll', 'examples/*.*', '*.so*', '*.dylib*']},
      )
 
