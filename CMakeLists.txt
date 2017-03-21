@@ -64,6 +64,7 @@ OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat li
 OPTION(WITH_LIBSBML_LIBXML "Set if libsbml was compiled with a separate libxml library." ON)
 OPTION(WITH_LIBSBML_XERCES "Set if libsbml was compiled with a separate xerces library." OFF)
 OPTION(WITH_LIBSBML_COMPRESSION "Set if libsbml was compiled with separate zdll and bzip libraries." OFF)
+OPTION(PHRASEDML_ENABLE_XPATH_EVAL "Use libxml2 for xpath evaluation." OFF)
 
 set(EXTRA_LIBS "" CACHE STRING "Libraries the other libraries depend on that are in non-standard locations" )
 
@@ -79,6 +80,11 @@ endif()
 SET(LIBPHRASEDML_VERSION_STRING "v${LIBPHRASEDML_VERSION_MAJOR}.${LIBPHRASEDML_VERSION_MINOR}${LIBPHRASEDML_VERSION_PATCH}${LIBPHRASEDML_VERSION_RELEASE}")
 add_definitions( -DLIBPHRASEDML_VERSION_STRING="${LIBPHRASEDML_VERSION_STRING}" )
 
+if (PHRASEDML_ENABLE_XPATH_EVAL)
+  find_package(LibXml2 REQUIRED)
+  INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIR})
+  add_definitions(-DPHRASEDML_ENABLE_XPATH_EVAL)
+endif()
 
 ####################################################################
 #

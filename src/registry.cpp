@@ -596,7 +596,7 @@ bool Registry::addToChangeList(std::vector<ModelChange>* cl, std::vector<const s
     setError(err.str(), phrased_yylloc_last_line);
     return true;
   }
-  
+
   change_type type = ctype_loop_uniformLinear;
   if (CaselessStrCmp(key3str, "uniformLog") || CaselessStrCmp(key3str, "logUniform") ){
     type = ctype_loop_uniformLog;
@@ -635,7 +635,7 @@ bool Registry::addToChangeList(std::vector<ModelChange>* cl, std::vector<const s
     setError(err.str(), phrased_yylloc_last_line);
     return true;
   }
-  
+
   ModelChange mc(ctype_loop_vector, key1, numlist);
   cl->push_back(mc);
   return false;
@@ -720,7 +720,7 @@ string Registry::getWorkingFilename(const string& filename)
   if (file_exists(newfile)) return newfile;
   return "";
 }
-  
+
 char* Registry::getPhraSEDML() const
 {
   string retval  = "// Created by libphrasedml ";
@@ -964,7 +964,7 @@ bool Registry::finalize()
 
 void Registry::setReferencedSBML(const char* filename, SBMLDocument* doc)
 {
-  m_referencedSBML.insert(make_pair((string)filename, doc));
+  m_referencedSBML.insert(make_pair(normalizeModelPath((string)filename), doc));
 }
 
 void Registry::clearReferencedSBML()

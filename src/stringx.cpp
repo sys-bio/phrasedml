@@ -6,10 +6,34 @@
 #include "sbml/SBMLDocument.h"
 #include "model.h"
 
+#ifdef PHRASEDML_ENABLE_XPATH_EVAL
+  #include <libxml/parser.h>
+  #include <libxml/xpath.h>
+  #include <libxml/xpathInternals.h>
+#endif
+
 using namespace std;
 extern bool CaselessStrCmp(const string& lhs, const string& rhs);
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
+
+string stripExt(const string& path)
+{
+  std::size_t loc = path.rfind(".");
+  if (loc != std::string::npos)
+    return path.substr(0,loc);
+  else
+    return path;
+}
+
+string normalizeModelPath(const string& path)
+{
+  if (path.substr(0,2) == "./")
+    return stripExt(path.substr(2));
+  else
+    return stripExt(path);
+}
+
 string SizeTToString(size_t number)
 {
   ostringstream ostr;
@@ -75,6 +99,59 @@ vector<string> getStringVecFromDelimitedString(const string& var, string delimit
   ret.push_back(substr);
   return ret;
 }
+
+string xpathToNode(const string& xpath) {
+  string value_selector = "/@value";
+  if (xpath.rfind(value_selector) == xpath.size() - value_selector.size())
+    return xpath.substr(0, xpath.size() - value_selector.size());
+  else
+    return xpath;
+}
+
+#ifdef PHRASEDML_ENABLE_XPATH_EVAL
+vector<string> getIdFromXPathExtended(const string& xpath_, const string& source_doc, const std::string& sbml_ns)
+{
+  string xpath = xpathToNode(xpath_);
+  vector<string> ret;
+  xmlDocPtr doc;
+	doc = xmlParseDoc((const xmlChar*)source_doc.c_str());
+	if (doc == NULL ) {
+    // error
+		return ret;
+	}
+
+	xmlXPathContextPtr context;
+	xmlXPathObjectPtr result;
+
+  context = xmlXPathNewContext(doc);
+	if (context == NULL) {
+		return ret;
+	}
+  xmlXPathRegisterNs(context, (const xmlChar*)"sbml", (const xmlChar*)sbml_ns.c_str());
+
+  result = xmlXPathEvalExpression((const xmlChar*)xpathToNode(xpath).c_str(), context);
+	xmlXPathFreeContext(context);
+	if (result == NULL) {
+		return ret;
+	}
+
+	if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
+		xmlXPathFreeObject(result);
+		return ret;
+	}
+
+  xmlNodeSetPtr nodeset;
+	nodeset = result->nodesetval;
+	for (int i=0; i < nodeset->nodeNr; i++) {
+    xmlChar* id = xmlGetProp(nodeset->nodeTab[i], (const xmlChar*)"id");
+    ret.push_back(string((char*)id));
+	}
+	xmlXPathFreeObject (result);
+  xmlFreeDoc(doc);
+
+	return ret;
+}
+#endif
 
 
 vector<string> getIdFromXPath(const string& xpath)

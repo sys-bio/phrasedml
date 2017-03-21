@@ -81,16 +81,21 @@ ModelChange::ModelChange(change_type type, vector<const string*>* name, const ve
   }
 }
 
-ModelChange::ModelChange(SedChange* sedchange, SedDocument* seddoc, string model)
+ModelChange::ModelChange(SedChange* sedchange, SedDocument* seddoc, string model, string sbml_source, string sbml_ns)
   : m_type(ctype_val_assignment)
   , m_variable()
   , m_values()
   , m_formula()
   , m_astnode(NULL)
   , m_model()
+  , sbml_source_(sbml_source)
 {
   string target = sedchange->getTarget();
+  #ifdef PHRASEDML_ENABLE_XPATH_EVAL
+  m_variable = getIdFromXPathExtended(target, sbml_source_, sbml_ns);
+  #else
   m_variable = getIdFromXPath(target);
+  #endif
 
   switch(sedchange->getTypeCode())
   {
@@ -478,7 +483,7 @@ void ModelChange::setVariable(std::vector<std::string> id)
   m_variable = id;
 }
 
-string ModelChange::getModel() const 
+string ModelChange::getModel() const
 {
   return m_model;
 }

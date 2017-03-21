@@ -5,6 +5,7 @@
 #include <sstream>
 #include <ostream>
 #include <set>
+#include <string>
 
 #include "registry.h"
 #include "model.h"
@@ -45,7 +46,7 @@ PhrasedModel::PhrasedModel(string id, string source, vector<ModelChange> changes
 PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
   : Variable(sedmodel)
   , m_type(lang_XML)
-  , m_source(sedmodel->getSource())
+  , m_source(normalizeModelPath(sedmodel->getSource()))
   , m_changes()
   , m_isFile(true)
 {
@@ -57,17 +58,29 @@ PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
   else {
     processSource();
   }
-  for (unsigned int ch=0; ch<sedmodel->getNumChanges(); ch++) {
-    SedChange* sc = sedmodel->getChange(ch);
-    ModelChange mc(sc, seddoc, m_id);
-    m_changes.push_back(mc);
-    if (sc->getTypeCode() == SEDML_CHANGE_COMPUTECHANGE) {
-      SedComputeChange* scc = static_cast<SedComputeChange*>(sc);
-      for (unsigned int p=0; p<scc->getNumParameters(); p++) {
-        ModelChange mc2(scc->getParameter(p));
-        m_changes.push_back(mc2);
+
+  ostringstream stream;
+  SBMLWriter sw;
+  string sbml_source;
+  if (getSBMLDocument()) {
+    sw.writeSBML(getSBMLDocument(), stream);
+    sbml_source = stream.str();
+
+    for (unsigned int ch=0; ch<sedmodel->getNumChanges(); ch++) {
+      SedChange* sc = sedmodel->getChange(ch);
+      ModelChange mc(sc, seddoc, m_id, sbml_source, getSBMLDocument()->getNamespaces()->getURI(0));
+      m_changes.push_back(mc);
+      if (sc->getTypeCode() == SEDML_CHANGE_COMPUTECHANGE) {
+        SedComputeChange* scc = static_cast<SedComputeChange*>(sc);
+        for (unsigned int p=0; p<scc->getNumParameters(); p++) {
+          ModelChange mc2(scc->getParameter(p));
+          m_changes.push_back(mc2);
+        }
       }
     }
+  } else {
+    if (sedmodel->getNumChanges() > 0)
+      g_registry.setError("Cannot make changes without model source", 0);
   }
 }
 
@@ -90,7 +103,7 @@ language PhrasedModel::getType() const
   return m_type;
 }
 
-SBMLDocument* PhrasedModel::getSBMLDocument() 
+SBMLDocument* PhrasedModel::getSBMLDocument()
 {
   if (!m_isFile && m_sbml.getModel()==NULL) {
     PhrasedModel* referencedModel = g_registry.getModel(m_source);
@@ -126,7 +139,7 @@ string PhrasedModel::getPhraSEDML() const
     }
     ret += m_changes[cl].getPhraSEDML();
   }
-  
+
   ret += "\n";
   return ret;
 }
@@ -285,33 +298,33 @@ std::string PhrasedModel::getURIFromLanguage(language lang) const
 {
   switch(lang)
   {
-  case lang_XML: 
+  case lang_XML:
     return "urn:sedml:language:xml";
-  case lang_SBML: 
+  case lang_SBML:
     return "urn:sedml:language:sbml";
-  case lang_CellML: 
+  case lang_CellML:
     return "urn:sedml:language:cellml";
-  case lang_SBMLl1v1: 
+  case lang_SBMLl1v1:
     return "urn:sedml:language:sbml.level-1.version-1";
-  case lang_SBMLl1v2: 
+  case lang_SBMLl1v2:
     return "urn:sedml:language:sbml.level-1.version-2";
-  case lang_SBMLl2v1: 
+  case lang_SBMLl2v1:
     return "urn:sedml:language:sbml.level-2.version-1";
-  case lang_SBMLl2v2: 
+  case lang_SBMLl2v2:
     return "urn:sedml:language:sbml.level-2.version-2";
-  case lang_SBMLl2v3: 
+  case lang_SBMLl2v3:
     return "urn:sedml:language:sbml.level-2.version-3";
-  case lang_SBMLl2v4: 
+  case lang_SBMLl2v4:
     return "urn:sedml:language:sbml.level-2.version-4";
-  case lang_SBMLl2v5: 
+  case lang_SBMLl2v5:
     return "urn:sedml:language:sbml.level-2.version-5";
-  case lang_SBMLl3v1: 
+  case lang_SBMLl3v1:
     return "urn:sedml:language:sbml.level-3.version-1";
-  case lang_SBMLl3v2: 
+  case lang_SBMLl3v2:
     return "urn:sedml:language:sbml.level-3.version-2";
-  case lang_CellML1_0: 
+  case lang_CellML1_0:
     return "urn:sedml:language:cellml_1.0";
-  case lang_CellML1_1: 
+  case lang_CellML1_1:
     return "urn:sedml:language:cellml_1.0";
   case lang_CellML1_2:
     return "urn:sedml:language:cellml_1.2";

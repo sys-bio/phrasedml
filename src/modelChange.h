@@ -39,12 +39,13 @@ private:
   ASTNode* m_astnode;
 
   std::string m_model;
+  std::string sbml_source_;
 
 public:
 
   ModelChange(std::vector<const std::string*>* name, std::vector<std::string>* formula);
   ModelChange(change_type type, std::vector<const std::string*>* name, const std::vector<double>* values);
-  ModelChange(SedChange* sedchange, SedDocument* seddoc, std::string parent);
+  ModelChange(SedChange* sedchange, SedDocument* seddoc, std::string parent, std::string sbml_source, std::string sbml_ns);
   ModelChange(SedRange* sr);
   ModelChange(SedParameter* parameter);
   ModelChange(SedSetValue* ssv);

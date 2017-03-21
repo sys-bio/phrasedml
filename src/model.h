@@ -14,20 +14,20 @@ class SedModel;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 enum language {
-  lang_XML, 
-  lang_SBML, 
-  lang_CellML, 
-  lang_SBMLl1v1, 
-  lang_SBMLl1v2, 
-  lang_SBMLl2v1, 
-  lang_SBMLl2v2, 
-  lang_SBMLl2v3, 
-  lang_SBMLl2v4, 
-  lang_SBMLl2v5, 
-  lang_SBMLl3v1, 
-  lang_SBMLl3v2, 
-  lang_CellML1_0, 
-  lang_CellML1_1, 
+  lang_XML,
+  lang_SBML,
+  lang_CellML,
+  lang_SBMLl1v1,
+  lang_SBMLl1v2,
+  lang_SBMLl2v1,
+  lang_SBMLl2v2,
+  lang_SBMLl2v3,
+  lang_SBMLl2v4,
+  lang_SBMLl2v5,
+  lang_SBMLl3v1,
+  lang_SBMLl3v2,
+  lang_CellML1_0,
+  lang_CellML1_1,
   lang_CellML1_2
 };
 
