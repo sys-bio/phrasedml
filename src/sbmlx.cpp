@@ -35,4 +35,28 @@ void replaceVariablesInASTNodeWith(ASTNode* astn, const map<string, string>& rep
   }
 
 }
+
+string fixMinMaxSymbolsXMLStr(string input)
+{
+  string ret = input;
+  // replace max
+  string oldstr = "<max/>";
+  string newstr = "<csymbol definitionURL=\"http://sed-ml.org/#max\" encoding=\"text\">max</csymbol>";
+  size_t p = ret.find(oldstr);
+  while(p != string::npos) {
+    ret.replace(p, oldstr.size(), newstr);
+    p = ret.find(oldstr);
+  }
+
+  // replace min
+  oldstr = "<min/>";
+  newstr = "<csymbol definitionURL=\"http://sed-ml.org/#min\" encoding=\"text\">min</csymbol>";
+  p = ret.find(oldstr);
+  while(p != string::npos) {
+    ret.replace(p, oldstr.size(), newstr);
+    p = ret.find(oldstr);
+  }
+
+  return ret;
+}
 PHRASEDML_CPP_NAMESPACE_END

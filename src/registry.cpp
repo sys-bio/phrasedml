@@ -795,16 +795,20 @@ char* Registry::getSEDML() const
   sw.setProgramVersion(LIBPHRASEDML_VERSION_STRING);
   sw.writeSedML(m_sedml, stream);
   string ret = stream.str();
+  // fix single quotes
   size_t replace = ret.find("&apos;");
   while (replace != string::npos) {
     ret.replace(replace, 6, "'");
     replace = ret.find("&apos;");
   }
+  // fix double quotes
   replace = ret.find("&quot;");
   while (replace != string::npos) {
     ret.replace(replace, 6, "\"");
     replace = ret.find("&quot;");
   }
+  // fix min/max symbols
+  ret = fixMinMaxSymbolsXMLStr(ret);
   return g_registry.getCharStar(ret.c_str());
 }
 
