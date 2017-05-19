@@ -65,7 +65,7 @@
 }
 
 %type   <character>     mathThing "mathematical symbol"
-%type   <words>         varOrKeyword 
+%type   <words>         varOrKeyword
 %type   <wordstr>       formula commaformula
 %type   <wordstrvec>    vslist
 %type   <nums>          numlist
@@ -94,8 +94,8 @@ input:          /* empty */
         |       input plot lineend {}
         |       input name lineend {}
         |       input lineend {}
-        |       input error {YYABORT;} 
-        |       input ERROR {YYABORT;} 
+        |       input error {YYABORT;}
+        |       input ERROR {YYABORT;}
         ;
 
 varOrKeyword:   PHRASEWORD {$$ = new vector<const string*>; $$->push_back($1);}
@@ -126,7 +126,9 @@ changelist:     varOrKeyword '=' formula {$$ = new vector<ModelChange>; if (g_re
         |       varOrKeyword varOrKeyword '[' numlist ']' {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $4)) YYABORT;}
         |       varOrKeyword varOrKeyword '(' formula ')' {$$ = new vector<ModelChange>; if (g_registry.addToChangeList($$, $1, $2, $4, false)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword {$$ = $1; if (g_registry.addToChangeList($$, $3, $4)) YYABORT;}
+        |       changelist ',' varOrKeyword '=' varOrKeyword '-' '>' formula {$$ = $1; if (g_registry.addMapToChangeList($$, $3, $5, $8)) YYABORT;}
         |       changelist ',' varOrKeyword '=' formula {$$ = $1; if (g_registry.addToChangeList($$, $3, $5)) YYABORT;}
+        |       changelist ',' varOrKeyword '=' varOrKeyword ':' formula {$$ = $1; if (g_registry.addToChangeListFromRange($$, $3, $5, $7)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword '=' formula {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $6, true)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword varOrKeyword '=' number {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $5, $7)) YYABORT;}
         |       changelist ',' varOrKeyword varOrKeyword varOrKeyword varOrKeyword '=' number {$$ = $1; if (g_registry.addToChangeList($$, $3, $4, $5, $6, $8)) YYABORT;}

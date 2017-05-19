@@ -23,6 +23,7 @@ enum change_type {
   , ctype_loop_uniformLinear
   , ctype_loop_uniformLog
   , ctype_loop_vector
+  , ctype_loop_functional
 };
 
 bool isLoop(change_type type);
@@ -40,15 +41,19 @@ private:
 
   std::string m_model;
   std::string sbml_source_;
+  // for functional ranges
+  std::string m_source_range;
 
 public:
 
   ModelChange(std::vector<const std::string*>* name, std::vector<std::string>* formula);
+  // for functional ranges
+  ModelChange(std::vector<const std::string*>* name, std::string source, std::vector<std::string>* formula, bool functional=true);
   ModelChange(change_type type, std::vector<const std::string*>* name, const std::vector<double>* values);
   ModelChange(SedChange* sedchange, SedDocument* seddoc, std::string parent, std::string sbml_source, std::string sbml_ns);
   ModelChange(SedRange* sr);
   ModelChange(SedParameter* parameter);
-  ModelChange(SedSetValue* ssv);
+  ModelChange(SedSetValue* ssv, std::string source_range="");
   ModelChange(const ModelChange& orig);
   ModelChange& operator=(const ModelChange& rhs);
   ~ModelChange();

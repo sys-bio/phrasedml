@@ -67,6 +67,34 @@ ModelChange::ModelChange(vector<const string*>* name, std::vector<std::string>* 
   free(rt_form);
 }
 
+ModelChange::ModelChange(vector<const string*>* name, std::string source, std::vector<std::string>* formula, bool functional)
+  : m_type(functional ? ctype_loop_functional : ctype_formula_assignment)
+  , m_variable()
+  , m_values()
+  , m_formula()
+  , m_astnode(NULL)
+  , m_model()
+  , m_source_range(source)
+{
+  if (name==NULL) return;
+  for (size_t n=0; n<name->size(); n++) {
+    m_variable.push_back(*(*name)[n]);
+  }
+  m_formula = getStringFrom(formula, " ");
+  m_astnode = g_registry.parseFormula(m_formula);
+  if (m_astnode->isNumber()) {
+    m_values.push_back(m_astnode->getValue());
+    delete m_astnode;
+    m_astnode = NULL;
+    m_formula.clear();
+    m_type = ctype_val_assignment;
+    return;
+  }
+  char* rt_form = SBML_formulaToL3String(m_astnode);
+  m_formula = rt_form;
+  free(rt_form);
+}
+
 ModelChange::ModelChange(change_type type, vector<const string*>* name, const vector<double>* values)
   : m_type(type)
   , m_variable()
@@ -164,9 +192,11 @@ ModelChange::ModelChange(SedRange* sr)
   case SEDML_RANGE_FUNCTIONALRANGE:
     {
       SedFunctionalRange* func = static_cast<SedFunctionalRange*>(sr);
-      m_type = ctype_formula_assignment;
+      m_type = ctype_loop_functional;
+      m_source_range = func->getRange();
       setASTNode(func->getMath());
-      //We'll worry about the variables later.
+      m_variable.push_back("local");
+      m_variable.push_back(func->getId());
     }
     break;
   }
@@ -185,7 +215,7 @@ ModelChange::ModelChange(SedParameter* param)
   m_values.push_back(param->getValue());
 }
 
-ModelChange::ModelChange(SedSetValue* ssv)
+ModelChange::ModelChange(SedSetValue* ssv, string source_range)
   : m_type(ctype_val_assignment)
   , m_variable()
   , m_values()
@@ -196,6 +226,9 @@ ModelChange::ModelChange(SedSetValue* ssv)
   m_variable = getIdFromXPath(ssv->getTarget());
   m_variable.insert(m_variable.begin(), ssv->getModelReference());
   m_model = ssv->getModelReference();
+  if (source_range.size()) {
+    m_source_range = source_range;
+  }
   setASTNode(ssv->getMath());
   if (m_astnode != NULL && m_astnode->isNumber()) {
     m_values.push_back(m_astnode->getValue());
@@ -216,6 +249,7 @@ ModelChange::ModelChange(const ModelChange& orig)
   , m_formula(orig.m_formula)
   , m_astnode(orig.m_astnode)
   , m_model(orig.m_model)
+  , m_source_range(orig.m_source_range)
 {
   if(m_astnode != NULL) {
     m_astnode = m_astnode->deepCopy();
@@ -233,6 +267,7 @@ ModelChange& ModelChange::operator=(const ModelChange& orig)
     m_astnode = m_astnode->deepCopy();
   }
   m_model = orig.m_model;
+  m_source_range = orig.m_source_range;
   return *this;
 }
 
@@ -279,8 +314,15 @@ string ModelChange::getPhraSEDML() const
     ret += "]";
     break;
   case ctype_formula_assignment:
-    ret = getStringFrom(&m_variable, ".");
-    ret += " = " + m_formula;
+    ret = getStringFrom(&m_variable, ".") + " = ";
+    if (m_source_range.size())
+      ret += m_source_range + " : ";
+    ret += m_formula;
+    break;
+  case ctype_loop_functional:
+    ret =  getStringFrom(&m_variable, ".") + " = ";
+    ret += m_source_range + " -> ";
+    ret += m_formula;
     break;
   default:
     break;
@@ -442,6 +484,26 @@ bool ModelChange::addModelChangeToSEDMLRepeatedTask(SedRepeatedTask* sedrt, vect
     {
       if (xpath.empty()) {
         //Only used as a local variable for other functions--do nothing here; we'll pick them up later for other elements.
+      }
+      else {
+        SedSetValue* ssv = sedrt->createTaskChange();
+        ssv->setTarget(xpath);
+        ssv->setModelReference(modref);
+        ssv->setMath(m_astnode);
+        ssv->setRange(m_source_range);
+      }
+    }
+    break;
+  case ctype_loop_functional:
+    {
+      if (xpath.empty()) {
+        SedFunctionalRange* sfr = sedrt->createFunctionalRange();
+        if (m_variable.size() >= 2) {
+          if (m_variable[0] == "local")
+            sfr->setId(m_variable[1]);
+        }
+        sfr->setRange(m_source_range);
+        sfr->setMath(m_astnode);
       }
       else {
         SedSetValue* ssv = sedrt->createTaskChange();

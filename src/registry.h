@@ -104,16 +104,18 @@ public:
   //phraSED-ML lines that are clearly plots:
   bool addOutput(std::vector<const std::string*>* plot, std::vector<std::vector<std::string>*>* plotlist, const std::string* name = NULL);
 
-  
+  bool addMapToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* name, std::vector<const std::string*>* arg, std::vector<std::string>* formula);
+
   //ChangeList addition
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* name, std::vector<std::string>* formula);
+  bool addToChangeListFromRange(std::vector<ModelChange>* cl, std::vector<const std::string*>* name, std::vector<const std::string*>* range, std::vector<std::string>* formula);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* name, std::vector<std::string>* formula, bool usedEquals);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* name, double val);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<const std::string*>* name, double val);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<const std::string*>* key3, std::vector<double>* numlist);
   bool addToChangeList(std::vector<ModelChange>* cl, std::vector<const std::string*>* key1, std::vector<const std::string*>* key2, std::vector<double>* numlist);
-  
+
   //Setting the 'name' attribute
   bool setName(std::vector<const std::string*>* id, std::vector<const std::string*>* is, const std::string* name);
 
@@ -132,7 +134,7 @@ public:
   void setReferencedSBML(const char* filename, SBMLDocument* doc);
   void clearReferencedSBML();
   SBMLDocument* getSavedSBML(std::string filename);
-  void addDotXMLToModelSources();
+  void addDotXMLToModelSources(bool force=false);
 
   //Some people might not want to write the Timestamp to SBML files.
   void SetWriteSEDMLTimestamp(bool set);

@@ -56,7 +56,11 @@ PhrasedRepeatedTask::PhrasedRepeatedTask(SedRepeatedTask* sedRepeatedTask)
   }
   for (unsigned long c=0; c<sedRepeatedTask->getNumTaskChanges(); c++) {
     SedSetValue* ssv = sedRepeatedTask->getTaskChange(c);
-    ModelChange mc(ssv);
+    string source;
+    if (ssv->isSetRange()) {
+      source = ssv->getRange();
+    }
+    ModelChange mc(ssv, source);
     m_changes.push_back(mc);
     for (unsigned long p=0; p<ssv->getNumParameters(); p++) {
       ModelChange mc_p(ssv->getParameter(p));
@@ -230,7 +234,7 @@ bool PhrasedRepeatedTask::isRecursive(set<PhrasedTask*>& tasks)
   return false;
 }
 
-bool ASTNodeHasId(const ASTNode* astn, const string& id) 
+bool ASTNodeHasId(const ASTNode* astn, const string& id)
 {
   if (astn->getType() == AST_NAME) {
     if (id == astn->getName()) {

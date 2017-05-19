@@ -538,9 +538,32 @@ bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* k
 }
 
 
+bool Registry::addMapToChangeList(vector<ModelChange>* cl, vector<const string*>* name, vector<const string*>* arg, vector<string>* formula)
+{
+  std::string source;
+  if (arg->size())
+    source = *(*arg).at(0);
+  ModelChange mc(name, source, formula, true);
+  cl->push_back(mc);
+  return false;
+}
+
+
 bool Registry::addToChangeList(vector<ModelChange>* cl, vector<const string*>* name, vector<string>* formula)
 {
   ModelChange mc(name, formula);
+  cl->push_back(mc);
+  return false;
+}
+
+
+bool Registry::addToChangeListFromRange(vector<ModelChange>* cl, vector<const string*>* name, vector<const string*>* range, vector<string>* formula)
+{
+  std::string source_range;
+  if (range->size() && range->at(0)) {
+    source_range = *range->at(0);
+  }
+  ModelChange mc(name, source_range, formula, false);
   cl->push_back(mc);
   return false;
 }
@@ -979,7 +1002,7 @@ void Registry::clearReferencedSBML()
   m_referencedSBML.clear();
 }
 
-void Registry::addDotXMLToModelSources()
+void Registry::addDotXMLToModelSources(bool force)
 {
   for (size_t m=0; m<m_models.size(); m++) {
     if (m_models[m].getIsFile()) {
@@ -993,7 +1016,7 @@ void Registry::addDotXMLToModelSources()
     for (unsigned long sm=0; sm<m_sedml->getNumModels(); sm++) {
       SedModel* sedmodel = m_sedml->getModel(sm);
       string modelstr = sedmodel->getSource();
-      if (m_sedml->getModel(modelstr) == NULL && modelstr.find(".xml") == string::npos && modelstr.find(".sbml") == string::npos) {
+      if ((m_sedml->getModel(modelstr) == NULL || force) && modelstr.find(".xml") == string::npos && modelstr.find(".sbml") == string::npos) {
         //It's a filename without ".xml"
         sedmodel->setSource(modelstr + ".xml");
       }
