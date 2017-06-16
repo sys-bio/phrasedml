@@ -68,6 +68,8 @@ PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
 
     for (unsigned int ch=0; ch<sedmodel->getNumChanges(); ch++) {
       SedChange* sc = sedmodel->getChange(ch);
+      if (sc->getTarget().find("@id=''") != string::npos)
+        continue;
       ModelChange mc(sc, seddoc, m_id, sbml_source, getSBMLDocument()->getNamespaces()->getURI(0));
       m_changes.push_back(mc);
       if (sc->getTypeCode() == SEDML_CHANGE_COMPUTECHANGE) {
