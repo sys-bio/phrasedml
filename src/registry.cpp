@@ -1016,7 +1016,7 @@ void Registry::addDotXMLToModelSources(bool force)
     for (unsigned long sm=0; sm<m_sedml->getNumModels(); sm++) {
       SedModel* sedmodel = m_sedml->getModel(sm);
       string modelstr = sedmodel->getSource();
-      if ((m_sedml->getModel(modelstr) == NULL || force) && modelstr.find(".xml") == string::npos && modelstr.find(".sbml") == string::npos) {
+      if ((m_sedml->getModel(modelstr) == NULL || m_sedml->getModel(modelstr) == sedmodel) && modelstr.find(".xml") == string::npos && modelstr.find(".sbml") == string::npos) {
         //It's a filename without ".xml"
         sedmodel->setSource(modelstr + ".xml");
       }
