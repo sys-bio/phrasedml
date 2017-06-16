@@ -67,15 +67,23 @@ char* Registry::convertString(string model)
   if (m_sedml->getNumErrors(LIBSEDML_SEV_ERROR) == 0 && m_sedml->getNumErrors(LIBSEDML_SEV_FATAL) == 0) {
     parseSEDML();
     return getPhraSEDML();
+  } else {
+    // std::cerr << "Registry::convertString: errors reading SED-ML: " << m_sedml->getNumErrors(LIBSEDML_SEV_ERROR) << " errors, " << m_sedml->getNumErrors(LIBSEDML_SEV_FATAL) << " fatal errors\n";
+    // if (m_sedml->getNumErrors(LIBSEDML_SEV_ERROR)) {
+    //   for (int k=0; k<m_sedml->getNumErrors(LIBSEDML_SEV_ERROR); ++k) {
+    //     std::cerr << m_sedml->getError(k)->getMessage() << "\n";
+    //     // std::cerr << model << "\n";
+    //   }
+    // }
+    istringstream* inputstring = new istringstream(model + "\n");
+    phrased_yylloc_last_line = 1;
+    input = inputstring;
+    if (parseInput()) {
+      return NULL;
+    }
+    createSEDML();
+    return getSEDML();
   }
-  istringstream* inputstring = new istringstream(model + "\n");
-  phrased_yylloc_last_line = 1;
-  input = inputstring;
-  if (parseInput()) {
-    return NULL;
-  }
-  createSEDML();
-  return getSEDML();
 }
 
 char* Registry::convertFile(const string& filename)
