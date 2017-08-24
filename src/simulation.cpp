@@ -457,6 +457,8 @@ string PhrasedSimulation::getPhrasedVersionOf(int kisao) const
     return "steadystate";
   case 32:
     return "rk4";
+  case 88:
+    return "lsoda";
   case 435:
     return "rk45";
   case 288:
