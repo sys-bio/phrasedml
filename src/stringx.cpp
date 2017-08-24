@@ -101,11 +101,35 @@ vector<string> getStringVecFromDelimitedString(const string& var, string delimit
 }
 
 string xpathToNode(const string& xpath) {
-  string value_selector = "/@value";
-  if (xpath.rfind(value_selector) == xpath.size() - value_selector.size())
-    return xpath.substr(0, xpath.size() - value_selector.size());
+  {
+    string selector = "/@value";
+    if (xpath.rfind(selector) == xpath.size() - selector.size())
+      return xpath.substr(0, xpath.size() - selector.size());
+  }
+  {
+    string selector = "/@initialConcentration";
+    if (xpath.rfind(selector) == xpath.size() - selector.size())
+      return xpath.substr(0, xpath.size() - selector.size());
+  }
+  return xpath;
+}
+
+// does the xpath have "@value" on the end?
+bool isValueSelector(const string& xpath) {
+  string selector = "/@value";
+  if (xpath.rfind(selector) == xpath.size() - selector.size())
+    return true;
   else
-    return xpath;
+    return false;
+}
+
+// does the xpath have "@initialConcentration" on the end?
+bool isInitialConcentrationSelector(const string& xpath) {
+  string selector = "/@initialConcentration";
+  if (xpath.rfind(selector) == xpath.size() - selector.size())
+    return true;
+  else
+    return false;
 }
 
 #ifdef PHRASEDML_ENABLE_XPATH_EVAL
