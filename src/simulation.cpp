@@ -136,7 +136,7 @@ int PhrasedSimulation::keywordToKisaoId(const string& keyword) const
     return 280;
   }
   if (CaselessStrCmp(keyword, "lsoda")) {
-    return 80;
+    return 88;
   }
 
 
