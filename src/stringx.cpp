@@ -19,6 +19,10 @@ PHRASEDML_CPP_NAMESPACE_BEGIN
 
 string stripExt(const string& path)
 {
+  // if it's a urn, leave it alone
+  if (path.find("urn:") != std::string::npos) {
+    return path;
+  }
   std::size_t loc = path.rfind(".");
   if (loc != std::string::npos)
     return path.substr(0,loc);
