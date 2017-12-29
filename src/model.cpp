@@ -70,14 +70,18 @@ PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
       SedChange* sc = sedmodel->getChange(ch);
       if (sc->getTarget().find("@id=''") != string::npos)
         continue;
-      ModelChange mc(sc, seddoc, m_id, sbml_source, getSBMLDocument()->getNamespaces()->getURI(0));
-      m_changes.push_back(mc);
-      if (sc->getTypeCode() == SEDML_CHANGE_COMPUTECHANGE) {
-        SedComputeChange* scc = static_cast<SedComputeChange*>(sc);
-        for (unsigned int p=0; p<scc->getNumParameters(); p++) {
-          ModelChange mc2(scc->getParameter(p));
-          m_changes.push_back(mc2);
+      try {
+        ModelChange mc(sc, seddoc, m_id, sbml_source, getSBMLDocument()->getNamespaces()->getURI(0));
+        m_changes.push_back(mc);
+        if (sc->getTypeCode() == SEDML_CHANGE_COMPUTECHANGE) {
+          SedComputeChange* scc = static_cast<SedComputeChange*>(sc);
+          for (unsigned int p=0; p<scc->getNumParameters(); p++) {
+            ModelChange mc2(scc->getParameter(p));
+            m_changes.push_back(mc2);
+          }
         }
+      } catch (const std::runtime_error& e) {
+        g_registry.setError(std::string("Cannot make change for ") + sc->getTarget(), 0);
       }
     }
   } else {

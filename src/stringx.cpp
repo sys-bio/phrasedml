@@ -140,44 +140,53 @@ bool isInitialConcentrationSelector(const string& xpath) {
 vector<string> getIdFromXPathExtended(const string& xpath_, const string& source_doc, const std::string& sbml_ns)
 {
   string xpath = xpathToNode(xpath_);
+  std::cerr << "run xpath query " << xpath << "\n";
   vector<string> ret;
   xmlDocPtr doc;
-	doc = xmlParseDoc((const xmlChar*)source_doc.c_str());
-	if (doc == NULL ) {
+  doc = xmlParseDoc((const xmlChar*)source_doc.c_str());
+  if (doc == NULL ) {
     // error
-		return ret;
-	}
+    return ret;
+  }
 
-	xmlXPathContextPtr context;
-	xmlXPathObjectPtr result;
+  xmlXPathContextPtr context;
+  xmlXPathObjectPtr result;
 
   context = xmlXPathNewContext(doc);
-	if (context == NULL) {
-		return ret;
-	}
+  if (context == NULL) {
+    return ret;
+  }
   xmlXPathRegisterNs(context, (const xmlChar*)"sbml", (const xmlChar*)sbml_ns.c_str());
 
   result = xmlXPathEvalExpression((const xmlChar*)xpathToNode(xpath).c_str(), context);
-	xmlXPathFreeContext(context);
-	if (result == NULL) {
-		return ret;
-	}
+  xmlXPathFreeContext(context);
+  if (result == NULL) {
+    return ret;
+  }
 
-	if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
-		xmlXPathFreeObject(result);
-		return ret;
-	}
+  if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
+    xmlXPathFreeObject(result);
+    return ret;
+  }
 
   xmlNodeSetPtr nodeset;
-	nodeset = result->nodesetval;
-	for (int i=0; i < nodeset->nodeNr; i++) {
-    xmlChar* id = xmlGetProp(nodeset->nodeTab[i], (const xmlChar*)"id");
+  nodeset = result->nodesetval;
+  for (int i=0; i < nodeset->nodeNr; i++) {
+    xmlNode* np = nodeset->nodeTab[i];
+    xmlChar* id = xmlGetProp(np, (const xmlChar*)"id");
+    if (!id) {
+      np = np->parent;
+      id = xmlGetProp(np, (const xmlChar*)"id");
+      if (!id) {
+        throw std::runtime_error("Cannot evaluate xpath " + xpath_);
+      }
+    }
     ret.push_back(string((char*)id));
-	}
-	xmlXPathFreeObject (result);
+  }
+  xmlXPathFreeObject (result);
   xmlFreeDoc(doc);
 
-	return ret;
+  return ret;
 }
 #endif
 

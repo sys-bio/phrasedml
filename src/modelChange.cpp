@@ -133,6 +133,7 @@ ModelChange::ModelChange(SedChange* sedchange, SedDocument* seddoc, string model
       stringstream val(sedchangeatt->getNewValue());
       double value;
       val >> value;
+      std::cerr << "  change attr to val " << value << "\n";
       m_values.push_back(value);
       m_type = ctype_val_assignment;
     }
