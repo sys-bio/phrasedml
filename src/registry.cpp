@@ -1017,9 +1017,6 @@ void Registry::addDotXMLToModelSources(bool force)
       string modelname = m_models[m].getSource();
       if (modelname.find(".xml") == string::npos && modelname.find(".sbml") == string::npos && modelname.find("urn:") == string::npos) {
         m_models[m].setSource(modelname + ".xml");
-        std::cerr << "add dot xml for model " << modelname << "\n";
-      } else {
-        std::cerr << "don't add dot xml for model " << modelname << "\n";
       }
     }
   }
