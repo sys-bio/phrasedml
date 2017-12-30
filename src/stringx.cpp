@@ -140,7 +140,6 @@ bool isInitialConcentrationSelector(const string& xpath) {
 vector<string> getIdFromXPathExtended(const string& xpath_, const string& source_doc, const std::string& sbml_ns)
 {
   string xpath = xpathToNode(xpath_);
-  std::cerr << "run xpath query " << xpath << "\n";
   vector<string> ret;
   xmlDocPtr doc;
   doc = xmlParseDoc((const xmlChar*)source_doc.c_str());
