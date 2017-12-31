@@ -1026,10 +1026,7 @@ void Registry::addDotXMLToModelSources(bool force)
       string modelstr = sedmodel->getSource();
       if ((m_sedml->getModel(modelstr) == NULL || m_sedml->getModel(modelstr) == sedmodel) && modelstr.find(".xml") == string::npos && modelstr.find(".sbml") == string::npos) {
         //It's a filename without ".xml"
-        std::cerr << "add dot xml for sedml model " << modelstr << "\n";
         sedmodel->setSource(modelstr + ".xml");
-      } else {
-        std::cerr << "don't add dot xml for sedml model " << modelstr << "\n";
       }
     }
   }
