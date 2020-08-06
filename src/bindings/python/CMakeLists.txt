@@ -45,6 +45,7 @@ if (PHRASEDML_REMOVE_WRAPPERS)
   endforeach()
 endif(PHRASEDML_REMOVE_WRAPPERS)
 
+if(NOT APPLE)
 ADD_CUSTOM_COMMAND(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp
     COMMAND "${PYTHON_EXECUTABLE}"
@@ -98,6 +99,31 @@ ADD_CUSTOM_COMMAND(
             ${CMAKE_CURRENT_SOURCE_DIR}/../swig/swigdoc.py
             ${SWIG_DEPENDENCIES}
     COMMENT "Swig Python source")
+else()
+#A version without swigdoc, which seems to fail on macos python 3.7 for some reason.
+ADD_CUSTOM_COMMAND(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp
+    COMMAND "${CMAKE_COMMAND}"
+    ARGS    -E touch pydoc.i
+    COMMAND "${SWIG_EXECUTABLE}"
+    ARGS    -I${CMAKE_CURRENT_SOURCE_DIR}/../swig/
+            -I${CMAKE_CURRENT_SOURCE_DIR}
+            -I${CMAKE_CURRENT_BINARY_DIR}
+            -I${CMAKE_SOURCE_DIR}/src
+            -I${CMAKE_SOURCE_DIR}/include
+            -I${LIBSBML_INCLUDE_DIR}
+            -c++
+            -python
+            ${SWIG_EXTRA_ARGS}
+            -o ${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp
+            ${CMAKE_CURRENT_SOURCE_DIR}/phrasedml.i
+    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/phrasedml.i
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
+            ${CMAKE_CURRENT_SOURCE_DIR}/doc-converter/rewrite_pydoc.py
+            ${CMAKE_CURRENT_SOURCE_DIR}/../swig/swigdoc.py
+            ${SWIG_DEPENDENCIES}
+    COMMENT "Swig Python source")
+endif()
 
 add_custom_target(binding_python_swig ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp)
 

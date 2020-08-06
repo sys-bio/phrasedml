@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, Distribution
+
+class BinaryDistribution(Distribution):
+    """Distribution which always forces a binary package with platform name"""
+    def has_ext_modules(foo):
+        return True
 
 setup(name='phrasedml',
       version='${LIBPHRASEDML_VERSION_STRING_NO_V}',
@@ -10,5 +15,6 @@ setup(name='phrasedml',
       url='http://phrasedml.sf.net/',
       packages=['phrasedml'],
       package_data={'phrasedml': ['_phrasedml*', '*.dll', 'examples/*.*', '*.so*', '*.dylib*']},
+      distclass=BinaryDistribution,
      )
 
