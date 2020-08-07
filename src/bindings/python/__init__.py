@@ -7,8 +7,6 @@ For more information, see http://phrasedml.sf.net/
 """
 
 from .phrasedml import *
-from pkg_resources import get_distribution
 
-#__version__ = LIBPHRASEDML_VERSION_STRING[1:]
  __version__ = get_distribution('phrasedml').version
 
