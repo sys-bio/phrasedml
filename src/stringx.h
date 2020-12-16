@@ -5,8 +5,9 @@
 #include <vector>
 #include <set>
 #include "phrasedml-namespace.h"
+#include "sbmlx.h"
 
-class SBMLDocument;
+class libsbml::SBMLDocument;
 class PhrasedModel;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
@@ -27,8 +28,8 @@ std::vector<std::string> getIdFromXPath(const std::string& xpath);
 #ifdef PHRASEDML_ENABLE_XPATH_EVAL
 std::vector<std::string> getIdFromXPathExtended(const std::string& xpath, const std::string& source_doc, const std::string& sbml_ns);
 #endif
-std::string getValueXPathFromId(const std::vector<std::string>* id, const SBMLDocument* doc);
-std::string getElementXPathFromId(const std::vector<std::string>* id, const SBMLDocument* doc);
+std::string getValueXPathFromId(const std::vector<std::string>* id, const libsbml::SBMLDocument* doc);
+std::string getElementXPathFromId(const std::vector<std::string>* id, const libsbml::SBMLDocument* doc);
 void getElementXPathFromId(const std::string& id, std::set<PhrasedModel*> docs, std::string& xpath, std::string& modelref);
 
 bool IsReal(const std::string& src);

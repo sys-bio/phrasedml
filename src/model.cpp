@@ -15,6 +15,7 @@
 #include "stringx.h"
 
 using namespace std;
+using namespace libsbml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
@@ -81,7 +82,7 @@ PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
           }
         }
       } catch (const std::runtime_error& e) {
-        g_registry.setError(std::string("Cannot make change for ") + sc->getTarget(), 0);
+        g_registry.setError(std::string("Cannot make change for ") + sc->getTarget() + ": " + e.what(), 0);
       }
     }
   } else {

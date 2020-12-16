@@ -5,6 +5,7 @@
 #include "sbmlx.h"
 
 using namespace std;
+using namespace libsbml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 void getVariablesFromASTNode(ASTNode* astn, set<string>& variables)

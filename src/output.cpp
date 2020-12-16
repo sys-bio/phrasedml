@@ -13,6 +13,7 @@
 #include "sedml/SedVariable.h"
 
 using namespace std;
+using namespace libsbml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
@@ -104,12 +105,18 @@ PhrasedOutput::PhrasedOutput(SedOutput* sedout, SedDocument* seddoc)
       SedPlot2D* plot2d = static_cast<SedPlot2D*>(sedout);
       for (unsigned long p=0; p<plot2d->getNumCurves(); p++) {
         vector<ASTNode*> astns;
-        SedCurve* curve = plot2d->getCurve(p);
-        SedDataGenerator* datagen = seddoc->getDataGenerator(curve->getXDataReference());
-        astns.push_back(getASTNodeFrom(datagen, seddoc, curve->getLogX()));
-        datagen = seddoc->getDataGenerator(curve->getYDataReference());
-        astns.push_back(getASTNodeFrom(datagen, seddoc, curve->getLogY()));
-        m_outputVariables.push_back(astns);
+        SedAbstractCurve* abstractcurve = plot2d->getCurve(p);
+        if (abstractcurve->getTypeCode() == SEDML_OUTPUT_CURVE) {
+            SedCurve* curve = static_cast<SedCurve*>(abstractcurve);
+            SedDataGenerator* datagen = seddoc->getDataGenerator(curve->getXDataReference());
+            astns.push_back(getASTNodeFrom(datagen, seddoc, curve->getLogX()));
+            datagen = seddoc->getDataGenerator(curve->getYDataReference());
+            astns.push_back(getASTNodeFrom(datagen, seddoc, false));
+            m_outputVariables.push_back(astns);
+        }
+        else {
+            //It's a SedShadedArea, which we don't handle.
+        }
       }
     }
     break;

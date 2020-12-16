@@ -11,7 +11,7 @@
 #include "sedml/SedTypes.h"
 #include "sbml/math/L3ParserSettings.h"
 
-class SBMLDocument;
+class libsbml::SBMLDocument;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;
@@ -41,7 +41,7 @@ private:
   std::vector<PhrasedOutput>       m_outputs;
 
   //Any saved SBML documents the user has set:
-  std::map<std::string, SBMLDocument*> m_referencedSBML;
+  std::map<std::string, libsbml::SBMLDocument*> m_referencedSBML;
 
   L3ParserSettings         m_l3ps;
 
@@ -125,15 +125,15 @@ public:
   void setWorkingDirectory(const char* directory);
   std::string getWorkingFilename(const std::string& filename);
 
-  ASTNode* parseFormula(const std::string& formula);
+  libsbml::ASTNode* parseFormula(const std::string& formula);
 
   //When we're done, make sure the whole thing is coherent.
   bool finalize();
 
   //For parsing filenames that the user has given to us in memory instead:
-  void setReferencedSBML(const char* filename, SBMLDocument* doc);
+  void setReferencedSBML(const char* filename, libsbml::SBMLDocument* doc);
   void clearReferencedSBML();
-  SBMLDocument* getSavedSBML(std::string filename);
+  libsbml::SBMLDocument* getSavedSBML(std::string filename);
   void addDotXMLToModelSources(bool force=false);
 
   //Some people might not want to write the Timestamp to SBML files.
@@ -163,11 +163,11 @@ private:
 
   void createSEDML();
   bool file_exists (const std::string& filename);
-  bool addASTToCurve(const std::vector<std::string>* x, std::vector<ASTNode*>& curve, std::stringstream& err);
+  bool addASTToCurve(const std::vector<std::string>* x, std::vector<libsbml::ASTNode*>& curve, std::stringstream& err);
   bool addPlot(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err, const std::string* name);
   bool addReport(std::vector<std::vector<std::string>*>* plotlist, std::stringstream& err, const std::string* name);
 
-  ASTNode* fixTime(ASTNode* astn);
+  libsbml::ASTNode* fixTime(libsbml::ASTNode* astn);
 };
 
 PHRASEDML_CPP_NAMESPACE_END

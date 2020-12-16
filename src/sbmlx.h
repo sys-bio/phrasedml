@@ -6,12 +6,11 @@
 #include <set>
 #include <map>
 #include "phrasedml-namespace.h"
-
-class ASTNode;
+#include "sbml/math/ASTNode.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
-void getVariablesFromASTNode(ASTNode* astn, std::set<std::string>& variables);
-void replaceVariablesInASTNodeWith(ASTNode* astn, const std::map<std::string, std::string>& replacements);
+void getVariablesFromASTNode(libsbml::ASTNode* astn, std::set<std::string>& variables);
+void replaceVariablesInASTNodeWith(libsbml::ASTNode* astn, const std::map<std::string, std::string>& replacements);
 std::string fixMinMaxSymbolsXMLStr(std::string input);
 PHRASEDML_CPP_NAMESPACE_END
 

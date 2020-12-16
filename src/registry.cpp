@@ -25,8 +25,9 @@ extern int phrased_yylloc_last_line;
 #  define strdup _strdup
 #endif
 
-
 using namespace std;
+using namespace libsbml;
+
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
 Registry::Registry()
@@ -1120,9 +1121,9 @@ bool Registry::parseSEDML()
     }
   }
   for (unsigned long t=0; t<m_sedml->getNumTasks(); t++) {
-    SedTask* sedtask = m_sedml->getTask(t);
+    SedAbstractTask* sedtask = m_sedml->getTask(t);
     if (sedtask->getTypeCode() == SEDML_TASK) {
-      PhrasedTask pt(sedtask);
+      PhrasedTask pt(static_cast<SedTask*>(sedtask));
       m_tasks.push_back(pt);
     }
     else if (sedtask->getTypeCode() == SEDML_TASK_REPEATEDTASK) {

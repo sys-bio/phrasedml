@@ -41,7 +41,7 @@ private:
   std::vector<ModelChange> m_changes;
 
   bool m_isFile;
-  SBMLDocument m_sbml;
+  libsbml::SBMLDocument m_sbml;
 
 public:
 
@@ -53,13 +53,13 @@ public:
   void setIsFile(bool isfile);
   bool getIsFile() const;
   language getType() const;
-  const SBMLDocument* getSBMLDocument() const {return &m_sbml;} ;
-  SBMLDocument* getSBMLDocument();
+  const libsbml::SBMLDocument* getSBMLDocument() const {return &m_sbml;} ;
+  libsbml::SBMLDocument* getSBMLDocument();
 
   std::string getPhraSEDML() const;
   void addModelToSEDML(SedDocument* sedml) const;
 
-  void langTypeToURI(language type) const;
+  //void langTypeToURI(language type) const;
 
   std::string getSource() const {return m_source;};
   void setSource(std::string source) {m_source = source;};
