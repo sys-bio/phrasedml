@@ -183,16 +183,19 @@ endif()
 
 set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
 set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/setup.py")
-set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py;${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp")
+set(INIT_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py.in")
+set(INIT_PY    "${CMAKE_CURRENT_BINARY_DIR}/__init__.py")
+set(DEPS        "${INIT_PY};${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp")
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/phrasedml_wrap.cpp PROPERTIES GENERATED TRUE)
 set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/timestamp")
 
 configure_file(${SETUP_PY_IN} ${SETUP_PY})
+configure_file(${INIT_PY_IN} ${INIT_PY})
 
 add_custom_command(OUTPUT ${OUTPUT}
                    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/phrasedml/
                    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/phrasedml.py ${CMAKE_CURRENT_BINARY_DIR}/phrasedml/
-                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py ${CMAKE_CURRENT_BINARY_DIR}/phrasedml/
+                   COMMAND ${CMAKE_COMMAND} -E copy ${INIT_PY} ${CMAKE_CURRENT_BINARY_DIR}/phrasedml/
 #                   COMMAND ${PYTHON_EXECUTABLE} ${SETUP_PY} build
                    COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
                    DEPENDS ${DEPS})

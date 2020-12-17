@@ -12,7 +12,7 @@ class SedParameter;
 class SedRange;
 class SedRepeatedTask;
 class SedSetValue;
-class ASTNode;
+class libsbml::ASTNode;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;
@@ -37,7 +37,7 @@ private:
   std::vector<std::string> m_variable;
   std::vector<double> m_values;
   std::string m_formula;
-  ASTNode* m_astnode;
+  libsbml::ASTNode* m_astnode;
 
   std::string m_model;
   std::string sbml_source_;
@@ -65,7 +65,7 @@ public:
   bool addModelChangeToSEDMLRepeatedTask(SedRepeatedTask* sedrtask, std::vector<std::string> tasks) const;
 
   bool setFormulaString(const std::string& formula);
-  bool setASTNode(const ASTNode* astnode);
+  bool setASTNode(const libsbml::ASTNode* astnode);
 
   void setModel(std::string model);
   void setVariable(std::vector<std::string> id);
@@ -73,7 +73,7 @@ public:
   std::string getModel() const;
   std::vector<std::string> getVariable() const;
   std::vector<double> getValues() const;
-  const ASTNode* getASTNode() const;
+  const libsbml::ASTNode* getASTNode() const;
 
   virtual bool finalize() const;
   virtual bool finalize(std::set<PhrasedModel*> models);

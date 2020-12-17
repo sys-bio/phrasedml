@@ -22,6 +22,8 @@
 #include "sbml/math/L3FormulaFormatter.h"
 
 using namespace std;
+using namespace libsbml;
+
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
 bool isLoop(change_type type)

@@ -13,6 +13,7 @@
 #include "sedml/SedRepeatedTask.h"
 
 using namespace std;
+using namespace libsbml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 PHRASEDML_CPP_NAMESPACE_BEGIN
@@ -27,7 +28,7 @@ PhrasedRepeatedTask::PhrasedRepeatedTask(std::string id, std::string task, vecto
 }
 
 PhrasedRepeatedTask::PhrasedRepeatedTask(SedRepeatedTask* sedRepeatedTask)
-  : PhrasedTask(sedRepeatedTask)
+  : PhrasedTask(sedRepeatedTask->getId(), "", "")
   , m_tasks()
   , m_changes()
   , m_resetModel(false)

@@ -13,6 +13,8 @@
 #endif
 
 using namespace std;
+using namespace libsbml;
+
 extern bool CaselessStrCmp(const string& lhs, const string& rhs);
 
 PHRASEDML_CPP_NAMESPACE_BEGIN

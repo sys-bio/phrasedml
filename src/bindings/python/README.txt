@@ -4,4 +4,4 @@ To install, run:
 
 Alternatively, point PYTHONPATH to this 'phrasedml' subdirectory.
 
-For more information, see http://phrasedml.sf.net/
+For more information, see https://github.com/sys-bio/phrasedml

@@ -19,6 +19,7 @@
 #endif
 
 using namespace std;
+using namespace libsbml;
 extern int phrased_yylloc_last_line;
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
