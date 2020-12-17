@@ -1,4 +1,4 @@
-//Created by libphrasedml v0.1
+//Created by libphrasedml v1.1.0
 // Models
 mod1 = model "sbml_model.xml"
 

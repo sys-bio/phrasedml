@@ -10,7 +10,7 @@ class BinaryDistribution(Distribution):
 setup(name='phrasedml',
       version='${LIBPHRASEDML_VERSION_STRING_NO_V}',
       description='Python bindings for phraSED-ML',
-      author='Lucian Smith, J Kyle Medley',
+      author='Lucian Smith, Kiri Choi, J Kyle Medley, and Herbert Sauro',
       author_email='lpsmith@uw.edu',
       url='http://phrasedml.sf.net/',
       packages=['phrasedml'],
