@@ -10,8 +10,7 @@
 
 #include "sedml/SedTypes.h"
 #include "sbml/math/L3ParserSettings.h"
-
-class libsbml::SBMLDocument;
+#include "sbml/SBMLDocument.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;

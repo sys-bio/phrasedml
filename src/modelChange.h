@@ -3,6 +3,7 @@
 
 #include <string>
 #include "phrasedml-namespace.h"
+#include "sbml/math/ASTNode.h"
 
 class SedChange;
 class SedChange;
@@ -12,7 +13,6 @@ class SedParameter;
 class SedRange;
 class SedRepeatedTask;
 class SedSetValue;
-class libsbml::ASTNode;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;

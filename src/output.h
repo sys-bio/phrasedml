@@ -7,6 +7,7 @@
 
 #include "variable.h"
 #include "sbml/SBMLDocument.h"
+#include "sbml/math/ASTNode.h"
 #include "modelChange.h"
 #include "phrasedml-namespace.h"
 
@@ -14,7 +15,6 @@ class SedPlot;
 class SedReport;
 class SedOutput;
 class SedDocument;
-class libsbml::ASTNode;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 

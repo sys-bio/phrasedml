@@ -6,8 +6,8 @@
 #include <set>
 #include "phrasedml-namespace.h"
 #include "sbmlx.h"
+#include "sbml/SBMLDocument.h"
 
-class libsbml::SBMLDocument;
 class PhrasedModel;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
