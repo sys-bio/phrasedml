@@ -273,7 +273,7 @@ int PhrasedSimulation::keywordToKisaoParamId(const string& keyword) const
     return 485;
   }
   if (CaselessStrCmp(keyword, "initial_time_step")) {
-    return 332;
+    return 559;
   }
   if (CaselessStrCmp(keyword, "variable_step_size")) {
     return 107;
@@ -480,6 +480,8 @@ string PhrasedSimulation::getPhrasedVersionOf(int kisao) const
   case 485:
     return "minimum_time_step";
   case 332:
+    return "initial_time_step";
+  case 559:
     return "initial_time_step";
   case 107:
     return "variable_step_size";
