@@ -517,11 +517,11 @@ void PhrasedOutput::replaceASTNamesAndAdd(ASTNode* astnode, SedDataGenerator* sd
         SedVariable* var = sdg->createVariable();
         var->setId(astnode->getName());
         var->setTaskReference(fullname[0]);
+        var->setModelReference(fullname[1]);
         if (fullname[2] == "time") {
           var->setSymbol("urn:sedml:symbol:time");
           return;
         }
-        var->setModelReference(fullname[1]);
         SBMLDocument* doc = g_registry.getModel(fullname[1])->getSBMLDocument();
         vector<string> idonly = getStringVecFromDelimitedString(fullname[2]);
         string xpath = getElementXPathFromId(&idonly, doc);
