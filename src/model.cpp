@@ -47,7 +47,7 @@ PhrasedModel::PhrasedModel(string id, string source, vector<ModelChange> changes
 PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
   : Variable(sedmodel)
   , m_type(lang_XML)
-  , m_source(normalizeModelPath(sedmodel->getSource()))
+  , m_source(sedmodel->getSource())
   , m_changes()
   , m_isFile(true)
 {
@@ -154,6 +154,18 @@ string PhrasedModel::getPhraSEDML() const
 void PhrasedModel::addModelToSEDML(SedDocument* sedml) const
 {
   SedModel* model = sedml->createModel();
+  libsbml::XMLNamespaces* sednames = sedml->getNamespaces();
+  libsbml::XMLNamespaces* libsbmlnames = m_sbml.getNamespaces();
+  for (int i = 0; i < libsbmlnames->getNumNamespaces(); i++)
+  {
+      string prefix = libsbmlnames->getPrefix(i);
+      if (prefix.empty())
+      {
+          prefix = "sbml";
+      }
+      sednames->add(libsbmlnames->getURI(i), prefix);
+  }
+
   model->setId(m_id);
   model->setName(m_name);
   model->setSource(m_source);

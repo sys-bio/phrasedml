@@ -317,8 +317,8 @@ string ModelChange::getPhraSEDML() const
     break;
   case ctype_formula_assignment:
     ret = getStringFrom(&m_variable, ".") + " = ";
-    if (m_source_range.size())
-      ret += m_source_range + " : ";
+    //if (m_source_range.size())
+    //  ret += m_source_range + " : ";
     ret += m_formula;
     break;
   case ctype_loop_functional:

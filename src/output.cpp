@@ -111,7 +111,7 @@ PhrasedOutput::PhrasedOutput(SedOutput* sedout, SedDocument* seddoc)
             SedDataGenerator* datagen = seddoc->getDataGenerator(curve->getXDataReference());
             astns.push_back(getASTNodeFrom(datagen, seddoc, curve->getLogX()));
             datagen = seddoc->getDataGenerator(curve->getYDataReference());
-            astns.push_back(getASTNodeFrom(datagen, seddoc, false));
+            astns.push_back(getASTNodeFrom(datagen, seddoc, curve->getLogY()));
             m_outputVariables.push_back(astns);
         }
         else {

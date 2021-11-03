@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sedML xmlns="http://sed-ml.org/sed-ml/level1/version2" level="1" version="2">
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version3" xmlns:sbml="http://www.sbml.org/sbml/level3/version1/core" level="1" version="3">
+  <listOfModels>
+    <model id="model_1" language="urn:sedml:language:sbml.level-3.version-1" source="00001-sbml-l3v1.xml"/>
+  </listOfModels>
   <listOfSimulations>
     <uniformTimeCourse id="simulation_1" initialTime="0" outputStartTime="0" outputEndTime="5" numberOfPoints="51">
       <algorithm kisaoID="KISAO:0000019"/>
     </uniformTimeCourse>
   </listOfSimulations>
-  <listOfModels>
-    <model id="model_1" language="urn:sedml:language:sbml.level-3.version-1" source="00001-sbml-l3v1.xml"/>
-  </listOfModels>
   <listOfTasks>
     <task id="task_1" modelReference="model_1" simulationReference="simulation_1"/>
   </listOfTasks>
   <listOfDataGenerators>
     <dataGenerator id="plot_0_0_0" name="time">
-      <listOfVariables>
-        <variable id="time" symbol="urn:sedml:symbol:time" taskReference="task_1"/>
-      </listOfVariables>
       <math xmlns="http://www.w3.org/1998/Math/MathML">
         <ci> time </ci>
       </math>
+      <listOfVariables>
+        <variable id="time" symbol="urn:sedml:symbol:time" taskReference="task_1" modelReference="model_1"/>
+      </listOfVariables>
     </dataGenerator>
     <dataGenerator id="plot_0_0_1" name="S1/compartment">
-      <listOfVariables>
-        <variable id="S1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']" taskReference="task_1" modelReference="model_1"/>
-        <variable id="compartment" target="/sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='compartment']" taskReference="task_1" modelReference="model_1"/>
-      </listOfVariables>
       <math xmlns="http://www.w3.org/1998/Math/MathML">
         <apply>
           <divide/>
@@ -32,12 +28,12 @@
           <ci> compartment </ci>
         </apply>
       </math>
-    </dataGenerator>
-    <dataGenerator id="plot_0_1_1" name="S2/compartment">
       <listOfVariables>
-        <variable id="S2" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']" taskReference="task_1" modelReference="model_1"/>
+        <variable id="S1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']" taskReference="task_1" modelReference="model_1"/>
         <variable id="compartment" target="/sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='compartment']" taskReference="task_1" modelReference="model_1"/>
       </listOfVariables>
+    </dataGenerator>
+    <dataGenerator id="plot_0_1_1" name="S2/compartment">
       <math xmlns="http://www.w3.org/1998/Math/MathML">
         <apply>
           <divide/>
@@ -45,13 +41,17 @@
           <ci> compartment </ci>
         </apply>
       </math>
+      <listOfVariables>
+        <variable id="S2" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']" taskReference="task_1" modelReference="model_1"/>
+        <variable id="compartment" target="/sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='compartment']" taskReference="task_1" modelReference="model_1"/>
+      </listOfVariables>
     </dataGenerator>
   </listOfDataGenerators>
   <listOfOutputs>
     <plot2D id="plot_0" name="Timecourse for test 00001">
       <listOfCurves>
-        <curve id="plot_0__plot_0_0_0__plot_0_0_1" logX="false" logY="false" xDataReference="plot_0_0_0" yDataReference="plot_0_0_1"/>
-        <curve id="plot_0__plot_0_0_0__plot_0_1_1" logX="false" logY="false" xDataReference="plot_0_0_0" yDataReference="plot_0_1_1"/>
+        <curve id="plot_0__plot_0_0_0__plot_0_0_1" logX="false" xDataReference="plot_0_0_0" logY="false" yDataReference="plot_0_0_1"/>
+        <curve id="plot_0__plot_0_0_0__plot_0_1_1" logX="false" xDataReference="plot_0_0_0" logY="false" yDataReference="plot_0_1_1"/>
       </listOfCurves>
     </plot2D>
     <report id="report_1" name="Report for test 00001">

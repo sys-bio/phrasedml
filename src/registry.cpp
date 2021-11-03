@@ -821,6 +821,9 @@ char* Registry::getSEDML() const
   if (m_sedml==NULL) {
     return NULL;
   }
+  if (m_sedml->getVersion() < 3) {
+      m_sedml->setVersion(3);
+  }
   ostringstream stream;
   SedWriter sw;
   sw.setProgramName("phraSED-ML");
@@ -1000,7 +1003,7 @@ bool Registry::finalize()
 
 void Registry::setReferencedSBML(const char* filename, SBMLDocument* doc)
 {
-  m_referencedSBML.insert(make_pair(normalizeModelPath((string)filename), doc));
+  m_referencedSBML.insert(make_pair(filename, doc));
 }
 
 void Registry::clearReferencedSBML()

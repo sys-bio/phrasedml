@@ -24,7 +24,7 @@ void testError(const string& base, const string& err)
   char* sedgen = convertString(base.c_str());
   fail_unless(sedgen == NULL);
   char* errgen = getLastPhrasedError();
-  fail_unless(err == errgen);
+  fail_unless(err == (string)errgen);
 
   free(errgen);
 }
@@ -143,7 +143,7 @@ END_TEST
 
 START_TEST (test_sim_onestep_5args)
 {
-  testError("sim1 = simulate onestep(0, 5.5, 3e-10, 2, 0.00001)", "Unable to parse line 1 ('sim1 = simulate onestep(0, 5.5, 3e-010, 2, 1e-005)'): onestep simulations must take exactly one argument.");
+  testError("sim1 = simulate onestep(0, 5.5, 3e-10, 2, 0.00001)", "Unable to parse line 1 ('sim1 = simulate onestep(0, 5.5, 3e-10, 2, 1e-05)'): onestep simulations must take exactly one argument.");
 }
 END_TEST
 
