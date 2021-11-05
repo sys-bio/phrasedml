@@ -821,8 +821,8 @@ char* Registry::getSEDML() const
   if (m_sedml==NULL) {
     return NULL;
   }
-  if (m_sedml->getVersion() < 3) {
-      m_sedml->setVersion(3);
+  if (m_sedml->getVersion() < 4) {
+      m_sedml->setVersion(4);
   }
   ostringstream stream;
   SedWriter sw;
@@ -942,7 +942,7 @@ const PhrasedTask* Registry::getTask(size_t num) const
 void Registry::createSEDML()
 {
   delete m_sedml;
-  m_sedml = new SedDocument();
+  m_sedml = new SedDocument(1, 4);
   for (size_t m=0; m<m_models.size(); m++) {
     m_models[m].addModelToSEDML(m_sedml);
   }
@@ -1123,7 +1123,7 @@ bool Registry::parseSEDML()
       return true;
     }
   }
-  for (unsigned long t=0; t<m_sedml->getNumTasks(); t++) {
+  for (unsigned int t=0; t<m_sedml->getNumTasks(); t++) {
     SedAbstractTask* sedtask = m_sedml->getTask(t);
     if (sedtask->getTypeCode() == SEDML_TASK) {
       PhrasedTask pt(static_cast<SedTask*>(sedtask));
@@ -1139,7 +1139,7 @@ bool Registry::parseSEDML()
       return true;
     }
   }
-  for (unsigned long out=0; out<m_sedml->getNumOutputs(); out++) {
+  for (unsigned int out=0; out<m_sedml->getNumOutputs(); out++) {
     SedOutput* output = m_sedml->getOutput(out);
     PhrasedOutput phrasedout(output, m_sedml);
     m_outputs.push_back(phrasedout);
@@ -1258,7 +1258,7 @@ ASTNode* Registry::fixTime(ASTNode* astn)
     astn->setType(AST_NAME);
     astn->setDefinitionURL("");
   }
-  for (size_t c=0; c<astn->getNumChildren(); c++) {
+  for (unsigned int c=0; c<astn->getNumChildren(); c++) {
     fixTime(astn->getChild(c));
   }
   return astn;

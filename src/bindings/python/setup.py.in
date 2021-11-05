@@ -15,6 +15,7 @@ setup(name='phrasedml',
       url='http://phrasedml.sf.net/',
       packages=['phrasedml'],
       package_data={'phrasedml': ['_phrasedml*', '*.dll', 'examples/*.*', '*.so*', '*.dylib*']},
+      license = "MIT",
       distclass=BinaryDistribution,
      )
 

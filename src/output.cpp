@@ -303,7 +303,7 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
     const vector<ASTNode*>* vec = &(m_outputVariables[ov]);
     //Create Data Generators for each element.
     for (size_t an=0; an<vec->size(); an++) {
-      datagennames.push_back(addDataGeneratorToSEDML(sedml, (*vec)[an], ov, an));
+      datagennames.push_back(addDataGeneratorToSEDML(sedml, (*vec)[an], (int)ov, (int)an));
       char* cformula = SBML_formulaToL3String((*vec)[an]);
       datagenlabels.push_back(getSimpleString(cformula));
       free(cformula);

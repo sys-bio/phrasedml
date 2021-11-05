@@ -35,7 +35,7 @@ PhrasedSimulation::PhrasedSimulation(simtype type, SedSimulation* sedsimulation)
     if (sedalg->isSetKisaoID()) {
       setAlgorithmKisao(getIntFromKisao(sedalg->getKisaoID()));
     }
-    for (size_t ap=0; ap<sedalg->getNumAlgorithmParameters(); ap++) {
+    for (unsigned int ap=0; ap<sedalg->getNumAlgorithmParameters(); ap++) {
       const SedAlgorithmParameter* sap = sedalg->getAlgorithmParameter(ap);
       string kisao = "";
       string value = "";

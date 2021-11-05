@@ -1,13 +1,13 @@
 /**
   * @file    phrasedml_api.h
-  * @brief   The API for the Phrasedml parser
+  * @brief   The API for the phraSEDML parser
   * @author  Lucian Smith
   *
   * libphrasedml uses a bison parser, libSEDML, libSBML, and internal C++ objects to read, convert, store, and output abstracted descriptions of biological simulation experiments.  Information about creating phraSEDML-formatted input files is available from http://phrasedml.sourceforge.net/.  The functions described in this document are a plain C API (application programming interface) to be used in programs that want to convert phraSEDML models to their own internal formats, and/or to convert phraSEDML models to and from SBML models.
   *
   * Note:  It is not currently possible to convert an internally-formatted model into an phraSEDML model (the API has several 'get' functions, but no 'set' functions).  This restriction may be relaxed in future versions of the library.
   *
-  * Converting files may be accomplished fairly straightforwardly using 'loadFile' to read in a file (of phraSEDML or SEDML formats), and the 'writePhraSEDMLFile', 'writeSEDMLFile', 'writePhraSEDMLString', and 'writeSEDMLString' routines to write them out again.
+  * Converting files may be accomplished fairly straightforwardly using 'convertFile' or 'convertString' to convert phraSEDML to SED-ML and visa-versa.  After any conversion has occurred, you can obtain the last phraSED-ML version of the simulation experiment by calling getLastPhraSEDML() or getLastSEDML.  In the case of phraSED-ML, this will not be a character-by-character return of your original string, but a re-conversion of the experiment to a standard format.
   *
   * In general, phraSEDML models may contain:
   * - Models
@@ -18,11 +18,13 @@
   * <b>Returned Pointers</b><br/>
   * The majority of the functions described below return pointers to arrays and/or strings.  These pointers you then own, and are created with 'malloc':  you must 'free' them yourself to release the allocated memory.  Some programming environments will handle this automatically for you, and others will not.  If you want to not bother with it, the function 'freeAllPhrased' is provided, which will free every pointer created by this library.  In order for this to work, however, you must have not freed a single provided pointer yourself, and you must not subsequently try to reference any data provided by the library (your own copies of the data will be fine, of course).
   *
-  * If the library runs out of memory when trying to return a pointer, it will return NULL instead and attempt to set an error mes * @if python
- * getLastError()'.
- * @else
- * getLastPhrasedError()'.
- * @endif
+  * If the library runs out of memory when trying to return a pointer, it will return NULL instead and attempt to set an error message.
+  *
+  * If a conversion fails, the reason why it failed can be seen by calling @if python
+  * getLastError()'.
+  * @else
+  * getLastPhrasedError()'.
+  * @endif
   *
  */
 
@@ -31,7 +33,7 @@
 #define PHRASEDML_API_H
 
 #ifndef LIBPHRASEDML_VERSION_STRING //Should be defined in the makefile (from CMakeLists.txt)
-#define LIBPHRASEDML_VERSION_STRING "v1.0.9"
+#define LIBPHRASEDML_VERSION_STRING "v1.1.0"
 #endif
 
 #include "libutil.h"

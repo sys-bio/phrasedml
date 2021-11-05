@@ -18,7 +18,7 @@ void getVariablesFromASTNode(ASTNode* astn, set<string>& variables)
     astn->setName("time");
     astn->setType(AST_NAME);
   }
-  for (size_t c=0; c<astn->getNumChildren(); c++) {
+  for (unsigned int c=0; c<astn->getNumChildren(); c++) {
     getVariablesFromASTNode(astn->getChild(c), variables);
   }
 }
@@ -31,7 +31,7 @@ void replaceVariablesInASTNodeWith(ASTNode* astn, const map<string, string>& rep
       astn->setName(rep->second.c_str());
     }
   }
-  for (size_t c=0; c<astn->getNumChildren(); c++) {
+  for (unsigned int c=0; c<astn->getNumChildren(); c++) {
     replaceVariablesInASTNodeWith(astn->getChild(c), replacements);
   }
 
