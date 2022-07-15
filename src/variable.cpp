@@ -12,6 +12,7 @@
 #include "sedml/SedBase.h"
 
 using namespace std;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 Variable::Variable(string id)

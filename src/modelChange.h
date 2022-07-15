@@ -4,15 +4,15 @@
 #include <string>
 #include "phrasedml-namespace.h"
 #include "sbml/math/ASTNode.h"
+#include "sedml/SedBase.h"
 
-class SedChange;
-class SedChange;
-class SedDocument;
-class SedModel;
-class SedParameter;
-class SedRange;
-class SedRepeatedTask;
-class SedSetValue;
+class libsedml::SedChange;
+class libsedml::SedDocument;
+class libsedml::SedModel;
+class libsedml::SedParameter;
+class libsedml::SedRange;
+class libsedml::SedRepeatedTask;
+class libsedml::SedSetValue;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;
@@ -50,10 +50,10 @@ public:
   // for functional ranges
   ModelChange(std::vector<const std::string*>* name, std::string source, std::vector<std::string>* formula, bool functional=true);
   ModelChange(change_type type, std::vector<const std::string*>* name, const std::vector<double>* values);
-  ModelChange(SedChange* sedchange, SedDocument* seddoc, std::string parent, std::string sbml_source, std::string sbml_ns);
-  ModelChange(SedRange* sr);
-  ModelChange(SedParameter* parameter);
-  ModelChange(SedSetValue* ssv, std::string source_range="");
+  ModelChange(libsedml::SedChange* sedchange, libsedml::SedDocument* seddoc, std::string parent, std::string sbml_source, std::string sbml_ns);
+  ModelChange(libsedml::SedRange* sr);
+  ModelChange(libsedml::SedParameter* parameter);
+  ModelChange(libsedml::SedSetValue* ssv, std::string source_range="");
   ModelChange(const ModelChange& orig);
   ModelChange& operator=(const ModelChange& rhs);
   ~ModelChange();
@@ -61,8 +61,8 @@ public:
   change_type getType() const;
 
   std::string getPhraSEDML() const;
-  bool addModelChangeToSEDMLModel(SedModel* sedmodel) const;
-  bool addModelChangeToSEDMLRepeatedTask(SedRepeatedTask* sedrtask, std::vector<std::string> tasks) const;
+  bool addModelChangeToSEDMLModel(libsedml::SedModel* sedmodel) const;
+  bool addModelChangeToSEDMLRepeatedTask(libsedml::SedRepeatedTask* sedrtask, std::vector<std::string> tasks) const;
 
   bool setFormulaString(const std::string& formula);
   bool setASTNode(const libsbml::ASTNode* astnode);

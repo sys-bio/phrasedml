@@ -7,7 +7,7 @@
 #include "simulation.h"
 #include "phrasedml-namespace.h"
 
-class SedSteadyState;
+class libsedml::SedSteadyState;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedSteadyState: public PhrasedSimulation
@@ -19,11 +19,11 @@ private:
 public:
 
   PhrasedSteadyState(std::string id);
-  PhrasedSteadyState(SedSteadyState* sedSteadyState);
+  PhrasedSteadyState(libsedml::SedSteadyState* sedSteadyState);
   ~PhrasedSteadyState();
 
   virtual std::string getPhraSEDML() const;
-  virtual void addSimulationToSEDML(SedDocument* sedml) const;
+  virtual void addSimulationToSEDML(libsedml::SedDocument* sedml) const;
   virtual bool setAlgorithmKisao(int kisao);
   bool kisaoIsDefault() const;
 

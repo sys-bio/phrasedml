@@ -12,6 +12,7 @@
 
 extern int phrased_yylloc_last_line;
 using namespace std;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedUniform::PhrasedUniform(std::string id, double start, double outstart, double end, long numpts, bool stochastic)

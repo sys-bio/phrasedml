@@ -274,7 +274,8 @@ def writeFunctions(libfile, functions):
       libfile.write(")\n")
 
       #Redefinition
-      libfile.write("\ndef " + funcid + "(")
+      newid = funcid.replace("PhrasedError", "Error")
+      libfile.write("\ndef " + newid + "(")
       first = True
       hasModuleName = False
       for (n, (argtype, argid)) in enumerate(function["args"]):

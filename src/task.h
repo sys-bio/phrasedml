@@ -8,8 +8,8 @@
 #include "variable.h"
 #include "phrasedml-namespace.h"
 
-class SedTask;
-class SedDocument;
+class libsedml::SedTask;
+class libsedml::SedDocument;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedTask : public Variable
@@ -24,12 +24,12 @@ protected:
 public:
 
   PhrasedTask(std::string id, std::string simulation, std::string model);
-  PhrasedTask(SedTask* sedtask);
+  PhrasedTask(libsedml::SedTask* sedtask);
   ~PhrasedTask();
 
   virtual bool isRepeated() const;
   virtual std::string getPhraSEDML() const;
-  virtual void addTaskToSEDML(SedDocument* sedml) const;
+  virtual void addTaskToSEDML(libsedml::SedDocument* sedml) const;
 
   virtual const ModelChange* getModelChangeFor(std::string varname) const;
 

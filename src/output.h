@@ -11,10 +11,10 @@
 #include "modelChange.h"
 #include "phrasedml-namespace.h"
 
-class SedPlot;
-class SedReport;
-class SedOutput;
-class SedDocument;
+class libsedml::SedPlot;
+class libsedml::SedReport;
+class libsedml::SedOutput;
+class libsedml::SedDocument;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
@@ -31,20 +31,20 @@ public:
 
   PhrasedOutput(const std::vector<libsbml::ASTNode*>& inputs);
   PhrasedOutput(const std::vector<std::vector<libsbml::ASTNode*> >& curves);
-  PhrasedOutput(SedOutput* sedout, SedDocument* seddoc);
+  PhrasedOutput(libsedml::SedOutput* sedout, libsedml::SedDocument* seddoc);
   ~PhrasedOutput();
 
   bool isPlot() const {return m_isPlot;};
 
   std::string getPhraSEDML() const;
-  std::string addDataGeneratorToSEDML(SedDocument* sedml, libsbml::ASTNode* astnodes, int num1, int num2) const;
-  void addOutputToSEDML(SedDocument* sedml) const;
+  std::string addDataGeneratorToSEDML(libsedml::SedDocument* sedml, libsbml::ASTNode* astnodes, int num1, int num2) const;
+  void addOutputToSEDML(libsedml::SedDocument* sedml) const;
 
   virtual bool finalize();
 private:
   bool addVariableToMap(const std::string& var);
-  std::string getMatchingDataGenerator(SedDocument* sedml, libsbml::ASTNode* astnode) const;
-  void replaceASTNamesAndAdd(libsbml::ASTNode* astnode, SedDataGenerator* sdg) const;
+  std::string getMatchingDataGenerator(libsedml::SedDocument* sedml, libsbml::ASTNode* astnode) const;
+  void replaceASTNamesAndAdd(libsbml::ASTNode* astnode, libsedml::SedDataGenerator* sdg) const;
   std::string getSimpleString(std::string formula) const;
 
 };

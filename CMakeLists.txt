@@ -11,7 +11,7 @@ project(libphrasedml)
 # Set up version information.
 #
 SET(LIBPHRASEDML_VERSION_MAJOR 1)
-SET(LIBPHRASEDML_VERSION_MINOR 2)
+SET(LIBPHRASEDML_VERSION_MINOR 3)
 SET(LIBPHRASEDML_VERSION_PATCH ".0")
 SET(LIBPHRASEDML_VERSION_RELEASE "")
 
@@ -60,13 +60,21 @@ endif()
 option(WITH_STATIC_NUML     "Use the static version of the libnuml library"      ON )
 option(WITH_STATIC_SEDML    "Use the static version of the libsedml library"     ON )
 option(WITH_STATIC_SBML     "Use the static version of the libsbml library"      ON )
-OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat library."  OFF)
-OPTION(WITH_LIBSBML_LIBXML "Set if libsbml was compiled with a separate libxml library." ON)
+OPTION(WITH_LIBSBML_EXPAT  "Set if libsbml was compiled with a separate expat library."  ON)
+OPTION(WITH_LIBSBML_LIBXML "Set if libsbml was compiled with a separate libxml library." OFF)
 OPTION(WITH_LIBSBML_XERCES "Set if libsbml was compiled with a separate xerces library." OFF)
 OPTION(WITH_LIBSBML_COMPRESSION "Set if libsbml was compiled with separate zdll and bzip libraries." OFF)
 OPTION(PHRASEDML_ENABLE_XPATH_EVAL "Use libxml2 for xpath evaluation." OFF)
 
 set(EXTRA_LIBS "" CACHE STRING "Libraries the other libraries depend on that are in non-standard locations" )
+
+# any of these directories are accepted as default directories.
+# this supports multi platform builds on a single system
+set(PHRASEDML_DEPENDENCIES_INSTALL_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/dependencies"
+        CACHE PATH "Path to dependency package"
+        )
+
+
 
 # Enable the generation of unit tests. If enabled, all test runners
 # will be created and can be run with "make test" or ctest.
@@ -86,280 +94,137 @@ if (PHRASEDML_ENABLE_XPATH_EVAL)
   add_definitions(-DPHRASEDML_ENABLE_XPATH_EVAL)
 endif()
 
-####################################################################
-#
-# Locate libsedml
-#
-    find_path(LIBSEDML_INSTALL_DIR
-    NAMES include/sedml/SedBase.h
-    PATHS /usr /usr/local /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/
-              ${CMAKE_SOURCE_DIR}/../
-              )
+####################################################
+#   Dependencies
 
-    if(WITH_STATIC_SEDML)
-        find_library(LIBSEDML_LIBRARY
-             NAMES libsedml-static.lib libsedml-static.so libsedml-static sedml-static.lib sedml-static.so sedml-static
-             PATHS /usr/lib /usr/local/lib
-               ${LIBSEDML_INSTALL_DIR}/lib
-               ${CMAKE_SOURCE_DIR}
-               ${CMAKE_SOURCE_DIR}/dependencies/lib
-             )
-    else()
-        find_library(LIBSEDML_LIBRARY
-            NAMES libsedml.lib libsedml.so libsedml sedml.lib sedml.so sedml
-            PATHS /usr/lib /usr/local/lib
-              ${LIBSEDML_INSTALL_DIR}/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-            )
-    endif()
-    find_path(LIBSEDML_INCLUDE_DIR
-        NAMES sedml/SedBase.h
-        PATHS /usr/include /usr/local/include
-              ${LIBSEDML_INSTALL_DIR}/include
-              ${CMAKE_SOURCE_DIR}/include
-              ${CMAKE_SOURCE_DIR}/dependencies/include
+set(DEPENDENCY_INCLUDE_DIR "${PHRASEDML_DEPENDENCIES_INSTALL_PREFIX}/include")
+
+if (NOT EXISTS ${DEPENDENCY_INCLUDE_DIR})
+    message(FATAL_ERROR "Cannot find the dependency include directory in your \
+dependency install tree. Please ensure the path you have given to -DPHRASEDML_DEPENDENCIES_INSTALL_PREFIX \
+exists and is the full path to the installed dependency tree.")
+endif ()
+
+set(RR_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
+set(DEPENDENCY_CMAKE_CONFIG_PATHS
+        "${PHRASEDML_DEPENDENCIES_INSTALL_PREFIX}/lib/cmake"
+        "${PHRASEDML_DEPENDENCIES_INSTALL_PREFIX}/lib64/cmake"
+        "${PHRASEDML_DEPENDENCIES_INSTALL_PREFIX}/cmake"
+        "${PHRASEDML_DEPENDENCIES_INSTALL_PREFIX}/lib/cmake/Poco"
         )
-    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBSEDML_LIBRARY} )
-    if(WIN32 AND NOT(WITH_STATIC_SEDML))
-        find_path(LIBSEDML_BIN_DIR
-            NAMES libsedml.dll
-            PATHS /usr/bin /usr/local/bin
-                  ${LIBSEDML_INSTALL_DIR}/bin
-                  ${LIBSEDML_INCLUDE_DIR}/../bin
-                  ${CMAKE_SOURCE_DIR}/
-                  ${CMAKE_SOURCE_DIR}/dependencies/libsedml/bin
-            )
-        set(LIBSEDML_DLL ${LIBSEDML_BIN_DIR}/libsedml.dll)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${DEPENDENCY_CMAKE_CONFIG_PATHS}")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${DEPENDENCY_CMAKE_CONFIG_PATHS}")
+message(STATUS "CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}")
+if (WIN32)
+    set(SBML_TARGET_NAME "libsbml-static")
+    set(SEDML_TARGET_NAME "libsedml-static")
+    set(NUML_TARGET_NAME "libnuml-static")
+else ()
+    set(SBML_TARGET_NAME "sbml-static")
+    set(SEDML_TARGET_NAME "sedml-static")
+    set(NUML_TARGET_NAME "numl-static")
+endif (WIN32)
+
+
+#find_package(Threads) # for libxml2, FindThreads.cmake is shipped with cmake
+#find_package(LibLZMA) # for libxml2, LibLZMA.cmake is shipped with cmake
+find_package(zlib CONFIG REQUIRED)
+#find_package(bzip2 CONFIG REQUIRED)
+#find_package(iconv CONFIG REQUIRED)
+
+find_package(expat CONFIG REQUIRED)
+
+## https://stackoverflow.com/questions/32183975/how-to-print-all-the-properties-of-a-target-in-cmake/56738858#56738858
+## https://stackoverflow.com/a/56738858/3743145
+
+## Get all properties that cmake supports
+execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
+## Convert command output into a CMake list
+STRING(REGEX REPLACE ";" "\\\\;" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+STRING(REGEX REPLACE "\n" ";" CMAKE_PROPERTY_LIST "${CMAKE_PROPERTY_LIST}")
+
+list(REMOVE_DUPLICATES CMAKE_PROPERTY_LIST)
+
+function(print_target_properties tgt)
+    if(NOT TARGET ${tgt})
+      message("There is no target named '${tgt}'")
+      return()
     endif()
-    INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBSEDML_INCLUDE_DIR})
 
-####################################################################
-#
-# Locate libnuml
-#
-    find_path(LIBNUML_INSTALL_DIR
-    NAMES include/numl/NMBase.h
-    PATHS /usr /usr/local /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/
-              ${CMAKE_SOURCE_DIR}/../
-              )
+    foreach (prop ${CMAKE_PROPERTY_LIST})
+        string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" prop ${prop})
+        get_target_property(propval ${tgt} ${prop})
+        if (propval)
+            message ("${tgt} ${prop} = ${propval}")
+        endif()
+    endforeach(prop)
+endfunction(print_target_properties)
 
-    if(WITH_STATIC_NUML)
-        find_library(LIBNUML_LIBRARY
-             NAMES libnuml-static.lib libnuml-static.so libnuml-static numl-static.lib numl-static.so numl-static
-             PATHS /usr/lib /usr/local/lib
-               ${LIBNUML_INSTALL_DIR}/lib
-               ${CMAKE_SOURCE_DIR}
-               ${CMAKE_SOURCE_DIR}/dependencies/lib
-             )
-    else()
-        find_library(LIBNUML_LIBRARY
-            NAMES libnuml.lib libnuml.so libnuml numl.lib numl.so numl
-            PATHS /usr/lib /usr/local/lib
-              ${LIBNUML_INSTALL_DIR}/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-            )
-    endif()
-    find_path(LIBNUML_INCLUDE_DIR
-        NAMES numl/NMBase.h
-        PATHS /usr/include /usr/local/include
-              ${LIBNUML_INSTALL_DIR}/include
-              ${CMAKE_SOURCE_DIR}/include
-              ${CMAKE_SOURCE_DIR}/dependencies/include
-        )
-    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBNUML_LIBRARY} )
-    if(WIN32 AND NOT(WITH_STATIC_NUML))
-        find_path(LIBNUML_BIN_DIR
-            NAMES libnuml.dll
-            PATHS /usr/bin /usr/local/bin
-                  ${LIBNUML_INSTALL_DIR}/bin
-                  ${LIBNUML_INCLUDE_DIR}/../bin
-                  ${CMAKE_SOURCE_DIR}/
-                  ${CMAKE_SOURCE_DIR}/dependencies/libnuml/bin
-            )
-        set(LIBNUML_DLL ${LIBNUML_BIN_DIR}/libnuml.dll)
-    endif()
-    INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBNUML_INCLUDE_DIR})
+cmake_language(CALL print_target_properties zlib::zlibstatic)
+cmake_language(CALL print_target_properties expat::expat)
 
-####################################################################
-#
-# Locate libsbml
-#
+#libsbml now needs to know that we found expat, so we set the relevant flags
+set(EXPAT_LIBRARY "expat::expat")
+get_target_property(EXPAT_INCLUDE_DIR expat::expat INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(EXPAT_LIBRARY expat::expat LOCATION)
+message(STATUS "EXPAT_LIBRARY: ${EXPAT_LIBRARY}")
 
-    find_path(LIBSBML_INSTALL_DIR
-    NAMES include/sbml/SBMLTypes.h
-    PATHS /usr /usr/local /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/
-              ${CMAKE_SOURCE_DIR}/../libsbml-5/release/
-              ${CMAKE_SOURCE_DIR}/../
-              )
+set(ZLIB_LIBRARY "zlib::zlibstatic")
+get_target_property(ZLIB_LIBRARY zlib::zlibstatic LOCATION)
+set(ZLIB_INCLUDE_DIR "${PHRASEDML_DEPENDENCIES_INSTALL_PREFIX}/include/")
+message(STATUS "ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
+message(STATUS "ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
 
-    if(WITH_STATIC_SBML)
-        find_library(LIBSBML_LIBRARY
-             NAMES libsbml-static.lib libsbml-static.so libsbml-static sbml-static.lib sbml-static.so sbml-static
-             PATHS /usr/lib /usr/local/lib
-               ${LIBSBML_INSTALL_DIR}/lib
-               ${CMAKE_SOURCE_DIR}
-               ${CMAKE_SOURCE_DIR}/dependencies/lib
-               ${CMAKE_SOURCE_DIR}/../libsbml-5/release/lib/
-             )
-    else()
-        find_library(LIBSBML_LIBRARY
-            NAMES libsbml.lib libsbml.so libsbml sbml.lib sbml.so sbml
-            PATHS /usr/lib /usr/local/lib
-              ${LIBSBML_INSTALL_DIR}/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-              ${CMAKE_SOURCE_DIR}/../libsbml-5/release/lib/
-            )
-    endif()
-    find_path(LIBSBML_INCLUDE_DIR
-        NAMES sbml/SBMLTypes.h
-        PATHS /usr/include /usr/local/include
-              ${LIBSBML_INSTALL_DIR}/include
-              ${CMAKE_SOURCE_DIR}/include
-              ${CMAKE_SOURCE_DIR}/dependencies/include
-              ${CMAKE_SOURCE_DIR}/../libsbml-5/release/include/
-        )
-    set(LIBPHRASEDML_LIBS ${LIBSBML_LIBRARY} ${LIBPHRASEDML_LIBS} )
-    if(WIN32 AND NOT WITH_STATIC_SBML)
-        find_path(LIBSBML_BIN_DIR
-            NAMES libsbml.dll
-            PATHS /usr/bin /usr/local/bin
-                  ${LIBSBML_INSTALL_DIR}/bin
-                  ${LIBSBML_INCLUDE_DIR}/../bin
-                  ${CMAKE_SOURCE_DIR}/
-                  ${CMAKE_SOURCE_DIR}/dependencies/libsbml/bin
-                  ${CMAKE_SOURCE_DIR}/../libsbml-5/release/bin/
-            )
-        set(LIBSBML_DLL ${LIBSBML_BIN_DIR}/libsbml.dll)
-    endif()
-    INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBSBML_INCLUDE_DIR})
-    if (WITH_COMP_SBML)
-        add_definitions( -DUSE_COMP )
-    endif(WITH_COMP_SBML)
-
-####################################################################
-#
-# Locate the CellML API and attendant libraries if needed
-#
-
-# [Not needed for phrased-ML at this point]
-
-###############################################################
-#
-# Locate the libraries libsbml depends on, for static linking.
-#
-
-if(WITH_LIBSBML_EXPAT)
-    find_library(EXPAT_LIBRARY
-        NAMES libexpat.lib libexpat.so libexpat.dylib libexpat expat.lib expat.so expat.dylib expat
-	PATHS /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-              ${LIBSBML_INCLUDE_DIR}/../lib
-        )
-    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${EXPAT_LIBRARY} )
+#For some reason, something in the bowels of the dependencies needs ZLIB::ZLIB, and won't accept zlib::zlib.
+# I stole this from libsbml's CMakeLists.txt file, since they apparently also suffer the same problem
+# (and are the probable cause, at that.)  I've only seen this needed on Ubuntu, and even there, it's
+# not needed for the azure ubuntu build, just when actually running Ubuntu.
+if(NOT TARGET ZLIB::ZLIB)
+  add_library(ZLIB::ZLIB UNKNOWN IMPORTED)
+  set_target_properties(ZLIB::ZLIB PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+    IMPORTED_LOCATION "${ZLIB_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}")
 endif()
 
-if(WITH_LIBSBML_LIBXML)
-    find_library(LIBXML_LIBRARY
-        NAMES libxml2.lib libxml2.so libxml2.dylib libxml2
-	PATHS /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-              ${LIBSBML_INCLUDE_DIR}/../lib
-        )
-    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${LIBXML_LIBRARY} )
-
-    if(WIN32)
-      find_library(ICONV_LIBRARY
-          NAMES iconv.lib iconv.so iconv.dylib iconv libiconv.lib libiconv.so libiconv.dylib libiconv
-          PATHS /usr/lib /usr/local/lib
-                ${CMAKE_SOURCE_DIR}
-                ${CMAKE_SOURCE_DIR}/dependencies/lib
-                ${LIBSBML_INCLUDE_DIR}/../lib
-          )
-      set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${ICONV_LIBRARY} )
-    endif()
+if(NOT TARGET expat)
+  add_library(expat UNKNOWN IMPORTED)
+  set_target_properties(expat PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+    IMPORTED_LOCATION "${EXPAT_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${EXPAT_INCLUDE_DIR}")
 endif()
 
-if(WITH_LIBSBML_XERCES)
-    find_library(XERCES_LIBRARY
-        NAMES xerces-c_static_3.lib xerces-c_static_3.so xerces-c_static_3.dylib xerces-c_static_3
-	PATHS /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-              ${LIBSBML_INCLUDE_DIR}/../lib
-        )
-    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${XERCES_LIBRARY} )
+
+if(NOT TARGET zlibstatic)
+  add_library(zlibstatic UNKNOWN IMPORTED)
+  set_target_properties(zlibstatic PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+    IMPORTED_LOCATION "${ZLIB_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}")
 endif()
 
-if(WITH_LIBSBML_COMPRESSION)
-    find_library(ZDLL_LIBRARY
-        NAMES zdll.lib zdll.so zdll.dylib zdll z
-	PATHS /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-              ${LIBSBML_INCLUDE_DIR}/../lib
-        )
-    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${ZDLL_LIBRARY} )
 
-    find_library(BZIP_LIBRARY
-        NAMES bzip2.lib bzip2.so bzip2.dylib bzip2 bz2
-	PATHS /usr/lib /usr/local/lib
-              ${CMAKE_SOURCE_DIR}
-              ${CMAKE_SOURCE_DIR}/dependencies/lib
-              ${LIBSBML_INCLUDE_DIR}/../lib
-        )
-    set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${BZIP_LIBRARY} )
-endif()
+find_package(${SBML_TARGET_NAME} CONFIG REQUIRED)
+find_package(${SEDML_TARGET_NAME} CONFIG REQUIRED)
+find_package(${NUML_TARGET_NAME} CONFIG REQUIRED)
 
-###############################################################################
-#
-# If WITH_SWIG is selected, we need to find swig
-#
-if(WITH_SWIG)
-    find_program(SWIG_EXECUTABLE
-        NAMES swig
-        PATHS
-              "c:/Program Files (x86)/Swig"
-              c:/Program Files/Swig
-              c:/swigwin-2.0.11
-              c:/swigwin-2.0.10
-              c:/swigwin-2.0.9
-              c:/swigwin-2.0.8
-              c:/swigwin-2.0.7
-              c:/swigwin-2.0.6
-              c:/swigwin-2.0.5
-              c:/swigwin-2.0.4
-              c:/swigwin-2.0.3
-              c:/swigwin-2.0.2
-              c:/swigwin-2.0.1
-              c:/swigwin-2.0.0
-              /usr/local/bin
-              /opt/local/bin
-              /usr/bin
-        DOC "The file name of the swig executable."
-        )
-    find_package(SWIG)
-    set(SWIG_EXTRA_ARGS "" CACHE STRING "Extra arguments to SWIG" )
-endif(WITH_SWIG)
 
-if(WITH_SWIG)
-    message(STATUS "  Using SWIG                    = ${SWIG_EXECUTABLE}")
+set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${SBML_TARGET_NAME} )
+set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${SEDML_TARGET_NAME} )
+set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${NUML_TARGET_NAME} )
+set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} expat::expat )
+set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} zlib::zlibstatic )
 
-    if (SWIG_FOUND AND SWIG_VERSION VERSION_LESS "2.0.4")
-        message(WARNING "   You are using swig version ${SWIG_VERSION} while we recommend at least version 2.0.4.")
-    endif()
+INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBSEDML_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBNUML_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${LIBSBML_INCLUDE_DIR})
 
-endif()
+if (WITH_COMP_SBML)
+    add_definitions( -DUSE_COMP )
+endif(WITH_COMP_SBML)
+
+
 
 if(WITH_PYTHON)
     message(STATUS "  Using Python                  = ${PYTHON_EXECUTABLE}")

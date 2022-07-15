@@ -23,6 +23,7 @@
 
 using namespace std;
 using namespace libsbml;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 

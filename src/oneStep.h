@@ -7,7 +7,7 @@
 #include "simulation.h"
 #include "phrasedml-namespace.h"
 
-class SedOneStep;
+class libsedml::SedOneStep;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
@@ -21,11 +21,11 @@ private:
 public:
 
   PhrasedOneStep(std::string id, double step);
-  PhrasedOneStep(SedOneStep* sedOneStep);
+  PhrasedOneStep(libsedml::SedOneStep* sedOneStep);
   ~PhrasedOneStep();
 
   virtual std::string getPhraSEDML() const;
-  virtual void addSimulationToSEDML(SedDocument* sedml) const;
+  virtual void addSimulationToSEDML(libsedml::SedDocument* sedml) const;
   virtual bool kisaoIsDefault() const;
 
   virtual bool finalize();

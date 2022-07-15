@@ -8,8 +8,8 @@
 #include "variable.h"
 #include "phrasedml-namespace.h"
 
-class SedSimulation;
-class SedDocument;
+class libsedml::SedSimulation;
+class libsedml::SedDocument;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 enum simtype {
@@ -33,13 +33,13 @@ protected:
 public:
 
   PhrasedSimulation(simtype type, std::string id);
-  PhrasedSimulation(simtype type, SedSimulation* sedsimulation);
+  PhrasedSimulation(simtype type, libsedml::SedSimulation* sedsimulation);
   ~PhrasedSimulation();
 
   simtype getType() const;
 
   virtual std::string getPhraSEDML() const = 0;
-  virtual void addSimulationToSEDML(SedDocument* sedml) const = 0;
+  virtual void addSimulationToSEDML(libsedml::SedDocument* sedml) const = 0;
 
   virtual bool setAlgorithmKisao(int kisao);
   virtual bool setAlgorithmKisao(const std::vector<const std::string*>& kisao, std::stringstream& err);
@@ -49,7 +49,7 @@ public:
   virtual void addAlgorithmParameter(int kisao, std::string val);
   virtual bool addAlgorithmParameter(const std::string* kisao, const std::string* val, std::stringstream& err);
   virtual bool addAlgorithmParameter(const std::string* kisao, double val, std::stringstream& err);
-  virtual void addKisaoAndAlgorithmParametersToSEDML(SedSimulation* sedsim) const;
+  virtual void addKisaoAndAlgorithmParametersToSEDML(libsedml::SedSimulation* sedsim) const;
   virtual int  keywordToKisaoParamId(const std::string& keyword) const;
 
   virtual void writePhraSEDMLKisao(std::stringstream& stream) const;

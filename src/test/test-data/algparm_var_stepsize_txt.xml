@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sedML xmlns="http://sed-ml.org/sed-ml/level1/version3" level="1" version="3">
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version4" level="1" version="4">
   <listOfSimulations>
-    <uniformTimeCourse id="sim1" initialTime="0" outputStartTime="0" outputEndTime="10" numberOfPoints="100">
-      <algorithm kisaoID="KISAO:0000019">
+    <uniformTimeCourse id="sim1" initialTime="0" outputStartTime="0" outputEndTime="10" numberOfSteps="100">
+      <algorithm name="CVODE" kisaoID="KISAO:0000019">
         <listOfAlgorithmParameters>
-          <algorithmParameter kisaoID="KISAO:0000107" value="true"/>
+          <algorithmParameter name="progression with adaptive time step" kisaoID="KISAO:0000107" value="true"/>
         </listOfAlgorithmParameters>
       </algorithm>
     </uniformTimeCourse>

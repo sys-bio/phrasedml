@@ -11,6 +11,7 @@
 #include "sedml/SedOneStep.h"
 
 using namespace std;
+using namespace libsedml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 

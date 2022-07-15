@@ -3,8 +3,7 @@
 
 #include <string>
 #include "phrasedml-namespace.h"
-
-class SedBase;
+#include "sedml/SedBase.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class Variable
@@ -19,7 +18,7 @@ protected:
 public:
 
   Variable(std::string id);
-  Variable(SedBase* sedbase);
+  Variable(libsedml::SedBase* sedbase);
   ~Variable();
 
   void setName(std::string name);

@@ -7,7 +7,7 @@
 #include "simulation.h"
 #include "phrasedml-namespace.h"
 
-class SedUniformTimeCourse;
+class libsedml::SedUniformTimeCourse;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedUniform : public PhrasedSimulation
@@ -23,11 +23,11 @@ private:
 public:
 
   PhrasedUniform(std::string id, double start, double outstart, double end, long numpts, bool stochastic);
-  PhrasedUniform(SedUniformTimeCourse* sedUniform);
+  PhrasedUniform(libsedml::SedUniformTimeCourse* sedUniform);
   ~PhrasedUniform();
 
   virtual std::string getPhraSEDML() const;
-  virtual void addSimulationToSEDML(SedDocument* sedml) const;
+  virtual void addSimulationToSEDML(libsedml::SedDocument* sedml) const;
   virtual bool setAlgorithmKisao(int kisao);
   virtual bool getStochastic() const {return m_stochastic;};
   virtual bool kisaoIsDefault() const;

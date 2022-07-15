@@ -14,6 +14,7 @@
 
 using namespace std;
 using namespace libsbml;
+using namespace libsedml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 PHRASEDML_CPP_NAMESPACE_BEGIN

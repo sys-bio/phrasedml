@@ -35,9 +35,6 @@ configure_file(${SETUP_PY_IN} ${SETUP_PY})
 configure_file(${INIT_PY_IN} ${INIT_PY})
 
 
-#Create the 'libphrasedml.pth' file (which lets users 'import libphrasedml').
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/libphrasedml.pth" "phrasedml\n")
-
 #All the files that need to be installed in the python library directory.
 file (GLOB phrasedml_python_files
     ${INIT_PY}

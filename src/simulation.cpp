@@ -13,6 +13,7 @@
 #include "stringx.h"
 
 using namespace std;
+using namespace libsedml;
 extern int phrased_yylloc_last_line;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
@@ -220,6 +221,7 @@ void PhrasedSimulation::addKisaoAndAlgorithmParametersToSEDML(SedSimulation* sed
     alg = sedsim->createAlgorithm();
   }
   if (m_kisao != 0) {
+    alg->unsetName(); //Because setting the kisao term will set the name appropriately if it's not already set.
     alg->setKisaoID(getKisaoFromInt(m_kisao));
   }
   for (map<int, string>::const_iterator algparam = m_algparams.begin(); algparam != m_algparams.end(); algparam++) {

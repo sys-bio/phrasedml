@@ -27,6 +27,7 @@ extern int phrased_yylloc_last_line;
 
 using namespace std;
 using namespace libsbml;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 

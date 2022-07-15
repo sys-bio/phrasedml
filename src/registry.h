@@ -28,7 +28,7 @@ private:
   int                      m_errorLine;
   std::vector<std::string> m_warnings;
 
-  SedDocument*             m_sedml;
+  libsedml::SedDocument*   m_sedml;
   std::string              m_workingDirectory;
   std::string              m_separator;
 
