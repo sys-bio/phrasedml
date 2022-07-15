@@ -114,9 +114,7 @@ stages:
               $(PipExecutable) install requests
               echo $(PythonExecutable) ./.azurepipelines/getCheck.py $(CheckURL) check
               $(PythonExecutable) ./.azurepipelines/getCheck.py $(CheckURL) check
-              $(PythonExecutable) ./.azurepipelines/getQt.py https://github.com/sys-bio/phrasedml/releases/download/libcheck/Qt5.15.2.msvc.zip qt
-              ls -R qt
-            displayName: "Get Check and Qt for Windows"
+            displayName: "Get Check for Windows"
           #- script: brew install qt@5 check
           #  displayName: install QT5 and check
           - task: DownloadPipelineArtifact@2
