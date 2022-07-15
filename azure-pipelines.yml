@@ -15,7 +15,6 @@ variables:
   INSTALL_DIR: '$(SOURCE_DIR)/phrasedml-$(Agent.OS)'
   DEPS_INSTALL_PREFIX: '$(SOURCE_DIR)/libroadrunner-deps' # e.g./home/vsts/work/1
   CHECK_INSTALL_PREFIX: '$(SOURCE_DIR)/check' # e.g./home/vsts/work/1
-  QT_INSTALL_PREFIX: '$(SOURCE_DIR)/qt' # e.g./home/vsts/work/1
 
 stages:
 ########################################################################
@@ -45,12 +44,12 @@ stages:
             64-bit Windows Release:
               BuildType: Release
               CheckFile: check-release.zip
-              CheckURL: https://github.com/sys-bio/phrasedml/releases/download/libcheck/check-release.zip
+              CheckURL: https://github.com/sys-bio/antimony/releases/download/libcheck/check-release.zip
               PythonCMake: -DWITH_PYTHON=ON -DPython_ROOT_DIR=$(PythonRoot)
             64-bit Windows Debug:
               BuildType: Debug
               CheckFile: check-debug.zip
-              CheckURL: https://github.com/sys-bio/phrasedml/releases/download/libcheck/check-debug.zip
+              CheckURL: https://github.com/sys-bio/antimony/releases/download/libcheck/check-debug.zip
               PythonCMake: -DWITH_PYTHON=OFF
         steps:
           - script: |
@@ -115,8 +114,6 @@ stages:
               echo $(PythonExecutable) ./.azurepipelines/getCheck.py $(CheckURL) check
               $(PythonExecutable) ./.azurepipelines/getCheck.py $(CheckURL) check
             displayName: "Get Check for Windows"
-          #- script: brew install qt@5 check
-          #  displayName: install QT5 and check
           - task: DownloadPipelineArtifact@2
             # In this task we go and grab the build artifacts from
             # the libroadrunner-dependencies package
@@ -148,7 +145,7 @@ stages:
               mkdir $(BUILD_DIR)
               echo "CD to build dir: $(BUILD_DIR)"
               cd $(BUILD_DIR)
-              cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5/lib  -DLIBSBML_INSTALL_DIR=$(DEPS_INSTALL_PREFIX) -DWITH_QTPHRASEDML=ON -DWITH_STATIC_SBML=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(BuildType) -DWITH_CHECK=ON -DLIBCHECK_INCLUDE_DIR=$(CHECK_INSTALL_PREFIX)/include/ -DLIBCHECK_LIBRARY=$(CHECK_INSTALL_PREFIX)/lib/libcheck.lib -DQt5_DIR=$(QT_INSTALL_PREFIX)/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5  -DEXTRA_LIBS=wsock32.lib $(PythonCMake)  ..
+              cmake -DPHRASED_DEPENDENCIES_INSTALL_PREFIX=$(DEPS_INSTALL_PREFIX) -DLIBSBML_INSTALL_DIR=$(DEPS_INSTALL_PREFIX) -DWITH_STATIC_SBML=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(BuildType) -DWITH_CHECK=ON -DLIBCHECK_INCLUDE_DIR=$(CHECK_INSTALL_PREFIX)/include/ -DLIBCHECK_LIBRARY=$(CHECK_INSTALL_PREFIX)/lib/libcheck.lib -DEXTRA_LIBS=wsock32.lib $(PythonCMake)  ..
             displayName: Run CMake Configure Command
           - script: |
               echo "less -N $(BUILD_DIR)/source/CMakeFiles/phrasedml.dir/build.make"
@@ -314,8 +311,8 @@ stages:
           - script: |
               mkdir $(DEPS_INSTALL_PREFIX)
             displayName: Make Directories
-          - script: brew install qt@5 check
-            displayName: install QT5 and check
+          - script: brew install check
+            displayName: install check
           - task: DownloadPipelineArtifact@2
             # In this task we go and grab the build artefacts from
             # the libroadrunner-dependencies package
@@ -347,7 +344,7 @@ stages:
               mkdir $(BUILD_DIR)
               echo "CD to build dir: $(BUILD_DIR)"
               cd $(BUILD_DIR)
-              cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5/lib -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5 -DLIBSBML_INSTALL_DIR=$(DEPS_INSTALL_PREFIX) -DWITH_QTPHRASEDML=ON -DWITH_STATIC_SBML=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(BuildType) -DWITH_CHECK=ON -DWITH_PYTHON=ON -DPython_ROOT_DIR=$(PythonRoot) ..
+              cmake -DPHRASED_DEPENDENCIES_INSTALL_PREFIX=$(DEPS_INSTALL_PREFIX) -DLIBSBML_INSTALL_DIR=$(DEPS_INSTALL_PREFIX) -DWITH_STATIC_SBML=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(BuildType) -DWITH_CHECK=ON -DWITH_PYTHON=ON -DPython_ROOT_DIR=$(PythonRoot) ..
             displayName: Run CMake Configure Command
           - script: |
               echo "less -N $(BUILD_DIR)/source/CMakeFiles/phrasedml.dir/build.make"
@@ -509,7 +506,7 @@ stages:
               mkdir $(BUILD_DIR)
               echo "CD to build dir: $(BUILD_DIR)"
               cd $(BUILD_DIR)
-              cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5/lib  -DLIBSBML_INSTALL_DIR=$(DEPS_INSTALL_PREFIX) -DLIBXML_LIBRARY=${DEPS_INSTALL_PREFIX}/lib64/libxml2.a -DWITH_QTPHRASEDML=OFF -DWITH_STATIC_SBML=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(BuildType) -DWITH_CHECK=OFF -DWITH_PYTHON=ON -DPython_ROOT_DIR=$(PythonRoot) ..
+              cmake -DPHRASED_DEPENDENCIES_INSTALL_PREFIX=$(DEPS_INSTALL_PREFIX) -DLIBSBML_INSTALL_DIR=$(DEPS_INSTALL_PREFIX) -DLIBXML_LIBRARY=${DEPS_INSTALL_PREFIX}/lib64/libxml2.a -DWITH_STATIC_SBML=ON -DCMAKE_INSTALL_PREFIX=$(INSTALL_DIR) -DCMAKE_BUILD_TYPE=$(BuildType) -DWITH_CHECK=OFF -DWITH_PYTHON=ON -DPython_ROOT_DIR=$(PythonRoot) ..
             displayName: Run CMake Configure Command
           - script: |
               echo "less -N $(BUILD_DIR)/source/CMakeFiles/phrasedml.dir/build.make"
