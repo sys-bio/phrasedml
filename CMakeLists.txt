@@ -119,10 +119,12 @@ if (WIN32)
     set(SBML_TARGET_NAME "libsbml-static")
     set(SEDML_TARGET_NAME "libsedml-static")
     set(NUML_TARGET_NAME "libnuml-static")
+    set(NUML_TARGET_NAME_NS "libnuml")
 else ()
     set(SBML_TARGET_NAME "sbml-static")
     set(SEDML_TARGET_NAME "sedml-static")
     set(NUML_TARGET_NAME "numl-static")
+    set(NUML_TARGET_NAME_NS "numl")
 endif (WIN32)
 
 
@@ -204,10 +206,24 @@ if(NOT TARGET zlibstatic)
     INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}")
 endif()
 
+find_package(${NUML_TARGET_NAME} CONFIG REQUIRED)
+
+#Now we need to fool sedml into thinking libnuml-static is libnuml.
+get_target_property(NUML_INCLUDE_DIR ${NUML_TARGET_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(NUML_LIBRARY ${NUML_TARGET_NAME} LOCATION)
+
+if(NOT TARGET ${NUML_TARGET_NAME_NS})
+  add_library(${NUML_TARGET_NAME_NS} UNKNOWN IMPORTED)
+  set_target_properties(${NUML_TARGET_NAME} PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+    IMPORTED_LOCATION "${NUML_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${NUML_INCLUDE_DIR}")
+endif()
+
+
 
 find_package(${SBML_TARGET_NAME} CONFIG REQUIRED)
 find_package(${SEDML_TARGET_NAME} CONFIG REQUIRED)
-find_package(${NUML_TARGET_NAME} CONFIG REQUIRED)
 
 
 set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${SBML_TARGET_NAME} )
