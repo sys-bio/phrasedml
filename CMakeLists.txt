@@ -210,6 +210,10 @@ endif()
 
 find_package(${SBML_TARGET_NAME} CONFIG REQUIRED)
 
+#Tell libnuml and libsedml not to look for libsbml on their own (since we install the static but not the dynamic versions):
+set(FIND_LIBSBML OFF CACHE BOOL "Search for the non-static libsbml (should be OFF if using libroadrunner-deps" FORCE)
+
+
 # Now fool sedml into thinking libsbml-static is libsbml.
 get_target_property(SBML_INCLUDE_DIR ${SBML_TARGET_NAME} INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(SBML_LIBRARY ${SBML_TARGET_NAME} LOCATION)
@@ -221,6 +225,9 @@ if(NOT TARGET ${SBML_TARGET_NAME_NS})
     IMPORTED_LOCATION "${SBML_LIBRARY}"
     INTERFACE_INCLUDE_DIRECTORIES "${SBML_INCLUDE_DIR}")
 endif()
+
+set(LIBSBML_LIBRARY ${SBML_LIBRARY})
+set(LIBSBML_INCLUDE_DIR ${SBML_INCLUDE_DIR})
 
 find_package(${NUML_TARGET_NAME} CONFIG REQUIRED)
 
