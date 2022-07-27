@@ -5,14 +5,13 @@
 #include "phrasedml-namespace.h"
 #include "sbml/math/ASTNode.h"
 #include "sedml/SedBase.h"
-
-class libsedml::SedChange;
-class libsedml::SedDocument;
-class libsedml::SedModel;
-class libsedml::SedParameter;
-class libsedml::SedRange;
-class libsedml::SedRepeatedTask;
-class libsedml::SedSetValue;
+#include "sedml/SedChange.h"
+#include "sedml/SedDocument.h"
+#include "sedml/SedModel.h"
+#include "sedml/SedParameter.h"
+#include "sedml/SedRange.h"
+#include "sedml/SedRepeatedTask.h"
+#include "sedml/SedSetValue.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedModel;

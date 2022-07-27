@@ -8,8 +8,8 @@
 #include "variable.h"
 #include "phrasedml-namespace.h"
 
-class libsedml::SedTask;
-class libsedml::SedDocument;
+#include "sedml/SedTask.h"
+#include "sedml/SedDocument.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedTask : public Variable

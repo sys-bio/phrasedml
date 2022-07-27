@@ -6,8 +6,7 @@
 
 #include "simulation.h"
 #include "phrasedml-namespace.h"
-
-class libsedml::SedOneStep;
+#include "sedml/SedOneStep.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 

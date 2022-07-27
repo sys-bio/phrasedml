@@ -8,8 +8,8 @@
 #include "variable.h"
 #include "phrasedml-namespace.h"
 
-class libsedml::SedSimulation;
-class libsedml::SedDocument;
+#include "sedml/SedSimulation.h"
+#include "sedml/SedDocument.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 enum simtype {
