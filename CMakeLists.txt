@@ -211,6 +211,7 @@ endif()
 find_package(${SBML_TARGET_NAME} CONFIG REQUIRED)
 
 #Tell libnuml and libsedml not to look for libsbml on their own (since we install the static but not the dynamic versions):
+set(VERBOSE ON)
 set(LIBSBML_SHARED OFF CACHE BOOL "Look for the shared version of libsbml (should be OFF if using libroadrunner-deps" FORCE)
 
 
