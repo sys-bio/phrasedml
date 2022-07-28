@@ -190,7 +190,7 @@ stages:
             condition: eq(variables.BuildType, 'Release')
             displayName: Clear published artifacts
           - script: |
-              cp .azurepipelines/renameWheel.py ${INSTALL_DIR}/bindings/python/
+              cp ${SOURCE_DIR}/.azurepipelines/renameWheel.py ${INSTALL_DIR}/bindings/python/
               echo "cd to python bindings dir: $(INSTALL_DIR)/bindings/python"
               cd $(INSTALL_DIR)/bindings/python
               echo "ls in install dir"
