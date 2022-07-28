@@ -34,7 +34,7 @@ public:
 
   PhrasedSimulation(simtype type, std::string id);
   PhrasedSimulation(simtype type, libsedml::SedSimulation* sedsimulation);
-  ~PhrasedSimulation();
+  virtual ~PhrasedSimulation();
 
   simtype getType() const;
 

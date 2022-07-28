@@ -86,7 +86,7 @@
 
 %define api.prefix {phrased_yy}
 %debug
-%error-verbose
+%define parse.error verbose
 %% /* The grammar: */
 
 input:          /* empty */
@@ -269,9 +269,9 @@ int phrased_yylex(void)
  }
 
   // Parse words
-  if (cc > 0 && cc < 256 && (isalpha(cc) || cc == '_')) {
+  if (cc > 0 && (isalpha(cc) || cc == '_')) {
     string word;
-    while (cc > 0 && cc < 256 && (isalpha(cc) || isdigit(cc) || cc == '_') && !g_registry.input->eof()) {
+    while (cc > 0 && (isalpha(cc) || isdigit(cc) || cc == '_') && !g_registry.input->eof()) {
       word += cc;
       g_registry.input->get(cc);
     }
@@ -288,7 +288,7 @@ int phrased_yylex(void)
   }
 
   // Parse numbers
-  if (cc > 0 && cc < 256 && (isdigit(cc) || (cc=='.' && isdigit(g_registry.input->peek())))) {
+  if (cc > 0 && (isdigit(cc) || (cc=='.' && isdigit(g_registry.input->peek())))) {
     if (cc=='.') {
       //If the element *before* the '.' was a-z, we just return '.'.  This is for things like 'kisao.424':
       streampos here = g_registry.input->tellg();
