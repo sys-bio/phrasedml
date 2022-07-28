@@ -50,9 +50,10 @@ option(WITH_PYTHON       "Generate Python language bindings." OFF)
 option(WITH_EXAMPLES     "Generate example programs, including translator." ON)
 set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS are used), Debug, Release, RelWithDebInfo, MinSizeRel" )
 if (WITH_PYTHON)
-  option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    ON )
-  option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    OFF )
-  option(WITH_CONDA_BUILDER     "Install files required to build Anaconda packages"  OFF)
+  option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    OFF )
+  option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    ON )
+#  There's no conda builder for phrasedml.
+#  option(WITH_CONDA_BUILDER     "Install files required to build Anaconda packages"  OFF)
   option(WITH_PYTHON_EXAMPLES   "Install Python example files"  OFF)
 endif()
 
