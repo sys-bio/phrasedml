@@ -1,0 +1,1 @@
+sim1 = simulate uniform_stochastic(-5, 8, 20)
