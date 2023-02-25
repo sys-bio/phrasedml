@@ -475,6 +475,9 @@ stages:
           - script: |
               mkdir $(DEPS_INSTALL_PREFIX)
             displayName: Make Directories
+          - script: |
+              yum install check
+            displayName: Install Libcheck
           - task: DownloadPipelineArtifact@2
             # In this task we go and grab the build artefacts from
             # the libroadrunner-dependencies package
