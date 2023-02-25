@@ -69,6 +69,20 @@ START_TEST (test_sedml_webtools_gillespie_transcription)
 }
 END_TEST 
 
+START_TEST(test_sim_uniform_negstart)
+{
+    compareStringAndFileTranslation("sim1 = simulate uniform(-5, 8, 20)", "uniform_negstart");
+}
+END_TEST
+
+
+START_TEST(test_sim_uniform_stochastic_negstart)
+{
+    compareStringAndFileTranslation("sim1 = simulate uniform_stochastic(-5, 8, 20)", "stochastic_negstart");
+}
+END_TEST
+
+
 
 
 
@@ -78,7 +92,8 @@ create_suite_Simulations (void)
   Suite *suite = suite_create("phraSED-ML Simulations");
   TCase *tcase = tcase_create("phraSED-ML Simulations");
 
-  tcase_add_test( tcase, test_sedml_webtools_gillespie_transcription);
+  tcase_add_test(tcase, test_sim_uniform_negstart);
+  tcase_add_test(tcase, test_sim_uniform_stochastic_negstart);
 
   tcase_add_test( tcase, test_steadystate);
   tcase_add_test( tcase, test_onestep);
@@ -86,6 +101,7 @@ create_suite_Simulations (void)
   tcase_add_test( tcase, test_uniform_4args);
   tcase_add_test( tcase, test_uniform_stochastic_3args);
   tcase_add_test( tcase, test_uniform_stochastic_4args);
+  tcase_add_test(tcase, test_sedml_webtools_gillespie_transcription);
 
   suite_add_tcase(suite, tcase);
 
