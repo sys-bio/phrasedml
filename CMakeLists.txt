@@ -3,7 +3,7 @@
 # CMake Build Script for libphrasedml
 #
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 project(libphrasedml)
 
 ####################################################################
@@ -137,7 +137,7 @@ find_package(zlib CONFIG REQUIRED)
 #find_package(bzip2 CONFIG REQUIRED)
 #find_package(iconv CONFIG REQUIRED)
 
-find_package(expat CONFIG REQUIRED)
+find_package(EXPAT CONFIG REQUIRED)
 
 ## https://stackoverflow.com/questions/32183975/how-to-print-all-the-properties-of-a-target-in-cmake/56738858#56738858
 ## https://stackoverflow.com/a/56738858/3743145
