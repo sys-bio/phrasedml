@@ -2333,11 +2333,11 @@ int phrased_yylex(void)
         g_registry.input->get(cc);
       }
       ++phrased_yylloc_last_line;
-      g_registry.input->unget();
+      g_registry.input->putback(cc);
       return phrased_yylex();
     }
     else {
-      g_registry.input->unget();
+      g_registry.input->putback(cc);
       cc = '\\';
     }
  }
@@ -2350,7 +2350,7 @@ int phrased_yylex(void)
       g_registry.input->get(cc);
     }
     if (!g_registry.input->eof()) {
-      g_registry.input->unget();
+      g_registry.input->putback(cc);
     }
     //Otherwise, it's a user-defined variable:
     phrased_yylval.word = g_registry.addWord(word);
@@ -2361,24 +2361,15 @@ int phrased_yylex(void)
     return PHRASEWORD;
   }
 
+  // The trick here is to distinguish 'kisao.433' from '5+.433'.  Have to do that with the parser, though.
+  if (cc=='.') {
+    return cc;
+  }
+
   // Parse numbers
-  if (cc > 0 && (isdigit(cc) || (cc=='.' && isdigit(g_registry.input->peek())))) {
-    if (cc=='.') {
-      //If the element *before* the '.' was a-z, we just return '.'.  This is for things like 'kisao.424':
-      streampos here = g_registry.input->tellg();
-      if (here>0) {
-        g_registry.input->unget();
-        g_registry.input->unget();
-        char prev;
-        g_registry.input->get(prev);
-        g_registry.input->get(cc);
-        if (('a' <= prev && prev <= 'z') || ('A' <= prev && prev <= 'Z')) {
-          return cc;
-        }
-      }
-    }
+  if (cc > 0 && (isdigit(cc))) {
     double number;
-    g_registry.input->unget();
+    g_registry.input->putback(cc);
     streampos numbegin = g_registry.input->tellg();
     *g_registry.input >> number;
     streampos numend = g_registry.input->tellg();
@@ -2411,13 +2402,13 @@ int phrased_yylex(void)
     else {
       g_registry.input->get(cc);
       if (cc == 'e' || cc == 'E') {
-        g_registry.input->unget();
+        g_registry.input->putback(cc);
       }
       if (cc == '.') {
         //We might be in a 'kisao.43.c' situation.  Which is wrong, but at least clear what was meant.
         char next = g_registry.input->peek();
         if (('a' <= next && next <= 'z') || ('A' <= next && next <= 'Z')) {
-          g_registry.input->unget();
+          g_registry.input->putback(cc);
         }
       }
     }
@@ -2432,7 +2423,7 @@ int phrased_yylex(void)
         g_registry.input->get(cc);
       }
       if (!g_registry.input->eof()) {
-        g_registry.input->unget();
+        g_registry.input->putback(cc);
       }
       return phrased_yylex();
     }
@@ -2451,7 +2442,7 @@ int phrased_yylex(void)
       return phrased_yylex();
     }
     else {
-      g_registry.input->unget();
+      g_registry.input->putback(cc);
       cc = '/';
     }
   }
@@ -2460,7 +2451,7 @@ int phrased_yylex(void)
         g_registry.input->get(cc);
       }
       if (!g_registry.input->eof()) {
-        g_registry.input->unget();
+        g_registry.input->putback(cc);
       }
       return phrased_yylex();
   }
@@ -2477,7 +2468,7 @@ int phrased_yylex(void)
     }
     if (cc == '\r' || cc == '\n' || g_registry.input->eof()) {
       for (; ccount > 0; ccount--) {
-        g_registry.input->unget();
+        g_registry.input->putback(cc);
       }
       cc = '"';
     }
@@ -2491,7 +2482,7 @@ int phrased_yylex(void)
   if (cc == '\r') {
     g_registry.input->get(cc);
     if (cc != '\n') {
-      g_registry.input->unget();
+      g_registry.input->putback(cc);
     }
     cc = '\n';
   }
