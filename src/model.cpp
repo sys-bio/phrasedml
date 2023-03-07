@@ -363,6 +363,7 @@ bool PhrasedModel::changeListIsInappropriate(stringstream& err)
     case ctype_loop_uniformLinear:
     case ctype_loop_uniformLog:
     case ctype_loop_vector:
+    case ctype_loop_functional:
       err << "The model change '" << m_changes[c].getPhraSEDML() << "' is not the type of change that can be used on a single model.  These changes must be used in repeated tasks, instead.";
       return true;
     }

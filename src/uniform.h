@@ -7,7 +7,7 @@
 #include "simulation.h"
 #include "phrasedml-namespace.h"
 
-class libsedml::SedUniformTimeCourse;
+#include "sedml/SedUniformTimeCourse.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedUniform : public PhrasedSimulation

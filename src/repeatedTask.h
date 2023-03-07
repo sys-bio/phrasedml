@@ -9,10 +9,10 @@
 #include "task.h"
 #include "phrasedml-namespace.h"
 
-class libsedml::SedRepeatedTask;
-class libsedml::SedDocument;
-class libsedml::SedSetValue;
-class libsedml::SedRepeatedTask;
+#include "sedml/SedRepeatedTask.h"
+#include "sedml/SedDocument.h"
+#include "sedml/SedSetValue.h"
+#include "sedml/SedRepeatedTask.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 

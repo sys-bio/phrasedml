@@ -1,0 +1,1 @@
+sim1 = simulate uniform(-5, 8, 20)

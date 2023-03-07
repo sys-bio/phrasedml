@@ -11,10 +11,10 @@
 #include "modelChange.h"
 #include "phrasedml-namespace.h"
 
-class libsedml::SedPlot;
-class libsedml::SedReport;
-class libsedml::SedOutput;
-class libsedml::SedDocument;
+#include "sedml/SedPlot.h"
+#include "sedml/SedReport.h"
+#include "sedml/SedOutput.h"
+#include "sedml/SedDocument.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 

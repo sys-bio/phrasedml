@@ -198,6 +198,7 @@ bool PhrasedRepeatedTask::changeListIsInappropriate(stringstream& err)
     case ctype_loop_uniformLinear:
     case ctype_loop_uniformLog:
     case ctype_loop_vector:
+    case ctype_loop_functional:
       break;
       //If we get additions, deletions, etc.; those go here.
 //      err << "The model change '" << m_changes[c].getPhraSEDML() << "' is not the type of change that can be used in a repeated task.  These changes must be used in models directly, instead.";

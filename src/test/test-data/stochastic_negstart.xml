@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version4" level="1" version="4">
+  <listOfSimulations>
+    <uniformTimeCourse id="sim1" initialTime="-5" outputStartTime="-5" outputEndTime="8" numberOfSteps="20">
+      <algorithm name="Gillespie-like method" kisaoID="KISAO:0000241"/>
+    </uniformTimeCourse>
+  </listOfSimulations>
+</sedML>

@@ -7,7 +7,7 @@
 #include "simulation.h"
 #include "phrasedml-namespace.h"
 
-class libsedml::SedSteadyState;
+#include "sedml/SedSteadyState.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 class PhrasedSteadyState: public PhrasedSimulation

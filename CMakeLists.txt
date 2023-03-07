@@ -3,7 +3,7 @@
 # CMake Build Script for libphrasedml
 #
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 project(libphrasedml)
 
 ####################################################################
@@ -50,9 +50,10 @@ option(WITH_PYTHON       "Generate Python language bindings." OFF)
 option(WITH_EXAMPLES     "Generate example programs, including translator." ON)
 set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS are used), Debug, Release, RelWithDebInfo, MinSizeRel" )
 if (WITH_PYTHON)
-  option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    ON )
-  option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    OFF )
-  option(WITH_CONDA_BUILDER     "Install files required to build Anaconda packages"  OFF)
+  option(PYTHON_SYSTEM_INSTALL  "Install the python bindings using setup.py and distutils.  May require admin privileges."    OFF )
+  option(PYTHON_LOCAL_INSTALL   "Install the python bindings in ${CMAKE_INSTALL_PREFIX}/bindings/python/.  Will probably require the use of PYTHONPATH."    ON )
+#  There's no conda builder for phrasedml.
+#  option(WITH_CONDA_BUILDER     "Install files required to build Anaconda packages"  OFF)
   option(WITH_PYTHON_EXAMPLES   "Install Python example files"  OFF)
 endif()
 
@@ -119,10 +120,14 @@ if (WIN32)
     set(SBML_TARGET_NAME "libsbml-static")
     set(SEDML_TARGET_NAME "libsedml-static")
     set(NUML_TARGET_NAME "libnuml-static")
+    set(NUML_TARGET_NAME_NS "libnuml")
+    set(SBML_TARGET_NAME_NS "libsbml")
 else ()
     set(SBML_TARGET_NAME "sbml-static")
     set(SEDML_TARGET_NAME "sedml-static")
     set(NUML_TARGET_NAME "numl-static")
+    set(NUML_TARGET_NAME_NS "numl")
+    set(SBML_TARGET_NAME_NS "sbml")
 endif (WIN32)
 
 
@@ -132,7 +137,7 @@ find_package(zlib CONFIG REQUIRED)
 #find_package(bzip2 CONFIG REQUIRED)
 #find_package(iconv CONFIG REQUIRED)
 
-find_package(expat CONFIG REQUIRED)
+find_package(EXPAT CONFIG REQUIRED)
 
 ## https://stackoverflow.com/questions/32183975/how-to-print-all-the-properties-of-a-target-in-cmake/56738858#56738858
 ## https://stackoverflow.com/a/56738858/3743145
@@ -204,10 +209,44 @@ if(NOT TARGET zlibstatic)
     INTERFACE_INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}")
 endif()
 
-
 find_package(${SBML_TARGET_NAME} CONFIG REQUIRED)
-find_package(${SEDML_TARGET_NAME} CONFIG REQUIRED)
+
+#Tell libnuml and libsedml not to look for libsbml on their own (since we install the static but not the dynamic versions):
+set(VERBOSE ON)
+set(FIND_LIBSBML CACHE BOOL "Look for the shared version of libsbml (should be OFF if using libroadrunner-deps" FORCE)
+set(FIND_LIBNUML CACHE BOOL "Look for the shared version of libnuml (should be OFF if using libroadrunner-deps" FORCE)
+
+
+# Now fool sedml into thinking libsbml-static is libsbml.
+get_target_property(SBML_INCLUDE_DIR ${SBML_TARGET_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(SBML_LIBRARY ${SBML_TARGET_NAME} LOCATION)
+
+if(NOT TARGET ${SBML_TARGET_NAME_NS})
+  add_library(${SBML_TARGET_NAME_NS} UNKNOWN IMPORTED)
+  set_target_properties(${SBML_TARGET_NAME} PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+    IMPORTED_LOCATION "${SBML_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${SBML_INCLUDE_DIR}")
+endif()
+
+set(LIBSBML_LIBRARY ${SBML_LIBRARY})
+set(LIBSBML_INCLUDE_DIR ${SBML_INCLUDE_DIR})
+
 find_package(${NUML_TARGET_NAME} CONFIG REQUIRED)
+
+#Now we need to fool sedml into thinking libnuml-static is libnuml.
+get_target_property(NUML_INCLUDE_DIR ${NUML_TARGET_NAME} INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(NUML_LIBRARY ${NUML_TARGET_NAME} LOCATION)
+
+if(NOT TARGET ${NUML_TARGET_NAME_NS})
+  add_library(${NUML_TARGET_NAME_NS} UNKNOWN IMPORTED)
+  set_target_properties(${NUML_TARGET_NAME} PROPERTIES
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+    IMPORTED_LOCATION "${NUML_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${NUML_INCLUDE_DIR}")
+endif()
+
+find_package(${SEDML_TARGET_NAME} CONFIG REQUIRED)
 
 
 set(LIBPHRASEDML_LIBS ${LIBPHRASEDML_LIBS} ${SBML_TARGET_NAME} )
@@ -335,16 +374,17 @@ file(GLOB LIBPHRASEDML_HEADERS
 
 ##### Build the main library #####
 add_library(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_HEADERS} ${LIBPHRASEDML_SOURCES})
+if (WIN32 AND NOT CYGWIN)
+    # don't decorate static library
+    set_target_properties(${LIBPHRASEDML_LIBRARY} PROPERTIES COMPILE_DEFINITIONS "LIBLAX_STATIC=1;LIBSEDML_STATIC=1;LIBNUML_STATIC=1;LIBSBML_STATIC=1")
+endif(WIN32 AND NOT CYGWIN)
+
 target_link_libraries(${LIBPHRASEDML_LIBRARY} ${LIBPHRASEDML_LIBS})
 #    message(STATUS "  Target link libraries = ${LIBPHRASEDML_LIBS}")
 add_definitions(-DLIB_EXPORTS)
 install(TARGETS ${LIBPHRASEDML_LIBRARY} DESTINATION lib)
 install(FILES   ${LIBPHRASEDML_HEADERS} DESTINATION include)
 
-if (WIN32 AND NOT CYGWIN)
-    # don't decorate static library
-    set_target_properties(${LIBPHRASEDML_LIBRARY} PROPERTIES COMPILE_DEFINITIONS "LIBLAX_STATIC=1;LIBSEDML_STATIC=1;LIBSBML_STATIC=1")
-endif(WIN32 AND NOT CYGWIN)
 
 if (NOT UNIX)
   add_definitions(-DWIN32 -DLIBSBML_EXPORTS -DLIBLAX_EXPORTS)
