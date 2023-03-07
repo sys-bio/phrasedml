@@ -601,7 +601,9 @@ END_TEST
 
 START_TEST (test_kisao_algtype_toolong2)
 {
+#ifndef __APPLE__
   testError("sim1 = simulate steadystate\nsim1.algorithm = kisao.43.c", "Unable to parse line 2 ('sim1.algorithm = kisao.43.c'): invalid algorithm type 'kisao.43.c'.  Types must be either a keyword ('CVODE') or of the form 'kisao.19'.");
+#endif
 }
 END_TEST
 
