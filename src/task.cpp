@@ -11,6 +11,7 @@
 #include "sedml/SedTask.h"
 
 using namespace std;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedTask::PhrasedTask(std::string id, std::string simulation, std::string model)

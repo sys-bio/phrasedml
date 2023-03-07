@@ -14,6 +14,7 @@
 
 using namespace std;
 using namespace libsbml;
+using namespace libsedml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 PHRASEDML_CPP_NAMESPACE_BEGIN
@@ -159,14 +160,14 @@ void PhrasedRepeatedTask::addRepeatedTaskToSEDML(SedDocument* sedml) const
   sedRepeatedTask->setResetModel(m_resetModel);
   for (size_t t=0; t<m_tasks.size(); t++) {
     SedSubTask* subtask = sedRepeatedTask->createSubTask();
-    subtask->setOrder(t);
+    subtask->setOrder((int)t);
     subtask->setTask(m_tasks[t]);
   }
   for (size_t c=0; c<m_changes.size(); c++) {
     m_changes[c].addModelChangeToSEDMLRepeatedTask(sedRepeatedTask, m_tasks);
   }
   //Now that all the changes have been added, we make sure that all the math variables can be found
-  for (size_t sv=0; sv<sedRepeatedTask->getNumTaskChanges(); sv++) {
+  for (unsigned int sv=0; sv<sedRepeatedTask->getNumTaskChanges(); sv++) {
     SedSetValue* ssv = sedRepeatedTask->getTaskChange(sv);
     addLocalVariablesToSetValue(ssv, sedRepeatedTask);
   }
@@ -197,6 +198,7 @@ bool PhrasedRepeatedTask::changeListIsInappropriate(stringstream& err)
     case ctype_loop_uniformLinear:
     case ctype_loop_uniformLog:
     case ctype_loop_vector:
+    case ctype_loop_functional:
       break;
       //If we get additions, deletions, etc.; those go here.
 //      err << "The model change '" << m_changes[c].getPhraSEDML() << "' is not the type of change that can be used in a repeated task.  These changes must be used in models directly, instead.";

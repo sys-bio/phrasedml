@@ -12,9 +12,10 @@ setup(name='phrasedml',
       description='Python bindings for phraSED-ML',
       author='Lucian Smith, Kiri Choi, J Kyle Medley, and Herbert Sauro',
       author_email='lpsmith@uw.edu',
-      url='http://phrasedml.sf.net/',
+      url='https://github.com/sys-bio/phrasedml',
       packages=['phrasedml'],
       package_data={'phrasedml': ['_phrasedml*', '*.dll', 'examples/*.*', '*.so*', '*.dylib*']},
+      license = "MIT",
       distclass=BinaryDistribution,
      )
 

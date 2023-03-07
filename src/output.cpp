@@ -14,6 +14,7 @@
 
 using namespace std;
 using namespace libsbml;
+using namespace libsedml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
@@ -111,7 +112,7 @@ PhrasedOutput::PhrasedOutput(SedOutput* sedout, SedDocument* seddoc)
             SedDataGenerator* datagen = seddoc->getDataGenerator(curve->getXDataReference());
             astns.push_back(getASTNodeFrom(datagen, seddoc, curve->getLogX()));
             datagen = seddoc->getDataGenerator(curve->getYDataReference());
-            astns.push_back(getASTNodeFrom(datagen, seddoc, false));
+            astns.push_back(getASTNodeFrom(datagen, seddoc, curve->getLogY()));
             m_outputVariables.push_back(astns);
         }
         else {
@@ -303,7 +304,7 @@ void PhrasedOutput::addOutputToSEDML(SedDocument* sedml) const
     const vector<ASTNode*>* vec = &(m_outputVariables[ov]);
     //Create Data Generators for each element.
     for (size_t an=0; an<vec->size(); an++) {
-      datagennames.push_back(addDataGeneratorToSEDML(sedml, (*vec)[an], ov, an));
+      datagennames.push_back(addDataGeneratorToSEDML(sedml, (*vec)[an], (int)ov, (int)an));
       char* cformula = SBML_formulaToL3String((*vec)[an]);
       datagenlabels.push_back(getSimpleString(cformula));
       free(cformula);
@@ -517,11 +518,11 @@ void PhrasedOutput::replaceASTNamesAndAdd(ASTNode* astnode, SedDataGenerator* sd
         SedVariable* var = sdg->createVariable();
         var->setId(astnode->getName());
         var->setTaskReference(fullname[0]);
+        var->setModelReference(fullname[1]);
         if (fullname[2] == "time") {
           var->setSymbol("urn:sedml:symbol:time");
           return;
         }
-        var->setModelReference(fullname[1]);
         SBMLDocument* doc = g_registry.getModel(fullname[1])->getSBMLDocument();
         vector<string> idonly = getStringVecFromDelimitedString(fullname[2]);
         string xpath = getElementXPathFromId(&idonly, doc);

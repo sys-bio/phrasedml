@@ -9,10 +9,10 @@
 #include "task.h"
 #include "phrasedml-namespace.h"
 
-class SedRepeatedTask;
-class SedDocument;
-class SedSetValue;
-class SedRepeatedTask;
+#include "sedml/SedRepeatedTask.h"
+#include "sedml/SedDocument.h"
+#include "sedml/SedSetValue.h"
+#include "sedml/SedRepeatedTask.h"
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
@@ -29,13 +29,13 @@ protected:
 public:
 
   PhrasedRepeatedTask(std::string id, std::string task, std::vector<ModelChange>*);
-  PhrasedRepeatedTask(SedRepeatedTask* sedRepeatedTask);
+  PhrasedRepeatedTask(libsedml::SedRepeatedTask* sedRepeatedTask);
   ~PhrasedRepeatedTask();
 
   virtual bool isRepeated() const;
   virtual void addTask(std::string task);
   virtual std::string getPhraSEDML() const;
-  virtual void addRepeatedTaskToSEDML(SedDocument* sedml) const;
+  virtual void addRepeatedTaskToSEDML(libsedml::SedDocument* sedml) const;
 
   virtual const ModelChange* getModelChangeFor(std::string varname) const;
 
@@ -45,7 +45,7 @@ public:
   virtual bool finalize();
 
 private:
-  void addLocalVariablesToSetValue(SedSetValue* ssv, SedRepeatedTask* srt) const;
+  void addLocalVariablesToSetValue(libsedml::SedSetValue* ssv, libsedml::SedRepeatedTask* srt) const;
   ModelChange* getModelChange(std::string id);
 
 };

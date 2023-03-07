@@ -12,6 +12,7 @@
 
 extern int phrased_yylloc_last_line;
 using namespace std;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedUniform::PhrasedUniform(std::string id, double start, double outstart, double end, long numpts, bool stochastic)
@@ -126,11 +127,6 @@ bool PhrasedUniform::finalize()
     return true;
   }
   stringstream err;
-  if (m_start < 0) {
-    err << "The start time for a uniform time course simulation must be zero or greater.  The start time for simulation '" << m_id << "' is '" << m_start << "', which is negative.";
-    g_registry.setError(err.str(), 0);
-    return true;
-  }
   if (m_outstart < m_start) {
     err << "The output start time for a uniform time course simulation must be greater than or equal to the start time for the simulation.  The output start time for simulation '" << m_id << "' is '" << m_outstart << "', which is lower than '" << m_start << "', the simulation start.";
     g_registry.setError(err.str(), 0);

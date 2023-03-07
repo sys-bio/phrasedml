@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created by libAntimony version v2.7.0 on 2015-05-06 13:05 with libSBML version 5.11.4. -->
 <sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
-  <model id="__main" name="__main">
+  <model metaid="case_01" id="case_01">
     <listOfCompartments>
       <compartment id="C1" size="1" spatialDimensions="3" constant="true"/>
     </listOfCompartments>
@@ -12,5 +11,24 @@
     <listOfParameters>
       <parameter id="p1" value="2" constant="true"/>
     </listOfParameters>
+    <listOfReactions>
+      <reaction id="_J0" reversible="true" fast="false">
+        <listOfReactants>
+          <speciesReference species="S1" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="S2" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> S1 </ci>
+              <ci> k </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
   </model>
 </sbml>

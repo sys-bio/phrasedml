@@ -23,6 +23,7 @@
 
 using namespace std;
 using namespace libsbml;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 
@@ -35,6 +36,7 @@ bool isLoop(change_type type)
   case ctype_loop_uniformLinear:
   case ctype_loop_uniformLog:
   case ctype_loop_vector:
+  case ctype_loop_functional:
     return true;
   }
   assert(false); //uncaught type
@@ -317,8 +319,8 @@ string ModelChange::getPhraSEDML() const
     break;
   case ctype_formula_assignment:
     ret = getStringFrom(&m_variable, ".") + " = ";
-    if (m_source_range.size())
-      ret += m_source_range + " : ";
+    //if (m_source_range.size())
+    //  ret += m_source_range + " : ";
     ret += m_formula;
     break;
   case ctype_loop_functional:
@@ -357,6 +359,7 @@ bool ModelChange::addModelChangeToSEDMLModel(SedModel* sedmodel) const
   case ctype_loop_uniformLinear:
   case ctype_loop_uniformLog:
   case ctype_loop_vector:
+  case ctype_loop_functional:
     g_registry.setError("It is not legal to have a looping change construct in a model directly.  You must use a repeated task instead.", 0);
     return true;
   case ctype_formula_assignment:

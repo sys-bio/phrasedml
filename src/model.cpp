@@ -16,6 +16,7 @@
 
 using namespace std;
 using namespace libsbml;
+using namespace libsedml;
 
 #define DEFAULTCOMP "default_compartment" //Also defined in antimony_api.cpp
 
@@ -47,7 +48,7 @@ PhrasedModel::PhrasedModel(string id, string source, vector<ModelChange> changes
 PhrasedModel::PhrasedModel(SedModel* sedmodel, SedDocument* seddoc)
   : Variable(sedmodel)
   , m_type(lang_XML)
-  , m_source(normalizeModelPath(sedmodel->getSource()))
+  , m_source(sedmodel->getSource())
   , m_changes()
   , m_isFile(true)
 {
@@ -154,6 +155,18 @@ string PhrasedModel::getPhraSEDML() const
 void PhrasedModel::addModelToSEDML(SedDocument* sedml) const
 {
   SedModel* model = sedml->createModel();
+  libsbml::XMLNamespaces* sednames = sedml->getNamespaces();
+  libsbml::XMLNamespaces* libsbmlnames = m_sbml.getNamespaces();
+  for (int i = 0; i < libsbmlnames->getNumNamespaces(); i++)
+  {
+      string prefix = libsbmlnames->getPrefix(i);
+      if (prefix.empty())
+      {
+          prefix = "sbml";
+      }
+      sednames->add(libsbmlnames->getURI(i), prefix);
+  }
+
   model->setId(m_id);
   model->setName(m_name);
   model->setSource(m_source);
@@ -350,6 +363,7 @@ bool PhrasedModel::changeListIsInappropriate(stringstream& err)
     case ctype_loop_uniformLinear:
     case ctype_loop_uniformLog:
     case ctype_loop_vector:
+    case ctype_loop_functional:
       err << "The model change '" << m_changes[c].getPhraSEDML() << "' is not the type of change that can be used on a single model.  These changes must be used in repeated tasks, instead.";
       return true;
     }

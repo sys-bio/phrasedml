@@ -13,6 +13,7 @@
 #include "stringx.h"
 
 using namespace std;
+using namespace libsedml;
 extern int phrased_yylloc_last_line;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
@@ -35,7 +36,7 @@ PhrasedSimulation::PhrasedSimulation(simtype type, SedSimulation* sedsimulation)
     if (sedalg->isSetKisaoID()) {
       setAlgorithmKisao(getIntFromKisao(sedalg->getKisaoID()));
     }
-    for (size_t ap=0; ap<sedalg->getNumAlgorithmParameters(); ap++) {
+    for (unsigned int ap=0; ap<sedalg->getNumAlgorithmParameters(); ap++) {
       const SedAlgorithmParameter* sap = sedalg->getAlgorithmParameter(ap);
       string kisao = "";
       string value = "";
@@ -220,6 +221,7 @@ void PhrasedSimulation::addKisaoAndAlgorithmParametersToSEDML(SedSimulation* sed
     alg = sedsim->createAlgorithm();
   }
   if (m_kisao != 0) {
+    alg->unsetName(); //Because setting the kisao term will set the name appropriately if it's not already set.
     alg->setKisaoID(getKisaoFromInt(m_kisao));
   }
   for (map<int, string>::const_iterator algparam = m_algparams.begin(); algparam != m_algparams.end(); algparam++) {
@@ -273,7 +275,7 @@ int PhrasedSimulation::keywordToKisaoParamId(const string& keyword) const
     return 485;
   }
   if (CaselessStrCmp(keyword, "initial_time_step")) {
-    return 332;
+    return 559;
   }
   if (CaselessStrCmp(keyword, "variable_step_size")) {
     return 107;
@@ -480,6 +482,8 @@ string PhrasedSimulation::getPhrasedVersionOf(int kisao) const
   case 485:
     return "minimum_time_step";
   case 332:
+    return "initial_time_step";
+  case 559:
     return "initial_time_step";
   case 107:
     return "variable_step_size";

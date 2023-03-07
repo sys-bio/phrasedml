@@ -358,7 +358,7 @@ bool IsReal(const string& src)
   if (src.empty()) return false;
 
   long i;
-  long end = src.size();
+  size_t end = src.size();
   bool pointfound = false;
   for (i = 0; i < end; ++i) {
     if (!isdigit(src[i])) {
@@ -379,7 +379,7 @@ bool IsInt(const string& src)
   if (src.empty()) return false;
 
   long i;
-  long end = src.size();
+  size_t end = src.size();
   for (i = 0; i < end; ++i) {
     if (!isdigit(src[i])) {
       return false;   // Ints only have digits

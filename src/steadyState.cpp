@@ -12,6 +12,7 @@
 
 extern int phrased_yylloc_last_line;
 using namespace std;
+using namespace libsedml;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 PhrasedSteadyState::PhrasedSteadyState(std::string id)

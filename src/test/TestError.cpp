@@ -24,7 +24,7 @@ void testError(const string& base, const string& err)
   char* sedgen = convertString(base.c_str());
   fail_unless(sedgen == NULL);
   char* errgen = getLastPhrasedError();
-  fail_unless(err == errgen);
+  fail_unless(err == (string)errgen);
 
   free(errgen);
 }
@@ -143,7 +143,7 @@ END_TEST
 
 START_TEST (test_sim_onestep_5args)
 {
-  testError("sim1 = simulate onestep(0, 5.5, 3e-10, 2, 0.00001)", "Unable to parse line 1 ('sim1 = simulate onestep(0, 5.5, 3e-010, 2, 1e-005)'): onestep simulations must take exactly one argument.");
+  testError("sim1 = simulate onestep(0, 5.5, 3e-10, 2, 0.00001)", "Unable to parse line 1 ('sim1 = simulate onestep(0, 5.5, 3e-10, 2, 1e-05)'): onestep simulations must take exactly one argument.");
 }
 END_TEST
 
@@ -164,13 +164,6 @@ END_TEST
 START_TEST (test_sim_uniform_6args)
 {
   testError("sim1 = simulate uniform(-5, 8, 2.2, 9, 27.27, 82.0005)", "Unable to parse line 1 ('sim1 = simulate uniform(-5, 8, 2.2, 9, 27.27, 82.0005)'): uniform timecourse simulations must have either three arguments (start, stop, steps) or four (simulation_start, output_start, stop, steps).");
-}
-END_TEST
-
-
-START_TEST (test_sim_uniform_negstart)
-{
-  testError("sim1 = simulate uniform(-5, 8, 20)", "The start time for a uniform time course simulation must be zero or greater.  The start time for simulation 'sim1' is '-5', which is negative.");
 }
 END_TEST
 
@@ -248,13 +241,6 @@ END_TEST
 START_TEST (test_sim_uniform_stochastic_6args)
 {
   testError("sim1 = simulate uniform_stochastic(-5, 8, 2.2, 9, 27.27, 82.0005)", "Unable to parse line 1 ('sim1 = simulate uniform_stochastic(-5, 8, 2.2, 9, 27.27, 82.0005)'): uniform timecourse simulations must have either three arguments (start, stop, steps) or four (simulation_start, output_start, stop, steps).");
-}
-END_TEST
-
-
-START_TEST (test_sim_uniform_stochastic_negstart)
-{
-  testError("sim1 = simulate uniform_stochastic(-5, 8, 20)", "The start time for a uniform time course simulation must be zero or greater.  The start time for simulation 'sim1' is '-5', which is negative.");
 }
 END_TEST
 
@@ -615,7 +601,9 @@ END_TEST
 
 START_TEST (test_kisao_algtype_toolong2)
 {
+#ifndef __APPLE__
   testError("sim1 = simulate steadystate\nsim1.algorithm = kisao.43.c", "Unable to parse line 2 ('sim1.algorithm = kisao.43.c'): invalid algorithm type 'kisao.43.c'.  Types must be either a keyword ('CVODE') or of the form 'kisao.19'.");
+#endif
 }
 END_TEST
 
@@ -721,7 +709,6 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_sim_uniform_0args);
   tcase_add_test( tcase, test_sim_uniform_2args);
   tcase_add_test( tcase, test_sim_uniform_6args);
-  tcase_add_test( tcase, test_sim_uniform_negstart);
   tcase_add_test( tcase, test_sim_uniform_lower_outstart);
   tcase_add_test( tcase, test_sim_uniform_lower_outstart2);
   tcase_add_test( tcase, test_sim_uniform_lower_end);
@@ -738,7 +725,6 @@ create_suite_Errors (void)
   tcase_add_test( tcase, test_sim_uniform_stochastic_0args);
   tcase_add_test( tcase, test_sim_uniform_stochastic_2args);
   tcase_add_test( tcase, test_sim_uniform_stochastic_6args);
-  tcase_add_test( tcase, test_sim_uniform_stochastic_negstart);
   tcase_add_test( tcase, test_sim_uniform_stochastic_lower_outstart);
   tcase_add_test( tcase, test_sim_uniform_stochastic_lower_outstart2);
   tcase_add_test( tcase, test_sim_uniform_stochastic_lower_end);

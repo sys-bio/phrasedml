@@ -9,8 +9,6 @@
 #include "modelChange.h"
 #include "phrasedml-namespace.h"
 
-class SedComputeChange;
-class SedModel;
 
 PHRASEDML_CPP_NAMESPACE_BEGIN
 enum language {
@@ -47,7 +45,7 @@ public:
 
   PhrasedModel(std::string id, std::string source, bool isFile);
   PhrasedModel(std::string id, std::string source, std::vector<ModelChange> changes, bool isFile);
-  PhrasedModel(SedModel* sedmodel, SedDocument* seddoc);
+  PhrasedModel(libsedml::SedModel* sedmodel, libsedml::SedDocument* seddoc);
   ~PhrasedModel();
 
   void setIsFile(bool isfile);
@@ -57,7 +55,7 @@ public:
   libsbml::SBMLDocument* getSBMLDocument();
 
   std::string getPhraSEDML() const;
-  void addModelToSEDML(SedDocument* sedml) const;
+  void addModelToSEDML(libsedml::SedDocument* sedml) const;
 
   //void langTypeToURI(language type) const;
 
@@ -70,7 +68,7 @@ private:
   void processSource();
   language getLanguageFromURI(std::string uri) const;
   std::string getURIFromLanguage(language lang) const;
-  void addLocalVariablesToComputeChange(SedComputeChange* scc, SedModel* model) const;
+  void addLocalVariablesToComputeChange(libsedml::SedComputeChange* scc, libsedml::SedModel* model) const;
 
 };
 

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sedML xmlns="http://sed-ml.org/sed-ml/level1/version2" level="1" version="2">
-  <listOfSimulations>
-    <uniformTimeCourse id="sim1" initialTime="0" outputStartTime="0" outputEndTime="10" numberOfPoints="100">
-      <algorithm kisaoID="KISAO:0000019"/>
-    </uniformTimeCourse>
-  </listOfSimulations>
+<sedML xmlns="http://sed-ml.org/sed-ml/level1/version4" xmlns:sbml="http://www.sbml.org/sbml/level3/version1/core" level="1" version="4">
   <listOfModels>
     <model id="mod1" language="urn:sedml:language:sbml.level-3.version-1" source="sbml_model.xml"/>
   </listOfModels>
+  <listOfSimulations>
+    <uniformTimeCourse id="sim1" initialTime="0" outputStartTime="0" outputEndTime="10" numberOfSteps="100">
+      <algorithm name="CVODE" kisaoID="KISAO:0000019"/>
+    </uniformTimeCourse>
+  </listOfSimulations>
   <listOfTasks>
     <task id="task1" modelReference="mod1" simulationReference="sim1"/>
     <repeatedTask id="task2" range="uniform_log_for_S2" resetModel="false">
@@ -18,29 +18,26 @@
           <value> 5 </value>
           <value> 100 </value>
         </vectorRange>
-        <uniformRange id="uniform_linear_for_S1" start="0" end="10" numberOfPoints="100" type="linear"/>
-        <uniformRange id="uniform_log_for_S2" start="0" end="100" numberOfPoints="5" type="log"/>
+        <uniformRange id="uniform_linear_for_S1" start="0" end="10" numberOfSteps="100" type="linear"/>
+        <uniformRange id="uniform_log_for_S2" start="0" end="100" numberOfSteps="5" type="log"/>
       </listOfRanges>
       <listOfChanges>
-        <setValue range="vector_for_p1" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='p1']">
+        <setValue modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfParameters/sbml:parameter[@id='p1']" range="vector_for_p1">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> vector_for_p1 </ci>
           </math>
         </setValue>
-        <setValue range="uniform_linear_for_S1" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']">
+        <setValue modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']" range="uniform_linear_for_S1">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> uniform_linear_for_S1 </ci>
           </math>
         </setValue>
-        <setValue range="uniform_log_for_S2" modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']">
+        <setValue modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S2']" range="uniform_log_for_S2">
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <ci> uniform_log_for_S2 </ci>
           </math>
         </setValue>
         <setValue modelReference="mod1" target="/sbml:sbml/sbml:model/sbml:listOfCompartments/sbml:compartment[@id='C1']">
-          <listOfVariables>
-            <variable id="S1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']" modelReference="mod1"/>
-          </listOfVariables>
           <math xmlns="http://www.w3.org/1998/Math/MathML">
             <apply>
               <plus/>
@@ -48,6 +45,9 @@
               <cn type="integer"> 2 </cn>
             </apply>
           </math>
+          <listOfVariables>
+            <variable id="S1" target="/sbml:sbml/sbml:model/sbml:listOfSpecies/sbml:species[@id='S1']" modelReference="mod1"/>
+          </listOfVariables>
         </setValue>
       </listOfChanges>
       <listOfSubTasks>
